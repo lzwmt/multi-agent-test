@@ -1,6 +1,6 @@
 # MEMORY.md - Long-Term Memory
 
-> 共享协议同步于 2026-03-25 | Your curated memories. Distill from daily notes. Remove when outdated.
+> 共享协议同步于 2026-03-27 | Your curated memories. Distill from daily notes. Remove when outdated.
 
 ---
 
@@ -71,6 +71,17 @@ direct + 关键解释
 2. 或调用 `realtime_data.py` 获取实时数据
 3. 输出技术分析报告（价格、均线、RSI、MACD等）
 **注意**: 股票分析时必须**主动使用此技能**，不要浏览器爬取
+
+### clawteam
+**位置**: `~/.openclaw/workspace/skills/clawteam/SKILL.md`
+**功能**: 多代理团队协调，并行分析股票
+**触发**: "启动团队分析股票"、"用clawteam分析"、"7个子代理分析"
+**流程**:
+1. 使用 `clawteam` CLI 创建团队和任务
+2. 并行 spawn 多个子代理（每个代理分析一个维度）
+3. 监控进度，处理超时
+4. 汇总结果给用户
+**注意**: 子代理默认超时1分钟太短，需要在任务中设置更长超时或分阶段执行
 
 ---
 
