@@ -192,7 +192,7 @@ for source_name, feed_url in rss_sources:
         print(f'  ⚠️ {source_name} 抓取失败: {e}', file=sys.stderr)
 
 if not news_list:
-    print('❌ 今天没有 AI 相关新闻')
+    print('❌ 今天没有匹配到 AI 相关新闻（RSS可能在维护或今日无AI内容）')
     sys.exit(1)
 
 for i, item in enumerate(news_list[:$NEWS_COUNT]):
