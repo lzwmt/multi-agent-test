@@ -84,63 +84,123 @@ init() {
     echo "✅ 初始化完成"
 }
 
-# ========== 第一步: 获取AI新闻 ==========
+# ========== 第一步: 获取AI新闻 (虎嗅→36氪→少数派) ==========
 fetch_ai_news_from_cache() {
     echo "🔍 步骤1: 获取AI热点新闻..."
     
-    local news_json
-    # 直接搜索 AI 相关新闻，不限制日期
-    news_json=$(mcporter call trendradar search_news query="AI" limit=30 2>/dev/null) || true
+    local today_en=$(date +'%a, %d %b %Y')
+    local today_cn=$(date +'%Y-%m-%d')
     
-    if [ -z "$news_json" ] || [ "$news_json" = "null" ]; then
-        echo "⚠️ TrendRadar 无返回，使用备用方案..."
-        news_json=$(mcporter call trendradar get_latest_news limit=50 2>/dev/null) || true
-    fi
+    local rss_feeds=(
+        "https://rss.huxiu.com/"
+        "https://sspai.com/feed"
+    )
     
-    if [ -z "$news_json" ] || [ "$news_json" = "null" ]; then
-        echo "❌ 无法获取新闻，请检查 mcporter 配置"
+    # 逐个抓取 RSS（Python 端会过滤反爬页面）
+    > "$TEMP_DIR/raw_rss.xml"
+    local fetch_ok=0
+    for feed_url in "${rss_feeds[@]}"; do
+        local content=$(curl -sL --max-time 15 "$feed_url" 2>/dev/null)
+        if [ ${#content} -gt 100 ]; then
+            echo "$content" >> "$TEMP_DIR/raw_rss.xml"
+            echo "" >> "$TEMP_DIR/raw_rss.xml"
+            fetch_ok=1
+            local domain=$(echo "$feed_url" | grep -oP '//\K[^/]+')
+            echo "  ✅ $domain"
+        else
+            local domain=$(echo "$feed_url" | grep -oP '//\K[^/]+')
+            echo "  ⚠️ $domain 无数据，跳过"
+        fi
+    done
+    
+    if [ "$fetch_ok" -eq 0 ]; then
+        echo "❌ 所有 RSS 源获取失败"
+        echo "NOTIFY: ⚠️ 新闻视频：所有 RSS 源获取失败，请检查网络"
         exit 1
     fi
     
-    echo "$news_json" > "$TEMP_DIR/raw_news.json"
-    echo "✅ 获取到新闻数据"
+    echo "✅ 获取到 RSS 数据"
     
-    # 提取新闻标题 (按 rank 排序，rank 越小越热门)
+    # 解析 RSS 提取新闻标题和链接
     python3 -c "
-import json, sys
-import os
+import re, sys, subprocess
 
-try:
-    raw = json.load(open('$TEMP_DIR/raw_news.json'))
-except:
-    print('❌ 新闻数据解析失败')
-    sys.exit(1)
+today_en = '$today_en'
+today_cn = '$today_cn'
 
-# 解析 TrendRadar 返回格式
-if isinstance(raw, dict) and 'data' in raw:
-    news_list = raw['data']
-elif isinstance(raw, dict) and 'results' in raw:
-    news_list = raw['results']
-elif isinstance(raw, list):
-    news_list = raw
-else:
-    news_list = []
+rss_sources = [
+    ('虎嗅', 'https://rss.huxiu.com/'),
+    ('少数派', 'https://sspai.com/feed'),
+]
+
+ai_keywords = ['AI', 'ai', '人工智能', '大模型', 'GPT', 'Claude', 'DeepSeek', 
+               'OpenAI', '机器学习', '深度学习', 'NLP', 'LLM', '具身智能', 
+               'Sora', 'Copilot', 'Agent', '智能体', '文心', '通义', '豆包', 
+               'Kimi', '智谱', '商汤', '旷视', '科大讯飞', '芯片', '半导体', 
+               '量子', '机器人', '自动驾驶', '智能', '腾讯', '阿里', '字节', 
+               '百度', '小米', '华为', '苹果', '特斯拉', '谷歌', '微软', 'Meta', 'Anthropic']
+
+news_list = []
+seen_titles = set()
+
+for source_name, feed_url in rss_sources:
+    try:
+        result = subprocess.run(['curl', '-sL', '--max-time', '10', feed_url], 
+                              capture_output=True, text=True, timeout=15)
+        content = result.stdout
+        
+        # 跳过反爬页面
+        if '<item>' not in content:
+            print(f'  ⚠️ {source_name} 被反爬或无数据', file=sys.stderr)
+            continue
+        
+        items = re.findall(r'<item>(.*?)</item>', content, re.DOTALL)
+        found = 0
+        
+        for item in items:
+            title_match = re.search(r'<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</title>', item, re.DOTALL)
+            link_match = re.search(r'<link>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</link>', item, re.DOTALL)
+            pub_match = re.search(r'<pubDate>([^<]+)', item)
+            desc_match = re.search(r'<description>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</description>', item, re.DOTALL)
+            
+            if not title_match:
+                continue
+            
+            title = title_match.group(1).strip()
+            link = link_match.group(1).strip() if link_match else ''
+            desc = desc_match.group(1).strip()[:300] if desc_match else ''
+            pub_date = pub_match.group(1).strip() if pub_match else ''
+            
+            if title in seen_titles:
+                continue
+            seen_titles.add(title)
+            
+            # 只要今天的
+            is_today = (today_en in pub_date) or (today_cn in pub_date)
+            if not is_today:
+                continue
+            
+            # 过滤 AI 关键词
+            text = title + desc
+            if any(kw in text for kw in ai_keywords):
+                news_list.append({'title': title, 'url': link})
+                found += 1
+        
+        print(f'  ✅ {source_name}: {found} 条', file=sys.stderr)
+    except Exception as e:
+        print(f'  ⚠️ {source_name} 抓取失败: {e}', file=sys.stderr)
 
 if not news_list:
-    print('❌ 没有新闻数据')
+    print('❌ 今天没有 AI 相关新闻')
     sys.exit(1)
 
-# 按 rank 排序 (rank 越小越热门)
-news_list = sorted(news_list, key=lambda x: x.get('rank', 999))
-
 for i, item in enumerate(news_list[:$NEWS_COUNT]):
-    title = item.get('title', '无标题')
-    url = item.get('url', '')
-    # 标题截断到一行 (35 个中文字)
+    title = item['title']
+    url = item['url']
     if len(title) > 35:
         title = title[:35] + '...'
     print(f'{i}|{title}|{url}')
-" > "$TEMP_DIR/news_titles.txt" || {
+" > "$TEMP_DIR/news_titles.txt" 2>&1 || {
         echo "❌ 新闻提取失败"
         exit 1
     }
