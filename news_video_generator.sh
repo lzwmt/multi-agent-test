@@ -11,6 +11,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 OUTPUT_DIR="${OUTPUT_DIR:-$SCRIPT_DIR/output}"
 TEMP_DIR="${TEMP_DIR:-/tmp/news_video_$$}"
+export TEMP_DIR
 PROJECT_DIR="$TEMP_DIR/remotion-project"
 
 # 视频参数
@@ -183,7 +184,7 @@ for source_name, feed_url in rss_sources:
             # 过滤 AI 关键词
             text = title + desc
             if any(kw in text for kw in ai_keywords):
-                news_list.append({'title': title, 'url': link})
+                news_list.append({'title': title, 'url': link, 'desc': desc})
                 found += 1
         
         print(f'  ✅ {source_name}: {found} 条', file=sys.stderr)
@@ -197,8 +198,19 @@ if not news_list:
 for i, item in enumerate(news_list[:$NEWS_COUNT]):
     title = item['title']
     url = item['url']
+    desc = item.get('desc', '')
     if len(title) > 35:
         title = title[:35] + '...'
+    # 保存正文供 summarize 使用
+    import os as _os
+    _td = _os.environ.get('TEMP_DIR', '/tmp')
+    desc_file = _os.path.join(_td, f'desc_{i}.txt')
+    # 去 HTML 标签
+    import re as _re
+    clean_text = _re.sub(r'<[^>]+>', ' ', desc)
+    clean_text = _re.sub(r'\s+', ' ', clean_text).strip()
+    with open(desc_file, 'w') as f:
+        f.write(clean_text[:3000])
     print(f'{i}|{title}|{url}')
 " > "$TEMP_DIR/news_titles.txt" 2>&1 || {
         echo "❌ 新闻提取失败"
@@ -225,23 +237,44 @@ generate_summaries() {
         
         echo "   正在处理: ${title:0:30}..."
         
-        # 尝试使用本地大模型 (生成 2-3 行摘要)
         local summary=""
-        if command -v ollama &>/dev/null; then
-            summary=$(ollama generate --model llama3 --prompt "你是新闻主播。请用80-120字生动有趣的口语总结以下新闻，控制在2-3行，要求吸引眼球：$title" 2>/dev/null | head -1) || true
+        local desc_file="$TEMP_DIR/desc_${num}.txt"
+        
+        # 方案1: 用 summarize CLI 总结正文
+        if [ -f "$desc_file" ] && [ "$(wc -c < "$desc_file")" -gt 100 ]; then
+            summary=$(summarize "$desc_file" --length short 2>/dev/null) || true
+            
+            if [ -n "$summary" ]; then
+                # 清理：去 markdown 标题、引用行、多余空格
+                summary=$(echo "$summary" | sed '/^#/d' | sed '/^\*/d' | tr '\n' ' ' | sed 's/  */ /g')
+                # 按句号截取，硬限120字
+                local short=""
+                IFS='。' read -ra parts <<< "$summary"
+                for part in "${parts[@]}"; do
+                    part=$(echo "$part" | xargs)
+                    [ -z "$part" ] && continue
+                    if [ ${#short} -lt 120 ]; then
+                        [ -n "$short" ] && short="${short}。"
+                        short="${short}${part}"
+                    fi
+                done
+                summary="${short}。"
+                # 硬截断
+                if [ ${#summary} -gt 120 ]; then
+                    summary="${summary:0:117}..."
+                fi
+            fi
         fi
         
-        # 回退：简单处理 (2-3 行)
+        # 方案2: ollama 本地模型
+        if [ -z "$summary" ] && command -v ollama &>/dev/null; then
+            summary=$(ollama generate --model llama3 --prompt "用60字以内总结：$title" 2>/dev/null | head -1) || true
+        fi
+        
+        # 方案3: 截取标题
         if [ -z "$summary" ]; then
-            # 拆分成多行
-            local part1="${title:0:20}"
-            local part2="${title:20:20}"
-            local part3="${title:40:20}"
-            if [ ${#title} -gt 40 ]; then
-                summary="$part1$part2$part3..."
-            else
-                summary="$part1$part2"
-            fi
+            summary="${title:0:60}"
+            [ ${#title} -gt 60 ] && summary="${summary}..."
         fi
         
         echo "$idx|$title|$summary|$url" >> "$TEMP_DIR/summaries.json"
@@ -260,7 +293,6 @@ generate_summaries() {
     while IFS='|' read -r idx title summary url; do
         [ -z "$title" ] && continue
         [ "$first" -eq 1 ] && first=0 || echo "," >> "$cache_file"
-        # 转义引号
         title_escaped=$(echo "$title" | sed 's/"/\\"/g')
         summary_escaped=$(echo "$summary" | sed 's/"/\\"/g')
         printf '  {"title": "%s", "summary": "%s", "url": "%s"}' "$title_escaped" "$summary_escaped" "$url" >> "$cache_file"
