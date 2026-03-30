@@ -602,9 +602,68 @@ generate_fallback_image() {
 
 # ========== 第四步: 生成配音 (可选) ==========
 generate_voiceover() {
-    echo "🎙️ 步骤4: 跳过配音 (仅使用背景音乐)..."
-    # 不生成配音，只保留背景音乐
-    echo "✅ 配音跳过"
+    echo "🎙️ 步骤4: 使用 Kokoro TTS 生成配音..."
+    
+    # 检查 python 和 kokoro
+    if ! python3 -c "import kokoro" 2>/dev/null; then
+        echo "⚠️ kokoro 未安装，跳过配音"
+        return
+    fi
+    
+    local voice="zm_yunyang"
+    local total_duration=0
+    
+    # 为每条新闻生成配音
+    local idx=0
+    while IFS='|' read -r num title summary url; do
+        [ -z "$title" ] && continue
+        
+        echo "   合成 [$((idx+1))]: ${title:0:20}..."
+        
+        # 拼接标题+摘要作为配音文本
+        local speak_text="${title}。${summary}"
+        
+        # 限制长度避免太长
+        if [ ${#speak_text} -gt 150 ]; then
+            speak_text="${speak_text:0:150}"
+        fi
+        
+        # 用 Python 调用 Kokoro
+        python3 - "$speak_text" "$voice" "$TEMP_DIR/voice_${idx}.wav" << 'PYEOF'
+import sys, soundfile as sf
+from kokoro import KPipeline
+
+text = sys.argv[1]
+voice = sys.argv[2]
+out_path = sys.argv[3]
+
+pipeline = KPipeline(lang_code='z', repo_id='hexgrad/Kokoro-82M')
+generator = pipeline(text, voice=voice)
+
+for i, (gs, ps, audio) in enumerate(generator):
+    if i == 0:
+        sf.write(out_path, audio, 24000)
+    else:
+        # 追加后续片段
+        import numpy as np
+        prev, sr = sf.read(out_path)
+        combined = np.concatenate([prev, audio])
+        sf.write(out_path, combined, 24000)
+PYEOF
+        
+        if [ -f "$TEMP_DIR/voice_${idx}.wav" ]; then
+            local dur=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$TEMP_DIR/voice_${idx}.wav" 2>/dev/null | cut -d. -f1)
+            total_duration=$((total_duration + dur))
+            echo "   ✅ ${dur}s"
+        else
+            echo "   ⚠️ 合成失败"
+        fi
+        
+        idx=$((idx + 1))
+    done < "$TEMP_DIR/summaries.json"
+    
+    local count=$(ls -1 "$TEMP_DIR"/voice_*.wav 2>/dev/null | wc -l)
+    echo "✅ 配音完成: $count 条, 总时长 ${total_duration}s"
 }
 
 # ========== 第五步: 合成视频 ==========
@@ -677,46 +736,82 @@ compose_video() {
 
 # ========== 第六步: 添加背景音乐和配音 ==========
 add_audio() {
-    echo "🎵 步骤6: 添加背景音乐和配音..."
+    echo "🎵 步骤6: 添加配音和背景音乐..."
     
     local input_video="$TEMP_DIR/video_no_audio.mp4"
     local output_video="$OUTPUT_DIR/ai_news_$(date +%Y%m%d_%H%M%S).mp4"
     
-    # 不使用配音，直接使用背景音乐
-    # 跳过配音合并步骤
+    # 获取视频时长
+    local video_duration
+    video_duration=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$input_video" 2>/dev/null | cut -d. -f1) || video_duration=40
     
-    # 添加背景音乐 (循环播放到视频结束)
-    if [ -f "$TEMP_DIR/bgm.mp3" ] && [ -s "$TEMP_DIR/bgm.mp3" ]; then
-        echo "   添加背景音乐 (循环)..."
+    # 检查是否有配音文件
+    local voice_files=($(ls -1 "$TEMP_DIR"/voice_*.wav 2>/dev/null | sort -V))
+    local has_voiceover=0
+    
+    if [ ${#voice_files[@]} -gt 0 ]; then
+        echo "   拼接 ${#voice_files[@]} 条配音..."
         
-        # 获取视频时长 (取整)
-        local video_duration
-        video_duration=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$input_video" 2>/dev/null | cut -d. -f1) || video_duration=40
+        # 拼接所有配音
+        > "$TEMP_DIR/voice_concat.txt"
+        for vf in "${voice_files[@]}"; do
+            echo "file '$vf'" >> "$TEMP_DIR/voice_concat.txt"
+        done
         
-        # 获取 BGM 时长 (取整)
-        local bgm_duration
-        bgm_duration=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$TEMP_DIR/bgm.mp3" 2>/dev/null | cut -d. -f1) || bgm_duration=30
+        ffmpeg -y -f concat -safe 0 -i "$TEMP_DIR/voice_concat.txt" \
+            -c:a pcm_s16le "$TEMP_DIR/voice_all.wav" 2>/dev/null && has_voiceover=1
         
-        # 计算需要循环的次数 (纯 bash)
-        local loop_count=$(((video_duration + bgm_duration - 1) / bgm_duration))
-        
-        echo "   视频时长: ${video_duration}s, BGM时长: ${bgm_duration}s, 循环: ${loop_count}次"
-        
-        # 循环 BGM
-        ffmpeg -y -stream_loop $loop_count -i "$TEMP_DIR/bgm.mp3" \
-            -i "$input_video" \
-            -c:v copy -c:a aac -b:a 192k \
-            -map 0:a -map 1:v \
-            -shortest "$output_video" 2>&1 | tail -3 || {
-            # 备用方案
-            ffmpeg -y -i "$input_video" -stream_loop 3 -i "$TEMP_DIR/bgm.mp3" \
-                -c:v copy -c:a aac -b:a 192k -shortest "$output_video" 2>&1 | tail -3 || {
-                echo "   ⚠️ BGM 混音失败"
+        if [ "$has_voiceover" -eq 1 ]; then
+            local voice_dur=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$TEMP_DIR/voice_all.wav" 2>/dev/null | cut -d. -f1)
+            echo "   ✅ 配音总时长: ${voice_dur}s"
+        fi
+    fi
+    
+    if [ "$has_voiceover" -eq 1 ]; then
+        # 配音 + BGM 混合
+        if [ -f "$TEMP_DIR/bgm.mp3" ] && [ -s "$TEMP_DIR/bgm.mp3" ]; then
+            echo "   混合配音 + BGM (BGM音量: ${BGM_VOLUME})..."
+            
+            local bgm_duration
+            bgm_duration=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$TEMP_DIR/bgm.mp3" 2>/dev/null | cut -d. -f1) || bgm_duration=30
+            local loop_count=$(((video_duration + bgm_duration - 1) / bgm_duration))
+            
+            # 方案: 视频 + 配音(主) + BGM(低音量)
+            ffmpeg -y \
+                -i "$input_video" \
+                -i "$TEMP_DIR/voice_all.wav" \
+                -stream_loop $loop_count -i "$TEMP_DIR/bgm.mp3" \
+                -filter_complex "[1:a]aformat=sample_fmts=fltp:sample_rates=24000:channel_layouts=mono[voice];[2:a]volume=${BGM_VOLUME}[bgm];[voice][bgm]amix=inputs=2:duration=first:dropout_transition=2[aout]" \
+                -map 0:v -map "[aout]" \
+                -c:v copy -c:a aac -b:a 192k \
+                "$output_video" 2>&1 | tail -3 || {
+                echo "   ⚠️ 混合失败，仅使用配音"
+                ffmpeg -y -i "$input_video" -i "$TEMP_DIR/voice_all.wav" \
+                    -c:v copy -c:a aac -b:a 192k -shortest "$output_video" 2>/dev/null
+            }
+        else
+            echo "   仅配音，无BGM..."
+            ffmpeg -y -i "$input_video" -i "$TEMP_DIR/voice_all.wav" \
+                -c:v copy -c:a aac -b:a 192k -shortest "$output_video" 2>/dev/null
+        fi
+    else
+        # 无配音，仅 BGM
+        if [ -f "$TEMP_DIR/bgm.mp3" ] && [ -s "$TEMP_DIR/bgm.mp3" ]; then
+            echo "   仅BGM (无配音)..."
+            local bgm_duration
+            bgm_duration=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$TEMP_DIR/bgm.mp3" 2>/dev/null | cut -d. -f1) || bgm_duration=30
+            local loop_count=$(((video_duration + bgm_duration - 1) / bgm_duration))
+            
+            ffmpeg -y -stream_loop $loop_count -i "$TEMP_DIR/bgm.mp3" \
+                -i "$input_video" \
+                -c:v copy -c:a aac -b:a 192k \
+                -map 0:a -map 1:v \
+                -shortest "$output_video" 2>&1 | tail -3 || {
                 cp "$input_video" "$output_video"
             }
-        }
-    else
-        cp "$input_video" "$output_video"
+        else
+            cp "$input_video" "$output_video"
+        fi
     fi
     
     echo "✅ 音频处理完成"
