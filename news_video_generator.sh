@@ -19,7 +19,7 @@ VIDEO_WIDTH=1080
 VIDEO_HEIGHT=1920  # 9:16 竖屏
 DURATION_PER_NEWS=5  # 每条新闻展示秒数
 NEWS_COUNT=10        # 选取新闻数量
-BGM_VOLUME=0.3      # 背景音乐音量
+BGM_VOLUME=0.15      # 背景音乐音量（有配音时更低）
 AUDIO_FORMAT="mp3"  # 配音格式
 
 # 颜色配置
@@ -491,7 +491,7 @@ generate_images() {
 </html>
 HTMLEOF
     
-    local idx=1
+    local idx=0
     while IFS='|' read -r num title summary url; do
         [ -z "$title" ] && continue
         
@@ -668,48 +668,63 @@ PYEOF
 
 # ========== 第五步: 合成视频 ==========
 compose_video() {
-    echo "🎬 步骤5: 合成视频 (使用动态多帧)..."
+    echo "🎬 步骤5: 合成视频 (配音同步)..."
     
-    # 检查 ffmpeg
     if ! command -v ffmpeg &>/dev/null; then
         echo "❌ ffmpeg 未安装"
         exit 1
     fi
     
-    # 检查是否有动态多帧图片
-    local multi_frames=($(ls -1 "$TEMP_DIR"/card_*_0.png 2>/dev/null | wc -l))
+    local multi_frames=$(ls -1 "$TEMP_DIR"/card_*_0.png 2>/dev/null | wc -l)
     
     if [ "$multi_frames" -gt 0 ]; then
-        # 使用多帧图片合成视频 (每张新闻15帧，每帧0.15秒，共2.25秒)
-        local frame_duration=0.15
+        local news_count=$multi_frames
+        > "$TEMP_DIR/concat_videos.txt"
         
-        # 获取所有新闻的图片组
-        local news_count=$(ls -1d "$TEMP_DIR"/card_*_0.png 2>/dev/null | wc -l)
-        
-        > "$TEMP_DIR/frames.txt"
         for idx in $(seq 0 $((news_count - 1))); do
-            for frame in $(seq 0 24); do
-                if [ -f "$TEMP_DIR/card_${idx}_${frame}.png" ]; then
-                    echo "file '$TEMP_DIR/card_${idx}_${frame}.png'" >> "$TEMP_DIR/frames.txt"
-                    echo "duration $frame_duration" >> "$TEMP_DIR/frames.txt"
-                fi
-            done
+            # 获取配音时长
+            local voice_dur=5
+            if [ -f "$TEMP_DIR/voice_${idx}.wav" ]; then
+                voice_dur=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$TEMP_DIR/voice_${idx}.wav" 2>/dev/null | cut -d. -f1)
+                [ -z "$voice_dur" ] || [ "$voice_dur" -lt 3 ] && voice_dur=5
+            fi
+            local total_dur=$((voice_dur + 1))
+            
+            echo "   新闻$((idx+1)): 配音${voice_dur}s → 视频${total_dur}s"
+            
+            # 用最后一帧生成视频，时长=配音时长+1秒
+            local last_frame=$((24))
+            [ ! -f "$TEMP_DIR/card_${idx}_${last_frame}.png" ] && last_frame=0
+            
+            ffmpeg -y -loop 1 -i "$TEMP_DIR/card_${idx}_${last_frame}.png" \
+                -t "$total_dur" -c:v libx264 -pix_fmt yuv420p -r 25 \
+                -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2" \
+                "$TEMP_DIR/segment_${idx}.mp4" 2>/dev/null
+            
+            if [ -f "$TEMP_DIR/segment_${idx}.mp4" ]; then
+                echo "file '$TEMP_DIR/segment_${idx}.mp4'" >> "$TEMP_DIR/concat_videos.txt"
+            fi
         done
         
-        # 最后一张重复
-        if [ -f "$TEMP_DIR/card_$((news_count-1))_24.png" ]; then
-            echo "file '$TEMP_DIR/card_$((news_count-1))_24.png'" >> "$TEMP_DIR/frames.txt"
-        fi
+        # 最后多停3秒
+        local last_idx=$((news_count - 1))
+        local last_frame=24
+        [ ! -f "$TEMP_DIR/card_${last_idx}_${last_frame}.png" ] && last_frame=0
+        ffmpeg -y -loop 1 -i "$TEMP_DIR/card_${last_idx}_${last_frame}.png" \
+            -t 3 -c:v libx264 -pix_fmt yuv420p -r 25 \
+            -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2" \
+            "$TEMP_DIR/segment_end.mp4" 2>/dev/null
+        echo "file '$TEMP_DIR/segment_end.mp4'" >> "$TEMP_DIR/concat_videos.txt"
         
-        ffmpeg -y -f concat -safe 0 -i "$TEMP_DIR/frames.txt" \
-            -vsync vfr -pix_fmt yuv420p -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2" \
-            "$TEMP_DIR/video_no_audio.mp4" 2>/dev/null || {
-            echo "❌ 动态视频合成失败，尝试备用方案"
-            # 备用：只用第一帧
-            ls -1 "$TEMP_DIR"/card_*_0.png > "$TEMP_DIR/simple_frames.txt"
-            ffmpeg -y -f concat -safe 0 -i "$TEMP_DIR/simple_frames.txt" \
-                -r 0.2 -c:v libx264 -pix_fmt yuv420p "$TEMP_DIR/video_no_audio.mp4" 2>/dev/null
+        # 拼接所有片段
+        ffmpeg -y -f concat -safe 0 -i "$TEMP_DIR/concat_videos.txt" \
+            -c copy "$TEMP_DIR/video_no_audio.mp4" 2>/dev/null || {
+            echo "❌ 视频合成失败"
+            exit 1
         }
+        
+        local vid_dur=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$TEMP_DIR/video_no_audio.mp4" 2>/dev/null | cut -d. -f1)
+        echo "✅ 视频合成完成 (${vid_dur}s)"
     else
         # 备用：单帧图片 + 淡入淡出
         local cards=($(ls -1 "$TEMP_DIR"/card_*.png 2>/dev/null | sort -V || true))
