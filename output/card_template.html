@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: sans-serif;
+            width: 1080px; height: 1920px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #0d1b2a 100%);
+            color: white;
+            overflow: hidden;
+            padding: 100px 0;
+            position: relative;
+        }
+        /* 科技感网格背景 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(0, 245, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 245, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+        /* 科技感光晕 */
+        body::after {
+            content: '';
+            position: absolute;
+            top: -200px;
+            right: -200px;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 245, 255, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .header-title {
+            position: absolute;
+            top: 80px;
+            text-align: center;
+            font-size: 110px;
+            font-weight: 900;
+            letter-spacing: 8px;
+            background: linear-gradient(90deg, #00F5FF, #00FF94);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            z-index: 10;
+        }
+        .title {
+            position: absolute;
+            top: 360px;
+            font-weight: 900;
+            letter-spacing: 8px;
+            font-size: 58px;
+            color: white;
+            line-height: 1.5;
+            margin: 0; 
+            padding-left: 80px;
+            z-index: 10;
+        }
+        .summary {
+            font-size: 56px;
+            line-height: 2;
+            max-width: 1100px;
+            margin: 10px 40px 0 40px;
+            white-space: pre-wrap;
+            text-indent: 1em;
+            z-index: 10;
+        }
+        .footer {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            font-size: 24px;
+            opacity: 0.6;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-title">03月29日 AI早报</div>
+    <div class="title">Anthropic模型代号泄露：最强Claude意外公开</div>
+    <div class="summary">    Anthropic史上最强模型内部代号Capybara因CMS配置失误意外曝光，与阿里通义千问吉祥物撞车。泄露文档显示该模型可能预示AI驱动漏洞利用浪潮，开发者承认造出了自己都需小心对待的东西。</div>
+    
+</body>
+</html>

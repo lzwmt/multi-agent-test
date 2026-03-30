@@ -1,0 +1,69 @@
+name: stock_analyst
+description: |
+  股票分析 Agent，负责：
+  - 每日股票数据更新
+  - 技术指标计算
+  - 交易信号生成
+  - 分析报告输出
+
+schedule:
+  # 交易日上午9:35更新数据
+  - cron: "35 9 * * 1-5"
+    timezone: "Asia/Shanghai"
+    action: update_morning
+  
+  # 交易日下午收盘后更新
+  - cron: "5 15 * * 1-5"
+    timezone: "Asia/Shanghai"
+    action: update_close
+  
+  # 每小时检查
+  - cron: "0 * * * *"
+    timezone: "Asia/Shanghai"
+    action: check_status
+
+actions:
+  update_morning:
+    description: "开盘前数据更新"
+    command: |
+      cd /root/.openclaw/workspace && python3 stock_agent.py run
+    timeout: 300
+    
+  update_close:
+    description: "收盘后完整分析"
+    command: |
+      cd /root/.openclaw/workspace && python3 stock_agent.py run && python3 stock_predictor.py train && python3 stock_local_analysis.py
+    timeout: 600
+    
+  check_status:
+    description: "检查Agent状态"
+    command: |
+      cd /root/.openclaw/workspace && python3 stock_agent.py status
+    timeout: 30
+    
+  on_demand:
+    description: "按需分析指定股票"
+    command: |
+      cd /root/.openclaw/workspace && python3 -c "
+      from stock_agent import StockAgent
+      agent = StockAgent()
+      agent.update_daily_data('{{symbol}}', '{{name}}')
+      agent.calculate_indicators('{{symbol}}')
+      agent.generate_signals('{{symbol}}')
+      print('分析完成: {{name}}({{symbol}})')
+      "
+    timeout: 120
+
+notifications:
+  on_error:
+    channel: discord
+    message: "股票Agent出错: {{error}}"
+  
+  on_complete:
+    channel: discord
+    message: "股票分析完成，{{stocks_count}}只股票已更新"
+
+metadata:
+  version: "1.0"
+  author: "lzwmt"
+  created: "2026-03-10"

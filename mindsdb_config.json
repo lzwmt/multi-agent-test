@@ -1,0 +1,12 @@
+{
+  "api": {
+    "http": {
+      "host": "127.0.0.1",
+      "port": 47334
+    }
+  },
+  "storage": {
+    "path": "/root/.local/share/mindsdb/var"
+  },
+  "debug": true
+}

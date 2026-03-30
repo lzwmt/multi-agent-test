@@ -1,0 +1,13 @@
+# 股票盯盘系统配置
+# 复制此文件为 .env 并填写实际值
+
+# Discord Webhook URL（可选）
+# 获取方式：Discord 频道设置 → 整合 → 创建 Webhook
+DISCORD_WEBHOOK_URL=
+
+# 监控配置
+MONITOR_INTERVAL=300  # 监控间隔（秒），默认5分钟
+ENABLE_NOTIFICATION=true  # 是否启用通知
+
+# 股票列表（逗号分隔）
+WATCH_LIST=600104,600150,600326,600581,603577,600410

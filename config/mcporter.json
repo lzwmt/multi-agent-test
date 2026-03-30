@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx -y @modelcontextprotocol/server-filesystem /root/.openclaw/workspace"
+    },
+    "everything": {
+      "command": "npx -y @modelcontextprotocol/server-everything"
+    },
+    "trendradar": {
+      "command": "/root/.openclaw/workspace/TrendRadar/start_mcp.sh"
+    }
+  },
+  "imports": []
+}

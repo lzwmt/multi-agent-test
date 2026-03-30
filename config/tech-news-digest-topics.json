@@ -1,0 +1,79 @@
+{
+  "topics": [
+    {
+      "id": "politics",
+      "emoji": "🏛️",
+      "label": "时政",
+      "description": "政府政策、国际关系、地缘政治、监管动态",
+      "search": {
+        "queries": ["government policy tech regulation", "US China tech war", "AI regulation policy", "geopolitics technology"],
+        "must_include": ["policy", "regulation", "government", "Pentagon", "Trump", "Biden", "制裁", "政策"],
+        "exclude": ["rumor", "speculation"]
+      },
+      "display": {
+        "max_items": 6,
+        "style": "detailed"
+      }
+    },
+    {
+      "id": "tech",
+      "emoji": "💻",
+      "label": "科技",
+      "description": "前沿科技、硬件创新、半导体、云计算、基础设施",
+      "search": {
+        "queries": ["semiconductor latest", "cloud computing news", "hardware innovation", "chip technology"],
+        "must_include": ["semiconductor", "chip", "hardware", "cloud", "infrastructure", "quantum", "robotics"],
+        "exclude": ["rumor"]
+      },
+      "display": {
+        "max_items": 8,
+        "style": "detailed"
+      }
+    },
+    {
+      "id": "ai",
+      "emoji": "🤖",
+      "label": "AI",
+      "description": "人工智能、大模型、AI Agent、机器学习、生成式AI",
+      "search": {
+        "queries": ["artificial intelligence latest", "LLM breakthrough", "AI agent framework", "generative AI"],
+        "must_include": ["AI", "artificial intelligence", "LLM", "machine learning", "GPT", "Claude", "大模型", "智能体"],
+        "exclude": ["tutorial", "beginner guide"]
+      },
+      "display": {
+        "max_items": 10,
+        "style": "detailed"
+      }
+    },
+    {
+      "id": "stock-market",
+      "emoji": "📈",
+      "label": "股市",
+      "description": "股票市场、科技股走势、IPO、投资分析、财报",
+      "search": {
+        "queries": ["tech stocks latest", "IPO news", "earnings report", "stock market analysis"],
+        "must_include": ["stock", "IPO", "earnings", "market", "investing", "股价", "财报"],
+        "exclude": ["scam", "pump dump"]
+      },
+      "display": {
+        "max_items": 6,
+        "style": "compact"
+      }
+    },
+    {
+      "id": "startup",
+      "emoji": "🚀",
+      "label": "新创业风口",
+      "description": "创业公司、融资动态、新兴赛道、独角兽、创业趋势",
+      "search": {
+        "queries": ["startup funding", "unicorn company", "venture capital", "emerging trends", "创业融资"],
+        "must_include": ["startup", "funding", "unicorn", "venture capital", "seed round", "Series A", "创业", "融资"],
+        "exclude": ["scam"]
+      },
+      "display": {
+        "max_items": 8,
+        "style": "detailed"
+      }
+    }
+  ]
+}

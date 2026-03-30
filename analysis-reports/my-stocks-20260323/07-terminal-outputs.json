@@ -1,0 +1,56 @@
+{
+  "team": "my-stocks",
+  "analysis_date": "2026-03-20",
+  "agents": [
+    {
+      "name": "buffett-analyst",
+      "task": "价值投资分析 (Buffett style)",
+      "status": "completed",
+      "key_finding": "所有股票ROE均远低于15%标准，八一钢铁资不抵债"
+    },
+    {
+      "name": "fundamentals-analyst", 
+      "task": "财务基本面分析",
+      "status": "completed",
+      "key_finding": "华胜天成表现最佳(ROE 7.83%, 净利润增长267%)"
+    },
+    {
+      "name": "growth-analyst",
+      "task": "成长性分析",
+      "status": "completed", 
+      "key_finding": "中国船舶强烈推荐(净利润预增65%-99%)"
+    },
+    {
+      "name": "technical-analyst",
+      "task": "技术指标分析",
+      "status": "completed",
+      "key_finding": "Bullish=0, Neutral=2, Bearish=4. 中国船舶和西藏天路超卖"
+    },
+    {
+      "name": "sentiment-analyst",
+      "task": "市场情绪分析",
+      "status": "completed",
+      "key_finding": "中国船舶情绪非常积极(大型邮轮订单+富时A50纳入)"
+    },
+    {
+      "name": "risk-manager",
+      "task": "风险评估",
+      "status": "completed",
+      "key_finding": "八一钢铁极高风险(资不抵债)，西藏天路高风险(PE 428倍)"
+    },
+    {
+      "name": "portfolio-manager",
+      "task": "投资组合综合分析",
+      "status": "completed",
+      "key_finding": "中国船舶强烈推荐，八一钢铁强烈回避/立即清仓"
+    }
+  ],
+  "final_recommendations": {
+    "强烈推荐": ["600150 中国船舶"],
+    "看好": ["600410 华胜天成"],
+    "中性偏多": ["603577 汇金通"],
+    "中性": ["600104 上汽集团"],
+    "谨慎": ["600326 西藏天路"],
+    "强烈回避": ["600581 八一钢铁"]
+  }
+}

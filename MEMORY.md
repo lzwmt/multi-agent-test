@@ -1,6 +1,6 @@
 # MEMORY.md - Long-Term Memory
 
-> 共享协议同步于 2026-03-28 | Your curated memories. Distill from daily notes. Remove when outdated.
+> 共享协议同步于 2026-03-30 | Your curated memories. Distill from daily notes. Remove when outdated.
 
 ---
 
@@ -48,6 +48,24 @@ direct + 关键解释
 
 ### Accounts
 - **GitHub**: 290980025@qq.com
+
+---
+
+## 当前项目: AI新闻短视频生成器
+
+### 脚本
+- `make_video_from_cache.sh` - 从缓存生成视频
+- `news_video_generator.sh` - 完整流程(需修复)
+
+### 素材缓存
+- `/root/.openclaw/workspace/news_cache.json` - 新闻数据(避免重复调用API)
+
+### 技术栈
+- 36氪新闻源 → Summarize(Gemini) → 摘要 → Playwright动态截图 → ffmpeg合成 → BGM → 视频
+
+### 待调试
+- 摘要显示完整度
+- 分类切换(AI/财经)
 
 ---
 

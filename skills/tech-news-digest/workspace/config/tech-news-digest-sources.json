@@ -1,0 +1,274 @@
+{
+  "sources": [
+    {
+      "id": "openai-rss",
+      "type": "rss",
+      "name": "OpenAI Blog",
+      "url": "https://openai.com/blog/rss.xml",
+      "enabled": true,
+      "priority": true,
+      "topics": ["ai"],
+      "note": "Official OpenAI updates"
+    },
+    {
+      "id": "huggingface-rss",
+      "type": "rss",
+      "name": "Hugging Face Blog",
+      "url": "https://huggingface.co/blog/feed.xml",
+      "enabled": true,
+      "priority": true,
+      "topics": ["ai", "tech"],
+      "note": "Open source AI/ML"
+    },
+    {
+      "id": "googleai-rss",
+      "type": "rss",
+      "name": "Google AI Blog",
+      "url": "https://blog.google/technology/ai/rss/",
+      "enabled": true,
+      "priority": true,
+      "topics": ["ai", "tech"],
+      "note": "Google AI research"
+    },
+    {
+      "id": "techcrunch-rss",
+      "type": "rss",
+      "name": "TechCrunch",
+      "url": "https://techcrunch.com/feed/",
+      "enabled": true,
+      "priority": true,
+      "topics": ["startup", "tech", "ai"],
+      "note": "Startup and tech news"
+    },
+    {
+      "id": "coindesk-rss",
+      "type": "rss",
+      "name": "CoinDesk",
+      "url": "https://www.coindesk.com/arc/outboundfeeds/rss/",
+      "enabled": true,
+      "priority": true,
+      "topics": ["stock-market", "politics"],
+      "note": "Crypto and policy news"
+    },
+    {
+      "id": "hackernews-rss",
+      "type": "rss",
+      "name": "Hacker News",
+      "url": "https://news.ycombinator.com/rss",
+      "enabled": true,
+      "priority": true,
+      "topics": ["startup", "tech", "ai"],
+      "note": "Tech community news"
+    },
+    {
+      "id": "mittechreview-rss",
+      "type": "rss",
+      "name": "MIT Technology Review",
+      "url": "https://www.technologyreview.com/feed/",
+      "enabled": true,
+      "priority": true,
+      "topics": ["ai", "tech", "politics"],
+      "note": "Deep tech analysis"
+    },
+    {
+      "id": "theverge-rss",
+      "type": "rss",
+      "name": "The Verge",
+      "url": "https://www.theverge.com/rss/index.xml",
+      "enabled": true,
+      "priority": false,
+      "topics": ["tech", "ai"],
+      "note": "Consumer tech news"
+    },
+    {
+      "id": "axios-rss",
+      "type": "rss",
+      "name": "Axios",
+      "url": "https://www.axios.com/rss/",
+      "enabled": true,
+      "priority": true,
+      "topics": ["politics", "tech", "ai"],
+      "note": "Politics and tech"
+    },
+    {
+      "id": "forbes-tech-rss",
+      "type": "rss",
+      "name": "Forbes Tech",
+      "url": "https://www.forbes.com/technology/feed/",
+      "enabled": true,
+      "priority": true,
+      "topics": ["startup", "stock-market", "ai"],
+      "note": "Business and tech"
+    },
+    {
+      "id": "venturebeat-rss",
+      "type": "rss",
+      "name": "VentureBeat",
+      "url": "https://venturebeat.com/feed/",
+      "enabled": true,
+      "priority": true,
+      "topics": ["startup", "ai"],
+      "note": "Startup and AI news"
+    },
+    {
+      "id": "crunchbase-rss",
+      "type": "rss",
+      "name": "Crunchbase News",
+      "url": "https://news.crunchbase.com/feed/",
+      "enabled": true,
+      "priority": true,
+      "topics": ["startup", "stock-market"],
+      "note": "Funding and startup data"
+    },
+    {
+      "id": "36kr-rss",
+      "type": "rss",
+      "name": "36氪",
+      "url": "https://36kr.com/feed",
+      "enabled": true,
+      "priority": true,
+      "topics": ["startup", "tech", "ai"],
+      "note": "中文科技媒体"
+    },
+    {
+      "id": "sspai-rss",
+      "type": "rss",
+      "name": "少数派",
+      "url": "https://sspai.com/feed",
+      "enabled": true,
+      "priority": false,
+      "topics": ["tech", "ai"],
+      "note": "中文科技生活方式"
+    },
+    {
+      "id": "huxiu-rss",
+      "type": "rss",
+      "name": "虎嗅",
+      "url": "https://www.huxiu.com/rss/0.xml",
+      "enabled": true,
+      "priority": true,
+      "topics": ["startup", "tech", "politics"],
+      "note": "中文商业科技"
+    },
+    {
+      "id": "solidot-rss",
+      "type": "rss",
+      "name": "Solidot",
+      "url": "https://www.solidot.org/index.rss",
+      "enabled": true,
+      "priority": true,
+      "topics": ["tech", "ai"],
+      "note": "中文科技新闻"
+    },
+    {
+      "id": "ifanr-rss",
+      "type": "rss",
+      "name": "爱范儿",
+      "url": "https://www.ifanr.com/feed",
+      "enabled": true,
+      "priority": false,
+      "topics": ["tech", "ai"],
+      "note": "中文科技媒体"
+    },
+    {
+      "id": "geekpark-rss",
+      "type": "rss",
+      "name": "极客公园",
+      "url": "https://www.geekpark.net/rss",
+      "enabled": true,
+      "priority": true,
+      "topics": ["startup", "tech", "ai"],
+      "note": "中文科技创业"
+    },
+    {
+      "id": "bbc-news-rss",
+      "type": "rss",
+      "name": "BBC News",
+      "url": "http://feeds.bbci.co.uk/news/rss.xml",
+      "enabled": true,
+      "priority": true,
+      "topics": ["politics"],
+      "note": "BBC world news"
+    },
+    {
+      "id": "bbc-tech-rss",
+      "type": "rss",
+      "name": "BBC Technology",
+      "url": "http://feeds.bbci.co.uk/news/technology/rss.xml",
+      "enabled": true,
+      "priority": true,
+      "topics": ["tech", "ai"],
+      "note": "BBC tech news"
+    },
+    {
+      "id": "politico-rss",
+      "type": "rss",
+      "name": "Politico",
+      "url": "https://www.politico.com/rss/politicopicks.xml",
+      "enabled": true,
+      "priority": true,
+      "topics": ["politics"],
+      "note": "US politics"
+    },
+    {
+      "id": "ft-rss",
+      "type": "rss",
+      "name": "Financial Times",
+      "url": "https://www.ft.com/rss/home",
+      "enabled": true,
+      "priority": true,
+      "topics": ["politics", "stock-market"],
+      "note": "Global finance and politics"
+    },
+    {
+      "id": "cnbc-rss",
+      "type": "rss",
+      "name": "CNBC",
+      "url": "https://www.cnbc.com/id/100003114/device/rss/rss.html",
+      "enabled": true,
+      "priority": true,
+      "topics": ["stock-market", "politics"],
+      "note": "Business and markets"
+    },
+    {
+      "id": "langchain-github",
+      "type": "github",
+      "name": "LangChain",
+      "repo": "langchain-ai/langchain",
+      "enabled": true,
+      "priority": true,
+      "topics": ["ai"],
+      "note": "AI agent framework"
+    },
+    {
+      "id": "openclaw-github",
+      "type": "github",
+      "name": "OpenClaw",
+      "repo": "openclaw/openclaw",
+      "enabled": true,
+      "priority": true,
+      "topics": ["ai", "startup"],
+      "note": "AI agent platform"
+    },
+    {
+      "id": "vllm-github",
+      "type": "github",
+      "name": "vLLM",
+      "repo": "vllm-project/vllm",
+      "enabled": true,
+      "priority": true,
+      "topics": ["ai", "tech"],
+      "note": "LLM inference engine"
+    },
+    {
+      "id": "ollama-github",
+      "type": "github",
+      "name": "Ollama",
+      "repo": "ollama/ollama",
+      "enabled": true,
+      "priority": true,
+      "topics": ["ai", "tech"],
+      "note": "Local LLM runner"
+    }
+  ]
+}

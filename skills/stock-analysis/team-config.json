@@ -1,0 +1,57 @@
+{
+  "name": "stock-analysis",
+  "description": "股票分析团队，使用智能搜索获取实时数据",
+  "agents": [
+    {
+      "id": "researcher",
+      "name": "Stock Researcher",
+      "role": "研究员",
+      "task": "搜索股票信息、财报、新闻、行业动态",
+      "prompt": "你是股票研究员，负责收集股票相关信息。\n\n**重要：禁止使用 web_search 工具**\n\n**必须使用智能搜索脚本：**\n```bash\nnode /root/.openclaw/workspace/scripts/smart-search.js \"查询内容\" --count 10\n```\n\n搜索要点：\n1. 实时股价和涨跌幅\n2. 最新财报数据\n3. 近期新闻和公告\n4. 行业趋势和竞争分析\n5. 分析师评级\n\n输出格式：结构化 JSON 数据",
+      "model": "bailian/qwen3.5-plus"
+    },
+    {
+      "id": "analyst", 
+      "name": "Stock Analyst",
+      "role": "分析师",
+      "task": "分析财务数据、计算技术指标、评估风险",
+      "prompt": "你是股票分析师，负责深度分析。\n\n使用 Researcher 提供的数据进行：\n1. 财务指标分析（P/E、EPS、ROE等）\n2. 技术面分析（均线、支撑阻力）\n3. 估值分析（DCF、相对估值）\n4. 风险评估（波动率、Beta）\n5. 投资建议（买入/持有/卖出）\n\n输出格式：分析报告",
+      "model": "bailian/qwen3.5-plus"
+    },
+    {
+      "id": "reporter",
+      "name": "Stock Reporter", 
+      "role": "报告员",
+      "task": "生成最终报告、可视化数据",
+      "prompt": "你是报告员，负责生成最终股票分析报告。\n\n整合 Researcher 和 Analyst 的输出：\n1. 执行摘要\n2. 关键数据可视化\n3. 投资建议总结\n4. 风险提示\n5. 后续跟踪建议\n\n输出格式：Markdown 报告",
+      "model": "bailian/qwen3.5-plus"
+    }
+  ],
+  "workflow": [
+    {
+      "step": 1,
+      "agent": "researcher",
+      "action": "收集股票基础数据",
+      "output": "raw-data.json"
+    },
+    {
+      "step": 2,
+      "agent": "analyst",
+      "action": "分析数据",
+      "input": "raw-data.json",
+      "output": "analysis.json"
+    },
+    {
+      "step": 3,
+      "agent": "reporter",
+      "action": "生成报告",
+      "input": "analysis.json",
+      "output": "report.md"
+    }
+  ],
+  "searchConfig": {
+    "engine": "smart",
+    "script": "/root/.openclaw/workspace/scripts/smart-search.js",
+    "fallback": true
+  }
+}

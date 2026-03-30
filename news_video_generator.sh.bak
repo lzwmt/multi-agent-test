@@ -1,0 +1,580 @@
+#!/bin/bash
+#
+# 每日AI新闻短视频生成脚本
+# 技术栈: mcporter + TrendRadar + Canvas + Remotion + Edge-TTS
+# 输出: 9:16 竖屏 MP4 (抖音/视频号)
+#
+
+set -euo pipefail
+
+# ========== 配置 (可自定义) ==========
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+OUTPUT_DIR="${OUTPUT_DIR:-$SCRIPT_DIR/output}"
+TEMP_DIR="${TEMP_DIR:-/tmp/news_video_$$}"
+PROJECT_DIR="$TEMP_DIR/remotion-project"
+
+# 视频参数
+VIDEO_WIDTH=1080
+VIDEO_HEIGHT=1920  # 9:16 竖屏
+DURATION_PER_NEWS=5  # 每条新闻展示秒数
+NEWS_COUNT=5        # 选取新闻数量
+BGM_VOLUME=0.3      # 背景音乐音量
+AUDIO_FORMAT="mp3"  # 配音格式
+
+# 颜色配置
+PRIMARY_COLOR="#6366F1"
+TEXT_COLOR="#FFFFFF"
+BG_GRADIENT_START="#1E1B4B"
+BG_GRADIENT_END="#312E81"
+
+# 背景音乐URL (免费版权)
+BGM_URL="https://cdn.pixabay.com/audio/2022/05/27/audio_1808fbf07a.mp3"  # Pixabay 免费音乐
+
+# ========== 依赖检查 ==========
+check_dependencies() {
+    echo "🔍 检查依赖..."
+    
+    local missing=()
+    
+    # 检查必需命令
+    for cmd in mcporter ffmpeg python3; do
+        if ! command -v "$cmd" &>/dev/null; then
+            missing+=("$cmd")
+        fi
+    done
+    
+    if [ ${#missing[@]} -gt 0 ]; then
+        echo "❌ 缺少依赖: ${missing[*]}"
+        echo "请安装: brew install ${missing[*]} (macOS) 或 apt-get install ${missing[*]} (Linux)"
+        exit 1
+    fi
+    
+    # 可选依赖
+    if ! command -v edge-tts &>/dev/null; then
+        echo "⚠️ edge-tts 未安装，尝试 pip 安装..."
+        pip install edge-tts &>/dev/null || true
+    fi
+    
+    if ! command -v node &>/dev/null; then
+        echo "⚠️ node 未安装，图片生成将使用备用方案"
+        USE_PLAYWRIGHT=false
+    else
+        USE_PLAYWRIGHT=true
+    fi
+    
+    echo "✅ 依赖检查通过"
+}
+
+# ========== 初始化 ==========
+init() {
+    echo "📁 初始化项目目录..."
+    mkdir -p "$OUTPUT_DIR" "$TEMP_DIR" "$PROJECT_DIR"
+    
+    # 下载背景音乐
+    if [ ! -f "$TEMP_DIR/bgm.mp3" ]; then
+        echo "🎵 下载背景音乐..."
+        if curl -fsSL "$BGM_URL" -o "$TEMP_DIR/bgm.mp3" 2>/dev/null; then
+            echo "✅ 背景音乐下载完成"
+        else
+            echo "⚠️ 背景音乐下载失败，将使用静音"
+            touch "$TEMP_DIR/bgm.mp3"
+        fi
+    fi
+    
+    echo "✅ 初始化完成"
+}
+
+# ========== 第一步: 获取AI新闻 ==========
+fetch_ai_news_from_cache() {
+    echo "🔍 步骤1: 获取AI热点新闻..."
+    
+    local news_json
+    # 直接搜索 AI 相关新闻，不限制日期
+    news_json=$(mcporter call trendradar search_news query="AI" limit=30 2>/dev/null) || true
+    
+    if [ -z "$news_json" ] || [ "$news_json" = "null" ]; then
+        echo "⚠️ TrendRadar 无返回，使用备用方案..."
+        news_json=$(mcporter call trendradar get_latest_news limit=50 2>/dev/null) || true
+    fi
+    
+    if [ -z "$news_json" ] || [ "$news_json" = "null" ]; then
+        echo "❌ 无法获取新闻，请检查 mcporter 配置"
+        exit 1
+    fi
+    
+    echo "$news_json" > "$TEMP_DIR/raw_news.json"
+    echo "✅ 获取到新闻数据"
+    
+    # 提取新闻标题 (按 rank 排序，rank 越小越热门)
+    python3 -c "
+import json, sys
+import os
+
+try:
+    raw = json.load(open('$TEMP_DIR/raw_news.json'))
+except:
+    print('❌ 新闻数据解析失败')
+    sys.exit(1)
+
+# 解析 TrendRadar 返回格式
+if isinstance(raw, dict) and 'data' in raw:
+    news_list = raw['data']
+elif isinstance(raw, dict) and 'results' in raw:
+    news_list = raw['results']
+elif isinstance(raw, list):
+    news_list = raw
+else:
+    news_list = []
+
+if not news_list:
+    print('❌ 没有新闻数据')
+    sys.exit(1)
+
+# 按 rank 排序 (rank 越小越热门)
+news_list = sorted(news_list, key=lambda x: x.get('rank', 999))
+
+for i, item in enumerate(news_list[:$NEWS_COUNT]):
+    title = item.get('title', '无标题')
+    url = item.get('url', '')
+    # 标题截断到一行 (35 个中文字)
+    if len(title) > 35:
+        title = title[:35] + '...'
+    print(f'{i}|{title}|{url}')
+" > "$TEMP_DIR/news_titles.txt" || {
+        echo "❌ 新闻提取失败"
+        exit 1
+    }
+    
+    sed -i '/^$/d' "$TEMP_DIR/news_titles.txt"
+    
+    local count=$(wc -l < "$TEMP_DIR/news_titles.txt")
+    echo "✅ 提取到 $count 条新闻"
+    
+    [ "$count" -gt 0 ] || { echo "❌ 没有获取到新闻"; exit 1; }
+}
+
+# ========== 第二步: 生成AI摘要 ==========
+generate_summaries() {
+    echo "📝 步骤2: 生成AI摘要..."
+    
+    > "$TEMP_DIR/summaries.json"
+    
+    local idx=0
+    while IFS='|' read -r num title url; do
+        [ -z "$title" ] && continue
+        
+        echo "   正在处理: ${title:0:30}..."
+        
+        # 尝试使用本地大模型 (生成 2-3 行摘要)
+        local summary=""
+        if command -v ollama &>/dev/null; then
+            summary=$(ollama generate --model llama3 --prompt "你是新闻主播。请用80-120字生动有趣的口语总结以下新闻，控制在2-3行，要求吸引眼球：$title" 2>/dev/null | head -1) || true
+        fi
+        
+        # 回退：简单处理 (2-3 行)
+        if [ -z "$summary" ]; then
+            # 拆分成多行
+            local part1="${title:0:20}"
+            local part2="${title:20:20}"
+            local part3="${title:40:20}"
+            if [ ${#title} -gt 40 ]; then
+                summary="$part1$part2$part3..."
+            else
+                summary="$part1$part2"
+            fi
+        fi
+        
+        echo "$idx|$title|$summary|$url" >> "$TEMP_DIR/summaries.json"
+        idx=$((idx + 1))
+        
+    done < "$TEMP_DIR/news_titles.txt"
+    
+    local count=$(wc -l < "$TEMP_DIR/summaries.json")
+    echo "✅ 生成摘要完成 ($count 条)"
+}
+
+# ========== 第三步: 生成图片卡片 ==========
+generate_images() {
+    echo "🖼️ 步骤3: 生成封面和内容卡片..."
+    
+    # HTML 模板 (淡入淡出动画效果 + 大标题)
+    cat > "$TEMP_DIR/card_template.html" << 'HTMLEOF'
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', sans-serif;
+            width: 1080px; height: 1920px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            background: linear-gradient(135deg, BG_START, BG_END);
+            color: white;
+            overflow: hidden;
+            padding-top: 180px;
+        }
+        .header-title {
+            text-align: center;
+            font-size: 90px;
+            font-weight: 900;
+            letter-spacing: 6px;
+            background: linear-gradient(90deg, #00F5FF, #00FF94);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .container {
+            text-align: center;
+            padding: 60px;
+            width: 100%;
+            margin-top: 80px;
+        }
+        .title {
+            font-size: 64px;
+            font-weight: bold;
+            line-height: 1.3;
+            margin: 80px 0 50px;
+            max-width: 900px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease-out 0.5s forwards;
+        }
+        .summary {
+            font-size: 40px;
+            line-height: 1.6;
+            max-width: 850px;
+            margin: 40px auto 0;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease-out 1.5s forwards;
+            white-space: pre-line;
+        }
+        .footer {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            font-size: 24px;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out 2s forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header-title">DATE TYPE早报</div>
+    <div class="container">
+        <div class="title">TITLE</div>
+        <div class="summary">SUMMARY</div>
+    </div>
+    <div class="footer">AI News Daily</div>
+</body>
+</html>
+HTMLEOF
+    
+    local idx=1
+    while IFS='|' read -r num title summary url; do
+        [ -z "$title" ] && continue
+        
+        local safe_title="${title:0:35}"
+        local safe_summary="${summary:0:120}"
+        
+        # 获取当前日期
+        local current_date
+        current_date=$(date +"%m月%d日")
+        
+        sed -e "s|BG_START|$BG_GRADIENT_START|" \
+            -e "s|BG_END|$BG_GRADIENT_END|" \
+            -e "s|DATE|$current_date|" \
+            -e "s|TYPE|AI|g" \
+            -e "s|TITLE|$safe_title|g" \
+            -e "s|SUMMARY|$safe_summary|g" \
+            "$TEMP_DIR/card_template.html" > "$TEMP_DIR/card_$idx.html"
+        
+        # 使用 playwright 截取多帧 (带动画效果)
+        if command -v node &>/dev/null && node -e "require('playwright')" 2>/dev/null; then
+            echo "   📸 Playwright 截取 $idx ..."
+            node -e "
+            const { chromium } = require('playwright');
+            (async () => {
+                const browser = await chromium.launch();
+                const page = await browser.newPage({ viewport: { width: 1080, height: 1920 } });
+                const htmlPath = '$TEMP_DIR/card_$idx.html';
+                await page.goto('file://' + htmlPath, { waitUntil: 'networkidle', timeout: 30000 });
+                
+                for (let i = 0; i < 25; i++) {
+                    await page.waitForTimeout(200);
+                    await page.screenshot({ path: '$TEMP_DIR/card_${idx}_' + i + '.png' });
+                }
+                
+                await browser.close();
+                console.log('Done: $idx');
+            })().catch(e => { console.error(e); process.exit(1); });
+            " && echo "   ✅ $idx 多帧完成" || {
+                echo "   ⚠️ $idx 多帧失败，使用单帧"
+                generate_fallback_image "$idx"
+            }
+        else
+            generate_fallback_image "$idx"
+        fi
+        
+        idx=$((idx + 1))
+    done < "$TEMP_DIR/summaries.json"
+    
+    echo "✅ 生成图片卡片完成"
+}
+
+# 使用 ImageMagick 生成漂亮卡片
+generate_fallback_image() {
+    local idx=$1
+    echo "   🎨 生成卡片 $idx (ImageMagick)..."
+    
+    local title summary url
+    read -r _ title summary url < <(sed -n "${idx}p" "$TEMP_DIR/summaries.json")
+    
+    [ -z "$title" ] && title="AI News"
+    [ -z "$summary" ] && summary=""
+    
+    # 创建渐变背景
+    convert -size 1080x1920 gradient:"$BG_GRADIENT_START-$BG_GRADIENT_END" \
+        "$TEMP_DIR/card_${idx}_bg.png"
+    
+    # 添加标题 (使用 pango 渲染，透明背景)
+    convert "$TEMP_DIR/card_${idx}_bg.png" \
+        -gravity center -pointsize 60 -fill white \
+        -annotate +0-300 "$title" \
+        "$TEMP_DIR/card_${idx}_tmp1.png"
+    
+    # 添加摘要
+    convert "$TEMP_DIR/card_${idx}_tmp1.png" \
+        -gravity center -pointsize 36 -fill "#A5B4FC" \
+        -annotate +0+50 "$summary" \
+        "$TEMP_DIR/card_${idx}_tmp2.png"
+    
+    # 添加编号
+    convert "$TEMP_DIR/card_${idx}_tmp2.png" \
+        -gravity northwest -pointsize 32 -fill "#A5B4FC" \
+        -annotate +40+40 "NO.$idx" \
+        "$TEMP_DIR/card_${idx}_tmp3.png"
+    
+    # 添加角标
+    convert "$TEMP_DIR/card_${idx}_tmp3.png" \
+        -gravity southeast -pointsize 24 -fill white \
+        -annotate +40+40 "AI News Daily" \
+        "$TEMP_DIR/card_$idx.png"
+    
+    # 清理临时文件
+    rm -f "$TEMP_DIR/card_${idx}_bg.png" "$TEMP_DIR/card_${idx}_tmp1.png" "$TEMP_DIR/card_${idx}_tmp2.png" "$TEMP_DIR/card_${idx}_tmp3.png"
+}
+
+# ========== 第四步: 生成配音 (可选) ==========
+generate_voiceover() {
+    echo "🎙️ 步骤4: 跳过配音 (仅使用背景音乐)..."
+    # 不生成配音，只保留背景音乐
+    echo "✅ 配音跳过"
+}
+
+# ========== 第五步: 合成视频 ==========
+compose_video() {
+    echo "🎬 步骤5: 合成视频 (使用动态多帧)..."
+    
+    # 检查 ffmpeg
+    if ! command -v ffmpeg &>/dev/null; then
+        echo "❌ ffmpeg 未安装"
+        exit 1
+    fi
+    
+    # 检查是否有动态多帧图片
+    local multi_frames=($(ls -1 "$TEMP_DIR"/card_*_0.png 2>/dev/null | wc -l))
+    
+    if [ "$multi_frames" -gt 0 ]; then
+        # 使用多帧图片合成视频 (每张新闻15帧，每帧0.15秒，共2.25秒)
+        local frame_duration=0.15
+        
+        # 获取所有新闻的图片组
+        local news_count=$(ls -1d "$TEMP_DIR"/card_*_0.png 2>/dev/null | wc -l)
+        
+        > "$TEMP_DIR/frames.txt"
+        for idx in $(seq 0 $((news_count - 1))); do
+            for frame in $(seq 0 24); do
+                if [ -f "$TEMP_DIR/card_${idx}_${frame}.png" ]; then
+                    echo "file '$TEMP_DIR/card_${idx}_${frame}.png'" >> "$TEMP_DIR/frames.txt"
+                    echo "duration $frame_duration" >> "$TEMP_DIR/frames.txt"
+                fi
+            done
+        done
+        
+        # 最后一张重复
+        if [ -f "$TEMP_DIR/card_$((news_count-1))_24.png" ]; then
+            echo "file '$TEMP_DIR/card_$((news_count-1))_24.png'" >> "$TEMP_DIR/frames.txt"
+        fi
+        
+        ffmpeg -y -f concat -safe 0 -i "$TEMP_DIR/frames.txt" \
+            -vsync vfr -pix_fmt yuv420p -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2" \
+            "$TEMP_DIR/video_no_audio.mp4" 2>/dev/null || {
+            echo "❌ 动态视频合成失败，尝试备用方案"
+            # 备用：只用第一帧
+            ls -1 "$TEMP_DIR"/card_*_0.png > "$TEMP_DIR/simple_frames.txt"
+            ffmpeg -y -f concat -safe 0 -i "$TEMP_DIR/simple_frames.txt" \
+                -r 0.2 -c:v libx264 -pix_fmt yuv420p "$TEMP_DIR/video_no_audio.mp4" 2>/dev/null
+        }
+    else
+        # 备用：单帧图片 + 淡入淡出
+        local cards=($(ls -1 "$TEMP_DIR"/card_*.png 2>/dev/null | sort -V || true))
+        local fade_duration=1
+        
+        for card in "${cards[@]}"; do
+            ffmpeg -y -loop 1 -i "$card" \
+                -vf "fade=t=in:st=0:d=$fade_duration,fade=t=out:st=$((DURATION_PER_NEWS - fade_duration)):d=$fade_duration,scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2" \
+                -t "$DURATION_PER_NEWS" -c:v libx264 -pix_fmt yuv420p -crf 23 \
+                "$TEMP_DIR/card_${idx}.mp4" 2>/dev/null
+            idx=$((idx + 1))
+        done
+        
+        > "$TEMP_DIR/concat.txt"
+        for i in $(seq 0 $((idx - 1))); do
+            echo "file '$TEMP_DIR/card_${i}.mp4'" >> "$TEMP_DIR/concat.txt"
+        done
+        
+        ffmpeg -y -f concat -safe 0 -i "$TEMP_DIR/concat.txt" -c copy "$TEMP_DIR/video_no_audio.mp4" 2>/dev/null
+    fi
+    
+    echo "✅ 视频合成完成"
+}
+
+# ========== 第六步: 添加背景音乐和配音 ==========
+add_audio() {
+    echo "🎵 步骤6: 添加背景音乐和配音..."
+    
+    local input_video="$TEMP_DIR/video_no_audio.mp4"
+    local output_video="$OUTPUT_DIR/ai_news_$(date +%Y%m%d_%H%M%S).mp4"
+    
+    # 不使用配音，直接使用背景音乐
+    # 跳过配音合并步骤
+    
+    # 添加背景音乐 (循环播放到视频结束)
+    if [ -f "$TEMP_DIR/bgm.mp3" ] && [ -s "$TEMP_DIR/bgm.mp3" ]; then
+        echo "   添加背景音乐 (循环)..."
+        
+        # 获取视频时长 (取整)
+        local video_duration
+        video_duration=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$input_video" 2>/dev/null | cut -d. -f1) || video_duration=40
+        
+        # 获取 BGM 时长 (取整)
+        local bgm_duration
+        bgm_duration=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$TEMP_DIR/bgm.mp3" 2>/dev/null | cut -d. -f1) || bgm_duration=30
+        
+        # 计算需要循环的次数 (纯 bash)
+        local loop_count=$(((video_duration + bgm_duration - 1) / bgm_duration))
+        
+        echo "   视频时长: ${video_duration}s, BGM时长: ${bgm_duration}s, 循环: ${loop_count}次"
+        
+        # 循环 BGM
+        ffmpeg -y -stream_loop $loop_count -i "$TEMP_DIR/bgm.mp3" \
+            -i "$input_video" \
+            -c:v copy -c:a aac -b:a 192k \
+            -map 0:a -map 1:v \
+            -shortest "$output_video" 2>&1 | tail -3 || {
+            # 备用方案
+            ffmpeg -y -i "$input_video" -stream_loop 3 -i "$TEMP_DIR/bgm.mp3" \
+                -c:v copy -c:a aac -b:a 192k -shortest "$output_video" 2>&1 | tail -3 || {
+                echo "   ⚠️ BGM 混音失败"
+                cp "$input_video" "$output_video"
+            }
+        }
+    else
+        cp "$input_video" "$output_video"
+    fi
+    
+    echo "✅ 音频处理完成"
+}
+
+# ========== 第七步: 清理和输出 ==========
+finish() {
+    echo "📤 步骤7: 输出最终视频..."
+    
+    local output_file
+    output_file=$(ls -1t "$OUTPUT_DIR"/ai_news_*.mp4 2>/dev/null | head -1)
+    
+    if [ -n "$output_file" ] && [ -f "$output_file" ]; then
+        local size
+        size=$(du -h "$output_file" | cut -f1)
+        
+        echo ""
+        echo "🎉 视频生成完成！"
+        echo "📁 输出文件: $output_file"
+        echo "📊 文件大小: $size"
+    else
+        echo "❌ 视频生成失败"
+        exit 1
+    fi
+    
+    # 清理临时文件
+    if [ "$1" != "keep" ]; then
+        echo "🧹 清理临时文件..."
+        rm -rf "$TEMP_DIR"
+    fi
+}
+
+# ========== 帮助信息 ==========
+usage() {
+    cat << EOF
+用法: $0 [选项]
+
+选项:
+    --help          显示帮助
+    --keep          保留临时文件
+    --news-count N  新闻数量 (默认: 5)
+    --duration N    每条新闻秒数 (默认: 8)
+
+示例:
+    $0 --news-count 10 --duration 6
+EOF
+}
+
+# ========== 主流程 ==========
+main() {
+    # 解析参数
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --help) usage; exit 0 ;;
+            --keep) KEEP_TEMP=1 ;;
+            --news-count) NEWS_COUNT="$2"; shift ;;
+            --duration) DURATION_PER_NEWS="$2"; shift ;;
+            *) echo "未知选项: $1"; usage; exit 1 ;;
+        esac
+        shift
+    done
+    
+    echo "========================================"
+    echo "   每日AI新闻短视频生成器"
+    echo "   输出: 9:16 竖屏视频 (抖音/视频号)"
+    echo "========================================"
+    echo ""
+    
+    # 执行
+    check_dependencies
+    init
+    fetch_ai_news
+    generate_summaries
+    generate_images
+    generate_voiceover
+    compose_video
+    add_audio
+    finish "${KEEP_TEMP:-}"
+    
+    echo ""
+    echo "✨ 全部完成！"
+}
+
+main "$@"

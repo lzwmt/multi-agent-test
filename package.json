@@ -1,0 +1,24 @@
+{
+  "name": "workspace",
+  "version": "1.0.0",
+  "description": "",
+  "main": "test-lightpanda.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lzwmt/multi-agent-test.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lzwmt/multi-agent-test/issues"
+  },
+  "homepage": "https://github.com/lzwmt/multi-agent-test#readme",
+  "dependencies": {
+    "playwright": "^1.58.2",
+    "puppeteer-core": "^24.40.0"
+  }
+}

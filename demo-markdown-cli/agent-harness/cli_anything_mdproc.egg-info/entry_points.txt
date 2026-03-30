@@ -1,0 +1,2 @@
+[console_scripts]
+cli-anything-mdproc = cli_anything.mdproc.mdproc_cli:main
