@@ -87,7 +87,7 @@ init() {
 
 # ========== 第一步: 获取AI新闻 (虎嗅→36氪→少数派) ==========
 fetch_ai_news_from_cache() {
-    echo "🔍 步骤1: 获取AI热点新闻..."
+    echo "🔍 步骤1: 获取热点新闻（AI优先，科技补充）..."
     
     local today_en=$(date +'%a, %d %b %Y')
     local today_cn=$(date +'%Y-%m-%d')
@@ -122,12 +122,13 @@ fetch_ai_news_from_cache() {
     
     echo "✅ 获取到 RSS 数据"
     
-    # 解析 RSS 提取新闻标题和链接
+    # 解析 RSS 提取新闻（AI优先，不够用科技补，必须凑够NEWS_COUNT条）
     python3 -c "
-import re, sys, subprocess
+import re, sys, subprocess, os, html as html_mod
 
 today_en = '$today_en'
 today_cn = '$today_cn'
+target_count = $NEWS_COUNT
 
 rss_sources = [
     ('虎嗅', 'https://rss.huxiu.com/'),
@@ -141,7 +142,48 @@ ai_keywords = ['AI', 'ai', '人工智能', '大模型', 'GPT', 'Claude', 'DeepSe
                '量子', '机器人', '自动驾驶', '智能', '腾讯', '阿里', '字节', 
                '百度', '小米', '华为', '苹果', '特斯拉', '谷歌', '微软', 'Meta', 'Anthropic']
 
-news_list = []
+# 科技类宽松关键词（用于补充）
+tech_keywords = ai_keywords + [
+    '科技', '互联网', '手机', '电脑', '软件', '硬件', '算法', '数据', '云',
+    'SaaS', '融资', '创业', '投资', '上市', '财报', '产品', 'App', '应用',
+    '数码', '5G', '6G', '新能源', '电动车', '电商', '支付', '金融', '区块链',
+    '游戏', '社交', '视频', '直播', '短视频', '内容', '版权', '隐私', '安全',
+    'iPhone', 'Android', 'Windows', 'Mac', 'Linux', '三星', '索尼', '任天堂',
+    'Netflix', 'Spotify', 'Uber', 'Airbnb', 'TikTok', 'YouTube', 'Twitter',
+]
+
+def parse_items(content):
+    \"\"\"从 RSS XML 解析今天的新闻\"\"\"
+    items = re.findall(r'<item>(.*?)</item>', content, re.DOTALL)
+    results = []
+    for item in items:
+        title_match = re.search(r'<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</title>', item, re.DOTALL)
+        link_match = re.search(r'<link>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</link>', item, re.DOTALL)
+        pub_match = re.search(r'<pubDate>([^<]+)', item)
+        desc_match = re.search(r'<description>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</description>', item, re.DOTALL)
+        
+        if not title_match:
+            continue
+        
+        title = html_mod.unescape(title_match.group(1).strip())
+        link = link_match.group(1).strip() if link_match else ''
+        desc = html_mod.unescape(desc_match.group(1).strip())[:500] if desc_match else ''
+        pub_date = pub_match.group(1).strip() if pub_match else ''
+        
+        # 只要今天的
+        is_today = (today_en in pub_date) or (today_cn in pub_date)
+        if not is_today:
+            continue
+        
+        results.append({'title': title, 'url': link, 'desc': desc})
+    return results
+
+def match_keywords(item, keywords):
+    text = item['title'] + item.get('desc', '')
+    return any(kw.lower() in text.lower() for kw in keywords)
+
+# 收集所有源的今日新闻
+all_today_news = []
 seen_titles = set()
 
 for source_name, feed_url in rss_sources:
@@ -150,63 +192,62 @@ for source_name, feed_url in rss_sources:
                               capture_output=True, text=True, timeout=15)
         content = result.stdout
         
-        # 跳过反爬页面
         if '<item>' not in content:
             print(f'  ⚠️ {source_name} 被反爬或无数据', file=sys.stderr)
             continue
         
-        items = re.findall(r'<item>(.*?)</item>', content, re.DOTALL)
-        found = 0
-        
+        items = parse_items(content)
+        added = 0
         for item in items:
-            title_match = re.search(r'<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</title>', item, re.DOTALL)
-            link_match = re.search(r'<link>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</link>', item, re.DOTALL)
-            pub_match = re.search(r'<pubDate>([^<]+)', item)
-            desc_match = re.search(r'<description>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</description>', item, re.DOTALL)
-            
-            if not title_match:
+            if item['title'] in seen_titles:
                 continue
-            
-            title = title_match.group(1).strip()
-            link = link_match.group(1).strip() if link_match else ''
-            desc = desc_match.group(1).strip()[:300] if desc_match else ''
-            pub_date = pub_match.group(1).strip() if pub_match else ''
-            
-            if title in seen_titles:
-                continue
-            seen_titles.add(title)
-            
-            # 只要今天的
-            is_today = (today_en in pub_date) or (today_cn in pub_date)
-            if not is_today:
-                continue
-            
-            # 过滤 AI 关键词
-            text = title + desc
-            if any(kw in text for kw in ai_keywords):
-                news_list.append({'title': title, 'url': link, 'desc': desc})
-                found += 1
+            seen_titles.add(item['title'])
+            item['source'] = source_name
+            all_today_news.append(item)
+            added += 1
         
-        print(f'  ✅ {source_name}: {found} 条', file=sys.stderr)
+        print(f'  ✅ {source_name}: {added} 条今日新闻', file=sys.stderr)
     except Exception as e:
         print(f'  ⚠️ {source_name} 抓取失败: {e}', file=sys.stderr)
 
-if not news_list:
-    print('❌ 今天没有匹配到 AI 相关新闻（RSS可能在维护或今日无AI内容）')
+if not all_today_news:
+    print('❌ 今天没有任何新闻（RSS可能在维护）')
     sys.exit(1)
 
-for i, item in enumerate(news_list[:$NEWS_COUNT]):
+# 第一轮：AI关键词匹配
+ai_news = [n for n in all_today_news if match_keywords(n, ai_keywords)]
+print(f'  🤖 AI新闻: {len(ai_news)} 条', file=sys.stderr)
+
+# 第二轮：科技关键词匹配（排除已选AI的）
+tech_news = [n for n in all_today_news if n not in ai_news and match_keywords(n, tech_keywords)]
+print(f'  💻 科技新闻: {len(tech_news)} 条', file=sys.stderr)
+
+# 第三轮：剩余全部（兜底）
+other_news = [n for n in all_today_news if n not in ai_news and n not in tech_news]
+
+# 合并：AI优先 → 科技补充 → 兜底补充
+final_news = ai_news[:target_count]
+if len(final_news) < target_count:
+    final_news += tech_news[:target_count - len(final_news)]
+if len(final_news) < target_count:
+    final_news += other_news[:target_count - len(final_news)]
+
+print(f'  📰 最终选取: {len(final_news)} 条 (目标{target_count}条)', file=sys.stderr)
+
+if not final_news:
+    print('❌ 没有获取到新闻')
+    sys.exit(1)
+
+import re as _re
+_td = os.environ.get('TEMP_DIR', '/tmp')
+
+for i, item in enumerate(final_news):
     title = item['title']
     url = item['url']
     desc = item.get('desc', '')
     if len(title) > 35:
         title = title[:35] + '...'
-    # 保存正文供 summarize 使用
-    import os as _os
-    _td = _os.environ.get('TEMP_DIR', '/tmp')
-    desc_file = _os.path.join(_td, f'desc_{i}.txt')
-    # 去 HTML 标签
-    import re as _re
+    desc_file = os.path.join(_td, f'desc_{i}.txt')
     clean_text = _re.sub(r'<[^>]+>', ' ', desc)
     clean_text = _re.sub(r'\s+', ' ', clean_text).strip()
     with open(desc_file, 'w') as f:
