@@ -287,20 +287,28 @@ generate_summaries() {
             local or_key="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"
             local prompt="请为以下新闻生成一个 2-3 句话的精简摘要（50字以内）：新闻标题：$title，新闻内容：$desc_text。要求：直接输出，不要多余解释"
             
-            local payload=$(jq -n --arg p "$prompt" '{"model":"google/gemini-2.0-flash-001","messages":[{"role":"user","content":$p}],"max_tokens":200}')
-            local response=$(curl -s --connect-timeout 10 -m 30 -X POST "https://openrouter.ai/api/v1/chat/completions" \
-                -H "Authorization: Bearer $or_key" \
-                -H "Content-Type: application/json" \
-                -d "$payload")
-            
-            summary=$(echo "$response" | jq -r '.choices[0].message.content // ""')
-            
-            if [ -n "$summary" ] && [ "$summary" != "" ]; then
-                echo "   ✅ Gemini摘要成功"
-            else
-                echo "   ⚠️ Gemini摘要失败，使用fallback"
-                summary=""
-            fi
+            for attempt in 1 2 3; do
+                local payload=$(jq -n --arg p "$prompt" '{"model":"google/gemma-3n-e4b-it:free","messages":[{"role":"user","content":$p}],"max_tokens":200}')
+                local response=$(curl -s --connect-timeout 10 -m 30 -X POST "https://openrouter.ai/api/v1/chat/completions" \
+                    -H "Authorization: Bearer $or_key" \
+                    -H "Content-Type: application/json" \
+                    -d "$payload")
+                
+                summary=$(echo "$response" | jq -r '.choices[0].message.content // ""')
+                local error_code=$(echo "$response" | jq -r '.error.code // ""')
+                
+                if [ -n "$summary" ] && [ "$summary" != "" ]; then
+                    echo "   ✅ 摘要成功"
+                    break
+                elif [ "$error_code" = "429" ]; then
+                    echo "   ⏳ 限流，等待重试 ($attempt/3)..."
+                    sleep $((attempt * 5))
+                else
+                    echo "   ⚠️ 摘要失败，使用fallback"
+                    summary=""
+                    break
+                fi
+            done
         fi
         
         # 方案2: ollama 本地模型

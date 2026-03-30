@@ -47,19 +47,32 @@ for ((i=0; i<count; i++)); do
     else
         echo "   内容长度：${#content}"
         
-        # 生成摘要
+        # 生成摘要（带重试）
         prompt="请为以下新闻生成一个 2-3 句话的精简摘要（50字以内）：新闻标题：$title，新闻内容：$content。要求：直接输出，不要多余解释"
         
-        jq -n --arg p "$prompt" '{"model":"google/gemini-2.0-flash-001","messages":[{"role":"user","content":$p}],"max_tokens":200}' > /tmp/payload.json
+        summary=""
+        for attempt in 1 2 3; do
+            jq -n --arg p "$prompt" '{"model":"google/gemma-3n-e4b-it:free","messages":[{"role":"user","content":$p}],"max_tokens":200}' > /tmp/payload.json
+            
+            response=$(curl -s --connect-timeout 10 -m 60 -X POST "$API_URL" \
+                -H "Authorization: Bearer $GEMINI_API_KEY" \
+                -H "Content-Type: application/json" \
+                -d @/tmp/payload.json)
+            
+            summary=$(echo "$response" | jq -r '.choices[0].message.content // ""')
+            error_code=$(echo "$response" | jq -r '.error.code // ""')
+            
+            if [ -n "$summary" ] && [ "$summary" != "" ]; then
+                break
+            elif [ "$error_code" = "429" ]; then
+                echo "   ⏳ 限流，等待重试 ($attempt/3)..."
+                sleep $((attempt * 5))
+            else
+                break
+            fi
+        done
         
-        response=$(curl -s --connect-timeout 10 -m 60 -X POST "$API_URL" \
-            -H "Authorization: Bearer $GEMINI_API_KEY" \
-            -H "Content-Type: application/json" \
-            -d @/tmp/payload.json)
-        
-        summary=$(echo "$response" | jq -r '.choices[0].message.content // "LLM 失败"')
-        
-        if [ "$summary" != "LLM 失败" ] && [ -n "$summary" ]; then
+        if [ -n "$summary" ] && [ "$summary" != "" ]; then
             echo "   ✅ 摘要：${summary:0:50}..."
         else
             echo "   ❌ 摘要生成失败"
