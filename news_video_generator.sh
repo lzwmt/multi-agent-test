@@ -18,7 +18,7 @@ PROJECT_DIR="$TEMP_DIR/remotion-project"
 VIDEO_WIDTH=1080
 VIDEO_HEIGHT=1920  # 9:16 竖屏
 DURATION_PER_NEWS=5  # 每条新闻展示秒数
-NEWS_COUNT=5        # 选取新闻数量
+NEWS_COUNT=10        # 选取新闻数量
 BGM_VOLUME=0.3      # 背景音乐音量
 AUDIO_FORMAT="mp3"  # 配音格式
 
@@ -240,29 +240,25 @@ generate_summaries() {
         local summary=""
         local desc_file="$TEMP_DIR/desc_${num}.txt"
         
-        # 方案1: 用 summarize CLI 总结正文
-        if [ -f "$desc_file" ] && [ "$(wc -c < "$desc_file")" -gt 100 ]; then
-            summary=$(summarize "$desc_file" --length short 2>/dev/null) || true
+        # 方案1: 用 OpenRouter Gemini 生成摘要
+        if [ -f "$desc_file" ] && [ "$(wc -c < "$desc_file")" -gt 50 ]; then
+            local desc_text=$(cat "$desc_file" | head -c 3000)
+            local or_key="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"
+            local prompt="请为以下新闻生成一个 2-3 句话的精简摘要（50字以内）：新闻标题：$title，新闻内容：$desc_text。要求：直接输出，不要多余解释"
             
-            if [ -n "$summary" ]; then
-                # 清理：去 markdown 标题、引用行、多余空格
-                summary=$(echo "$summary" | sed '/^#/d' | sed '/^\*/d' | tr '\n' ' ' | sed 's/  */ /g')
-                # 按句号截取，硬限120字
-                local short=""
-                IFS='。' read -ra parts <<< "$summary"
-                for part in "${parts[@]}"; do
-                    part=$(echo "$part" | xargs)
-                    [ -z "$part" ] && continue
-                    if [ ${#short} -lt 120 ]; then
-                        [ -n "$short" ] && short="${short}。"
-                        short="${short}${part}"
-                    fi
-                done
-                summary="${short}。"
-                # 硬截断
-                if [ ${#summary} -gt 120 ]; then
-                    summary="${summary:0:117}..."
-                fi
+            local payload=$(jq -n --arg p "$prompt" '{"model":"google/gemini-2.0-flash-001","messages":[{"role":"user","content":$p}],"max_tokens":200}')
+            local response=$(curl -s --connect-timeout 10 -m 30 -X POST "https://openrouter.ai/api/v1/chat/completions" \
+                -H "Authorization: Bearer $or_key" \
+                -H "Content-Type: application/json" \
+                -d "$payload")
+            
+            summary=$(echo "$response" | jq -r '.choices[0].message.content // ""')
+            
+            if [ -n "$summary" ] && [ "$summary" != "" ]; then
+                echo "   ✅ Gemini摘要成功"
+            else
+                echo "   ⚠️ Gemini摘要失败，使用fallback"
+                summary=""
             fi
         fi
         
@@ -410,7 +406,7 @@ generate_images() {
             animation: fadeInUp 1s ease-out 0.5s forwards;
         }
         .summary {
-            font-size: 40px;
+            font-size: 48px;
             line-height: 1.6;
             max-width: 850px;
             margin: 40px auto 0;
@@ -420,13 +416,7 @@ generate_images() {
             white-space: pre-line;
         }
         .footer {
-            position: absolute;
-            bottom: 40px;
-            right: 40px;
-            font-size: 24px;
-            opacity: 0;
-            animation: fadeIn 0.5s ease-out 2s forwards;
-            z-index: 10;
+            display: none;
         }
         @keyframes fadeIn {
             from { opacity: 0; }
@@ -463,13 +453,27 @@ HTMLEOF
         local current_date
         current_date=$(date +"%m月%d日")
         
-        sed -e "s|BG_START|$BG_GRADIENT_START|" \
-            -e "s|BG_END|$BG_GRADIENT_END|" \
-            -e "s|DATE|$current_date|" \
-            -e "s|TYPE|AI|g" \
-            -e "s|TITLE|$safe_title|g" \
-            -e "s|SUMMARY|$safe_summary|g" \
-            "$TEMP_DIR/card_template.html" > "$TEMP_DIR/card_$idx.html"
+        # 用 Python 做模板替换（避免 sed 特殊字符问题）
+        echo "$safe_title" > "$TEMP_DIR/_title.txt"
+        echo "$safe_summary" > "$TEMP_DIR/_summary.txt"
+        python3 - "$TEMP_DIR" "$BG_GRADIENT_START" "$BG_GRADIENT_END" "$current_date" "$idx" << 'PYEOF'
+import sys
+td, bg_start, bg_end, date_str, idx = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5]
+with open(f"{td}/card_template.html") as f:
+    tpl = f.read()
+with open(f"{td}/_title.txt") as f:
+    title = f.read().strip()
+with open(f"{td}/_summary.txt") as f:
+    summary = f.read().strip()
+tpl = tpl.replace("BG_START", bg_start)
+tpl = tpl.replace("BG_END", bg_end)
+tpl = tpl.replace("DATE", date_str)
+tpl = tpl.replace("TYPE", "AI")
+tpl = tpl.replace("TITLE", title, 1)
+tpl = tpl.replace("SUMMARY", summary, 1)
+with open(f"{td}/card_{idx}.html", "w") as f:
+    f.write(tpl)
+PYEOF
         
         # 使用 playwright 截取多帧 (带动画效果)
         if command -v node &>/dev/null && node -e "require('playwright')" 2>/dev/null; then
