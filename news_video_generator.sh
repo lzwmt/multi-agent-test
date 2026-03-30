@@ -652,7 +652,10 @@ for i, (gs, ps, audio) in enumerate(generator):
 PYEOF
         
         if [ -f "$TEMP_DIR/voice_${idx}.wav" ]; then
-            local dur=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$TEMP_DIR/voice_${idx}.wav" 2>/dev/null | cut -d. -f1)
+            local dur_raw=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$TEMP_DIR/voice_${idx}.wav" 2>/dev/null)
+                dur=${dur_raw%.*}
+                # 向上取整：如果有小数部分就+1
+                if [[ "$dur_raw" == *"."* ]]; then dur=$((dur + 1)); fi
             total_duration=$((total_duration + dur))
             echo "   ✅ ${dur}s"
         else
@@ -679,46 +682,36 @@ compose_video() {
     
     if [ "$multi_frames" -gt 0 ]; then
         local news_count=$multi_frames
-        > "$TEMP_DIR/concat_videos.txt"
         
+        # 创建图片序列：每张图片持续时间 = 配音时长（单次 ffmpeg 调用，避免 MP4 拼接时间戳漂移）
+        > "$TEMP_DIR/img_list.txt"
         for idx in $(seq 0 $((news_count - 1))); do
-            # 获取配音时长
-            local voice_dur=5
+            local dur=5
             if [ -f "$TEMP_DIR/voice_${idx}.wav" ]; then
-                voice_dur=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$TEMP_DIR/voice_${idx}.wav" 2>/dev/null | cut -d. -f1)
-                [ -z "$voice_dur" ] || [ "$voice_dur" -lt 3 ] && voice_dur=5
+                dur_raw=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$TEMP_DIR/voice_${idx}.wav" 2>/dev/null)
+                dur=${dur_raw%.*}
+                # 向上取整：如果有小数部分就+1
+                if [[ "$dur_raw" == *"."* ]]; then dur=$((dur + 1)); fi
+                [ -z "$dur" ] || [ "$dur" -lt 3 ] && dur=5
             fi
-            local total_dur=$((voice_dur + 1))
             
-            echo "   新闻$((idx+1)): 配音${voice_dur}s → 视频${total_dur}s"
-            
-            # 用最后一帧生成视频，时长=配音时长+1秒
-            local last_frame=$((24))
+            local last_frame=24
             [ ! -f "$TEMP_DIR/card_${idx}_${last_frame}.png" ] && last_frame=0
             
-            ffmpeg -y -loop 1 -i "$TEMP_DIR/card_${idx}_${last_frame}.png" \
-                -t "$total_dur" -c:v libx264 -pix_fmt yuv420p -r 25 \
-                -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2" \
-                "$TEMP_DIR/segment_${idx}.mp4" 2>/dev/null
-            
-            if [ -f "$TEMP_DIR/segment_${idx}.mp4" ]; then
-                echo "file '$TEMP_DIR/segment_${idx}.mp4'" >> "$TEMP_DIR/concat_videos.txt"
-            fi
+            echo "   新闻$((idx+1)): ${dur}s"
+            echo "file '$TEMP_DIR/card_${idx}_${last_frame}.png'" >> "$TEMP_DIR/img_list.txt"
+            echo "duration $dur" >> "$TEMP_DIR/img_list.txt"
         done
         
-        # 最后多停3秒
+        # 末尾多停2秒
         local last_idx=$((news_count - 1))
         local last_frame=24
         [ ! -f "$TEMP_DIR/card_${last_idx}_${last_frame}.png" ] && last_frame=0
-        ffmpeg -y -loop 1 -i "$TEMP_DIR/card_${last_idx}_${last_frame}.png" \
-            -t 3 -c:v libx264 -pix_fmt yuv420p -r 25 \
-            -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2" \
-            "$TEMP_DIR/segment_end.mp4" 2>/dev/null
-        echo "file '$TEMP_DIR/segment_end.mp4'" >> "$TEMP_DIR/concat_videos.txt"
+        echo "file '$TEMP_DIR/card_${last_idx}_${last_frame}.png'" >> "$TEMP_DIR/img_list.txt"
+        echo "duration 2" >> "$TEMP_DIR/img_list.txt"
         
-        # 拼接所有片段
-        ffmpeg -y -f concat -safe 0 -i "$TEMP_DIR/concat_videos.txt" \
-            -c copy "$TEMP_DIR/video_no_audio.mp4" 2>/dev/null || {
+        # 用 concat demuxer 图片模式一次性生成（不会有 MP4 时间戳问题）
+        ffmpeg -y -f concat -safe 0 -i "$TEMP_DIR/img_list.txt"             -vsync vfr -c:v libx264 -pix_fmt yuv420p -r 25             -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2"             "$TEMP_DIR/video_no_audio.mp4" 2>/dev/null || {
             echo "❌ 视频合成失败"
             exit 1
         }
@@ -729,12 +722,10 @@ compose_video() {
         # 备用：单帧图片 + 淡入淡出
         local cards=($(ls -1 "$TEMP_DIR"/card_*.png 2>/dev/null | sort -V || true))
         local fade_duration=1
+        local idx=0
         
         for card in "${cards[@]}"; do
-            ffmpeg -y -loop 1 -i "$card" \
-                -vf "fade=t=in:st=0:d=$fade_duration,fade=t=out:st=$((DURATION_PER_NEWS - fade_duration)):d=$fade_duration,scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2" \
-                -t "$DURATION_PER_NEWS" -c:v libx264 -pix_fmt yuv420p -crf 23 \
-                "$TEMP_DIR/card_${idx}.mp4" 2>/dev/null
+            ffmpeg -y -loop 1 -i "$card"                 -vf "fade=t=in:st=0:d=$fade_duration,fade=t=out:st=$((DURATION_PER_NEWS - fade_duration)):d=$fade_duration,scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2"                 -t "$DURATION_PER_NEWS" -c:v libx264 -pix_fmt yuv420p -crf 23                 "$TEMP_DIR/card_${idx}.mp4" 2>/dev/null
             idx=$((idx + 1))
         done
         
