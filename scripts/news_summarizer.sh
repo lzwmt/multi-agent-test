@@ -52,7 +52,7 @@ for ((i=0; i<count; i++)); do
         
         summary=""
         for attempt in 1 2 3; do
-            jq -n --arg p "$prompt" '{"model":"google/gemma-3n-e4b-it:free","messages":[{"role":"user","content":$p}],"max_tokens":200}' > /tmp/payload.json
+            jq -n --arg p "$prompt" '{"model":"google/gemini-2.0-flash-lite-001","messages":[{"role":"user","content":$p}],"max_tokens":200}' > /tmp/payload.json
             
             response=$(curl -s --connect-timeout 10 -m 60 -X POST "$API_URL" \
                 -H "Authorization: Bearer $GEMINI_API_KEY" \

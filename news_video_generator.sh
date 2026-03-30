@@ -288,7 +288,7 @@ generate_summaries() {
             local prompt="请为以下新闻生成一个 2-3 句话的精简摘要（50字以内）：新闻标题：$title，新闻内容：$desc_text。要求：直接输出，不要多余解释"
             
             for attempt in 1 2 3; do
-                local payload=$(jq -n --arg p "$prompt" '{"model":"google/gemma-3n-e4b-it:free","messages":[{"role":"user","content":$p}],"max_tokens":200}')
+                local payload=$(jq -n --arg p "$prompt" '{"model":"google/gemini-2.0-flash-lite-001","messages":[{"role":"user","content":$p}],"max_tokens":200}')
                 local response=$(curl -s --connect-timeout 10 -m 30 -X POST "https://openrouter.ai/api/v1/chat/completions" \
                     -H "Authorization: Bearer $or_key" \
                     -H "Content-Type: application/json" \
