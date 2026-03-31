@@ -105,21 +105,34 @@ direct + 关键解释
 
 ## Lessons Learned
 
-### [Date] - [Topic]
-[What happened and what you learned]
+### 2026-03-31 - CLIProxyAPI + OpenAI Codex 深度调试
+- **免费 tier OpenAI 账号无法走 REST API**，只能通过 Codex CLI 协议
+- **Codex CLI 需要 session cookie**（`__Secure-next-auth.session-token`），不只是 OAuth access_token
+- **注册脚本失效原因**：OpenAI 改了 `/api/auth/session`，不再返回 `accessToken` 字段
+- **CLIProxyAPI 架构**：auth 文件 → conductor 选账号 → codex_executor 发请求到 `chatgpt.com/backend-api/codex/responses`
+- **结论**：免费 tier + 无 session cookie = Codex CLI 401 无解。需要转向 Claude OAuth 路径
 
 ---
 
 ## Ongoing Context
 
 ### Active Projects
-[What's currently in progress]
+- **CLIProxyAPI**: 已部署在 `119.28.106.55:8317`，101 个 Codex auth 文件（免费 tier）
+- **CLIProxyAPI 编译**: `/home/cpa/CLIProxyAPI_src`（Go 环境需 `export PATH=/usr/local/go/bin:$PATH`）
+- **OpenAI 注册**: 脚本在 `openai_register/`，能注册但 token 提取失败（OpenAI API 变更）
 
 ### Key Decisions Made
-[Important decisions and their reasoning]
+- **OpenAI 免费 tier 不支持 REST API** — 只能通过 Codex CLI WebSocket 协议，但还需要 session cookie
+- **auth 文件需要 session_token** — 当前只有 access_token/refresh_token，缺 ChatGPT 登录 Cookie
+- **注册脚本 token 提取失效** — OpenAI 改了 `/api/auth/session`，不再返回 accessToken
+- **建议转向 Claude** — OAuth token 直接能用，不需要 session cookie
 
 ### Things to Remember
-[Anything else important for continuity]
+- CLIProxyAPI auth 文件格式：需要 `account_id`、`client_id` 字段（已批量修复）
+- CLIProxyAPI 调试模式：`debug: true` 在 config.yaml 中，可看到详细认证日志
+- `missing_end_user_auth` = 缺 session cookie，不是 token 过期
+- 代理 7890 端口在用户本地电脑上，需要用户开启
+- 用户已多次尝试手动登录 Claude Code，都卡在邮箱验证码（临时邮箱无法收码）
 
 ---
 
