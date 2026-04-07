@@ -1,6 +1,6 @@
 # MEMORY.md - Long-Term Memory
 
-> 共享协议同步于 2026-04-05 (C00 nightly-sync) | Your curated memories. Distill from daily notes. Remove when outdated.
+> 共享协议同步于 2026-04-07 (C00 nightly-sync) | Your curated memories. Distill from daily notes. Remove when outdated.
 
 ---
 
