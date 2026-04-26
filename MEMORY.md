@@ -20,4 +20,4 @@
 ### 沟通风格
 direct + 关键解释
 
-> 共享协议同步于 2026-04-25 (C00 nightly-sync) | Your curated memories. Distill from daily notes. Remove when outdated.
+> 共享协议同步于 2026-04-26 (C00 nightly-sync) | Your curated memories. Distill from daily notes. Remove when outdated.
