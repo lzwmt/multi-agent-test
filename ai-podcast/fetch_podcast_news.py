@@ -20,6 +20,7 @@ from html import unescape
 import time
 import email.utils
 import requests
+import subprocess
 
 
 # === 配置 ===
@@ -31,6 +32,9 @@ LLM_SCORING_ENABLED = os.getenv("PODCAST_LLM_SCORING", "false").lower() == "true
 LLM_API_URL = os.getenv("AINAIBA_API_URL", "https://api-xai.ainaibahub.com/v1")
 LLM_API_KEY = os.getenv("AINAIBA_API_KEY", "")
 LLM_MODEL = "gpt-4.1-mini"  # 使用便宜的模型做打分
+# news-aggregator 集成
+NEWS_AGGREGATOR_SCRIPT = os.path.expanduser("~/.hermes/skills/news-aggregator-skill/scripts/fetch_news.py")
+NEWS_AGGREGATOR_SOURCES = "36kr,wallstreetcn,weibo,github"  # 中文+投资相关源
 
 
 def parse_rss_date(date_str: str) -> datetime | None:
@@ -110,6 +114,55 @@ INVEST_KEYWORDS = [
     "估值", "融资", "IPO", "上市", "市值", "财报", "盈利",
     "央行", "利率", "通胀", "GDP", "监管", "政策",
 ]
+
+
+def fetch_from_news_aggregator(sources: str = NEWS_AGGREGATOR_SOURCES, limit: int = 10) -> list:
+    """从 news-aggregator-skill 获取新闻数据"""
+    if not os.path.exists(NEWS_AGGREGATOR_SCRIPT):
+        print("  ⚠️ news-aggregator 脚本不存在，跳过", file=sys.stderr)
+        return []
+    
+    items = []
+    for source in sources.split(","):
+        source = source.strip()
+        if not source:
+            continue
+        
+        try:
+            result = subprocess.run(
+                ["python3", NEWS_AGGREGATOR_SCRIPT, "--source", source, "--limit", str(limit), "--no-save"],
+                capture_output=True, text=True, timeout=30
+            )
+            
+            if result.returncode != 0:
+                print(f"  ⚠️ news-aggregator {source} 失败: {result.stderr[:100]}", file=sys.stderr)
+                continue
+            
+            # 解析 JSON 输出
+            import json
+            data = json.loads(result.stdout)
+            
+            for item in data:
+                items.append({
+                    "title": item.get("title", ""),
+                    "summary": item.get("summary", item.get("title", "")),  # 有些源没有摘要
+                    "url": item.get("url", ""),
+                    "source": f"news-agg:{item.get('source', source)}",
+                    "category": "invest" if source in ["wallstreetcn"] else "ai",
+                    "priority": 2,  # news-aggregator 源的默认优先级
+                    "pub_date": item.get("time", ""),
+                })
+            
+            print(f"  ✅ news-aggregator:{source}: {len(data)} 条", file=sys.stderr)
+            
+        except subprocess.TimeoutExpired:
+            print(f"  ⚠️ news-aggregator:{source} 超时", file=sys.stderr)
+        except json.JSONDecodeError:
+            print(f"  ⚠️ news-aggregator:{source} JSON解析失败", file=sys.stderr)
+        except Exception as e:
+            print(f"  ❌ news-aggregator:{source}: {e}", file=sys.stderr)
+    
+    return items
 
 
 def fetch_feed(feed_info: dict) -> list:
@@ -217,11 +270,19 @@ def score_item(item: dict) -> float:
 
     # 投资关键词命中
     invest_hits = sum(1 for kw in INVEST_KEYWORDS if kw.lower() in text.lower())
-    score += invest_hits * 3
+    score += invest_hits * 5  # 投资关键词权重提高到 5
 
     # AI 原生源加分
     if item["category"] == "ai":
-        score += 15
+        score += 10
+    
+    # 投资源加分（news-aggregator 的财经源）
+    if item["category"] == "invest":
+        score += 15  # 投资源加分提高到 15
+    
+    # news-aggregator 来源加分（这些源更实时）
+    if item["source"].startswith("news-agg"):
+        score += 8  # news-aggregator 加分提高到 8
 
     # P1-6: LLM 辅助打分
     if LLM_SCORING_ENABLED and LLM_API_KEY:
@@ -294,13 +355,25 @@ def main():
     parser = argparse.ArgumentParser(description="AI 播客新闻抓取器")
     parser.add_argument("--output", "-o", default="/root/.openclaw/workspace/ai-podcast/output/today_news.json")
     parser.add_argument("--count", "-n", type=int, default=8)
+    parser.add_argument("--rss-only", action="store_true", help="仅使用RSS源")
+    parser.add_argument("--agg-only", action="store_true", help="仅使用news-aggregator")
     args = parser.parse_args()
 
     print("📰 开始抓取新闻源...", file=sys.stderr)
     all_items = []
-    for feed in FEEDS:
-        items = fetch_feed(feed)
-        all_items.extend(items)
+    
+    # 1. 从 news-aggregator 获取数据（财经/投资源更丰富）
+    if not args.rss_only:
+        print("📰 从 news-aggregator 获取...", file=sys.stderr)
+        agg_items = fetch_from_news_aggregator()
+        all_items.extend(agg_items)
+    
+    # 2. 从 RSS 源获取数据（补充AI/科技源）
+    if not args.agg_only:
+        print("📰 从 RSS 源获取...", file=sys.stderr)
+        for feed in FEEDS:
+            items = fetch_feed(feed)
+            all_items.extend(items)
 
     print(f"\n📊 总计 {len(all_items)} 条原始新闻", file=sys.stderr)
 
