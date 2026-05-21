@@ -375,7 +375,14 @@ def main():
         intro_bgm = os.path.join(bgm_dir, "intro.mp3")
         if os.path.exists(intro_bgm):
             print("🎵 使用已有片头 BGM")
-            parts.append(intro_bgm)
+            # 转换为WAV格式以确保拼接兼容性
+            intro_wav = os.path.join(tmpdir, "intro_bgm.wav")
+            subprocess.run([
+                "ffmpeg", "-y", "-i", intro_bgm,
+                "-ar", str(SAMPLE_RATE), "-ac", "1",
+                intro_wav
+            ], capture_output=True, check=True)
+            parts.append(intro_wav)
         else:
             print("🎵 生成占位片头 BGM (3s)")
             placeholder = os.path.join(tmpdir, "intro_bgm.wav")
@@ -415,7 +422,14 @@ def main():
         outro_bgm = os.path.join(bgm_dir, "outro.mp3")
         if os.path.exists(outro_bgm):
             print("🎵 使用已有片尾 BGM")
-            parts.append(outro_bgm)
+            # 转换为WAV格式以确保拼接兼容性
+            outro_wav = os.path.join(tmpdir, "outro_bgm.wav")
+            subprocess.run([
+                "ffmpeg", "-y", "-i", outro_bgm,
+                "-ar", str(SAMPLE_RATE), "-ac", "1",
+                outro_wav
+            ], capture_output=True, check=True)
+            parts.append(outro_wav)
         else:
             print("🎵 生成占位片尾 BGM (5s)")
             placeholder = os.path.join(tmpdir, "outro_bgm.wav")
