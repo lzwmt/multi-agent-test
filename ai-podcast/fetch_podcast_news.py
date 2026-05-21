@@ -19,12 +19,18 @@ from datetime import datetime, timezone, timedelta
 from html import unescape
 import time
 import email.utils
+import requests
 
 
 # === 配置 ===
 MAX_AGE_HOURS = 48  # 只保留最近 48 小时的新闻
 MAX_RETRIES = 3     # RSS 抓取最大重试次数
 RETRY_DELAY = 2     # 重试间隔秒数
+# LLM 打分配置
+LLM_SCORING_ENABLED = os.getenv("PODCAST_LLM_SCORING", "false").lower() == "true"
+LLM_API_URL = os.getenv("AINAIBA_API_URL", "https://api-xai.ainaibahub.com/v1")
+LLM_API_KEY = os.getenv("AINAIBA_API_KEY", "")
+LLM_MODEL = "gpt-4.1-mini"  # 使用便宜的模型做打分
 
 
 def parse_rss_date(date_str: str) -> datetime | None:
@@ -88,6 +94,15 @@ FEEDS = [
     # 英文 AI 源（作为补充）
     {"name": "OpenAI Blog", "url": "https://openai.com/blog/rss.xml", "priority": 2, "category": "ai"},
     {"name": "Hugging Face", "url": "https://huggingface.co/blog/feed.xml", "priority": 2, "category": "ai"},
+    # P1-5: 财经/投资源
+    {"name": "雪球热帖", "url": "https://xueqiu.com/hots/topic/rss", "priority": 3, "category": "invest"},
+    {"name": "第一财经", "url": "https://www.yicai.com/rss", "priority": 2, "category": "invest"},
+    {"name": "华尔街见闻", "url": "https://wallstreetcn.com/rss", "priority": 2, "category": "invest"},
+    {"name": "格隆汇", "url": "https://www.gelonghui.com/rss", "priority": 2, "category": "invest"},
+    {"name": "金十数据", "url": "https://www.jin10.com/rss", "priority": 2, "category": "invest"},
+    # 科技 + 投资交叉
+    {"name": "极客公园", "url": "https://www.geekpark.net/rss", "priority": 2, "category": "tech"},
+    {"name": "钛媒体", "url": "https://www.tmtpost.com/rss", "priority": 2, "category": "tech"},
 ]
 
 # AI/投资关键词
@@ -218,7 +233,57 @@ def score_item(item: dict) -> float:
     if item["category"] == "ai":
         score += 15
 
+    # P1-6: LLM 辅助打分
+    if LLM_SCORING_ENABLED and LLM_API_KEY:
+        llm_score = llm_score_item(item)
+        score += llm_score * 2  # LLM 分数权重 x2
+
     return score
+
+
+def llm_score_item(item: dict) -> float:
+    """P1-6: 用 LLM 辅助打分，评估新闻的相关性、新颖度、深度"""
+    prompt = f"""你是一个AI播客的选题编辑。请评估以下新闻对于"AI × 投资"主题播客的价值。
+
+新闻标题：{item['title']}
+新闻摘要：{item['summary'][:200]}
+来源：{item['source']}
+
+请从1-10打分，考虑：
+1. 与AI/投资主题的相关性（权重40%）
+2. 新颖度/时效性（权重30%）
+3. 深度/可讨论性（权重30%）
+
+只返回数字分数，不要解释。"""
+    
+    try:
+        response = requests.post(
+            f"{LLM_API_URL}/chat/completions",
+            headers={
+                "Authorization": f"Bearer {LLM_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": LLM_MODEL,
+                "messages": [{"role": "user", "content": prompt}],
+                "max_tokens": 10,
+                "temperature": 0.3
+            },
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            result = response.json()
+            content = result["choices"][0]["message"]["content"].strip()
+            # 提取数字
+            match = re.search(r'\d+', content)
+            if match:
+                score = int(match.group())
+                return min(max(score, 1), 10)  # 限制在 1-10
+    except Exception as e:
+        print(f"  ⚠️ LLM 打分失败: {e}", file=sys.stderr)
+    
+    return 0
 
 
 def deduplicate(items: list) -> list:

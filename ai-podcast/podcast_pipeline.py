@@ -22,12 +22,22 @@ import sys
 import tempfile
 import shutil
 from pathlib import Path
+from mutagen.mp3 import MP3
+from mutagen.id3 import ID3, TIT2, TPE1, TALB, APIC, TDRC, TRCK, COMM
+from datetime import datetime, timezone, timedelta
+import xml.etree.ElementTree as ET
 
 # === 配置 ===
 TTS_SCRIPT = os.path.expanduser("~/.hermes/scripts/mimo-tts.sh")
 SAMPLE_RATE = 24000
 LUFS_TARGET = -16
 DEFAULT_BGM_DIR = os.path.expanduser("~/.openclaw/workspace/ai-podcast/bgm")
+DEFAULT_COVER = os.path.expanduser("~/.openclaw/workspace/ai-podcast/rss/cover.png")
+PODCAST_TITLE = "程序员赚钱指南"
+PODCAST_AUTHOR = "lzwmt"
+PODCAST_ALBUM = "程序员赚钱指南"
+RSS_FEED_PATH = os.path.expanduser("~/.openclaw/workspace/ai-podcast/rss/feed.xml")
+RSS_BASE_URL = "https://lzwmt.github.io/ai-podcast-rss"
 
 
 def generate_placeholder_bgm(output_path: str, duration: float, freq: float = 440):
@@ -226,6 +236,117 @@ def concatenate_audio(parts: list, output_path: str):
         os.unlink(list_path)
 
 
+def write_id3_tags(mp3_path: str, title: str, artist: str, album: str,
+                   cover_path: str = None, episode_num: int = 1,
+                   comment: str = ""):
+    """写入 ID3 tags 和封面图到 MP3 文件"""
+    try:
+        audio = MP3(mp3_path)
+        if audio.tags is None:
+            audio.add_tags()
+        
+        tags = audio.tags
+        tags.add(TIT2(encoding=3, text=title))
+        tags.add(TPE1(encoding=3, text=artist))
+        tags.add(TALB(encoding=3, text=album))
+        tags.add(TRCK(encoding=3, text=str(episode_num)))
+        tags.add(TDRC(encoding=3, text="2026"))
+        
+        if comment:
+            tags.add(COMM(encoding=3, lang="zho", desc="", text=comment))
+        
+        # P1-9: 嵌入封面图
+        if cover_path and os.path.exists(cover_path):
+            with open(cover_path, "rb") as f:
+                cover_data = f.read()
+            tags.add(APIC(
+                encoding=3,
+                mime="image/png",
+                type=3,  # Cover (front)
+                desc="Cover",
+                data=cover_data
+            ))
+        
+        audio.save()
+        print(f"  ✅ ID3 tags 已写入: {title}")
+    except Exception as e:
+        print(f"  ⚠️ ID3 tags 写入失败: {e}", file=sys.stderr)
+
+
+def update_rss_feed(episode_num: int, title: str, description: str,
+                    audio_filename: str, audio_size: int, duration_seconds: float):
+    """更新 RSS feed.xml，添加新一期节目"""
+    try:
+        if not os.path.exists(RSS_FEED_PATH):
+            print(f"  ⚠️ RSS feed 不存在: {RSS_FEED_PATH}", file=sys.stderr)
+            return
+        
+        tree = ET.parse(RSS_FEED_PATH)
+        root = tree.getroot()
+        channel = root.find("channel")
+        
+        if channel is None:
+            print("  ⚠️ RSS feed 格式错误: 缺少 channel", file=sys.stderr)
+            return
+        
+        # 更新 lastBuildDate
+        now = datetime.now(timezone(timedelta(hours=8)))
+        now_str = now.strftime("%a, %d %b %Y %H:%M:%S %z")
+        last_build = channel.find("lastBuildDate")
+        if last_build is not None:
+            last_build.text = now_str
+        
+        # 检查是否已存在该集数
+        for item in channel.findall("item"):
+            guid = item.find("guid")
+            if guid is not None and guid.text == f"ep{episode_num:02d}-{now.strftime('%Y%m%d')}":
+                print(f"  ℹ️ EP{episode_num:02d} 已存在于 RSS feed", file=sys.stderr)
+                return
+        
+        # 创建新 item
+        item = ET.SubElement(channel, "item")
+        
+        title_el = ET.SubElement(item, "title")
+        title_el.text = title
+        
+        itunes_title = ET.SubElement(item, "{http://www.itunes.com/dtds/podcast-1.0.dtd}title")
+        itunes_title.text = title
+        
+        itunes_episode = ET.SubElement(item, "{http://www.itunes.com/dtds/podcast-1.0.dtd}episode")
+        itunes_episode.text = str(episode_num)
+        
+        itunes_duration = ET.SubElement(item, "{http://www.itunes.com/dtds/podcast-1.0.dtd}duration")
+        itunes_duration.text = str(int(duration_seconds))
+        
+        itunes_summary = ET.SubElement(item, "{http://www.itunes.com/dtds/podcast-1.0.dtd}summary")
+        itunes_summary.text = description
+        
+        desc_el = ET.SubElement(item, "description")
+        desc_el.text = description
+        
+        pub_date = ET.SubElement(item, "pubDate")
+        pub_date.text = now_str
+        
+        enclosure = ET.SubElement(item, "enclosure")
+        enclosure.set("url", f"{RSS_BASE_URL}/episodes/{audio_filename}")
+        enclosure.set("length", str(audio_size))
+        enclosure.set("type", "audio/mpeg")
+        
+        link = ET.SubElement(item, "link")
+        link.text = RSS_BASE_URL
+        
+        guid = ET.SubElement(item, "guid")
+        guid.set("isPermaLink", "false")
+        guid.text = f"ep{episode_num:02d}-{now.strftime('%Y%m%d')}"
+        
+        # 保存
+        tree.write(RSS_FEED_PATH, encoding="unicode", xml_declaration=True)
+        print(f"  ✅ RSS feed 已更新: EP{episode_num:02d}")
+        
+    except Exception as e:
+        print(f"  ⚠️ RSS feed 更新失败: {e}", file=sys.stderr)
+
+
 def main():
     if len(sys.argv) < 3:
         print("用法: python3 podcast_pipeline.py <script.json> <output.mp3> [--bgm-dir <dir>]")
@@ -309,6 +430,34 @@ def main():
         # === 标准化 ===
         print("📊 音量标准化...")
         normalize_audio(raw_concat, output_path)
+
+        # === P1-8/P1-9: 写入 ID3 tags + 封面图 ===
+        episode_num = len([s for s in segments if s.get("type") == "topic"])  # 估算集数
+        episode_title = f"EP{episode_num:02d}: {segments[0]['text'][:30]}..." if segments else "EP01"
+        cover_path = os.path.join(os.path.dirname(output_path), "cover.png")
+        if not os.path.exists(cover_path):
+            cover_path = DEFAULT_COVER
+        print("🏷️ 写入 ID3 tags + 封面图...")
+        write_id3_tags(
+            output_path,
+            title=episode_title,
+            artist=PODCAST_AUTHOR,
+            album=PODCAST_ALBUM,
+            cover_path=cover_path if os.path.exists(cover_path) else None,
+            episode_num=episode_num,
+            comment=f"AI × 投资 | 每天 5-8 分钟 | {PODCAST_TITLE}"
+        )
+
+        # === P1-10: 自动更新 RSS feed ===
+        print("📡 更新 RSS feed...")
+        update_rss_feed(
+            episode_num=episode_num,
+            title=episode_title,
+            description=segments[0]['text'][:200] if segments else "",
+            audio_filename=os.path.basename(output_path),
+            audio_size=os.path.getsize(output_path),
+            duration_seconds=get_duration(output_path)
+        )
 
         # === 完成 ===
         duration = get_duration(output_path)
