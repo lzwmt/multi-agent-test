@@ -85,24 +85,14 @@ def is_recent(date_str: str, max_hours: int = MAX_AGE_HOURS) -> bool:
 FEEDS = [
     # AI 原生 / 高优先级
     {"name": "36氪-AI", "url": "https://36kr.com/feed", "priority": 3, "category": "ai"},
-    {"name": "机器之心", "url": "https://www.jiqizhixin.com/rss", "priority": 3, "category": "ai"},
-    {"name": "量子位", "url": "https://www.qbitai.com/feed", "priority": 3, "category": "ai"},
     # 科技综合
-    {"name": "虎嗅", "url": "https://www.huxiu.com/rss/0.xml", "priority": 2, "category": "tech"},
     {"name": "爱范儿", "url": "https://www.ifanr.com/feed", "priority": 2, "category": "tech"},
     {"name": "少数派", "url": "https://sspai.com/feed", "priority": 1, "category": "tech"},
+    {"name": "钛媒体", "url": "https://www.tmtpost.com/rss", "priority": 2, "category": "tech"},
     # 英文 AI 源（作为补充）
     {"name": "OpenAI Blog", "url": "https://openai.com/blog/rss.xml", "priority": 2, "category": "ai"},
     {"name": "Hugging Face", "url": "https://huggingface.co/blog/feed.xml", "priority": 2, "category": "ai"},
-    # P1-5: 财经/投资源
-    {"name": "雪球热帖", "url": "https://xueqiu.com/hots/topic/rss", "priority": 3, "category": "invest"},
-    {"name": "第一财经", "url": "https://www.yicai.com/rss", "priority": 2, "category": "invest"},
-    {"name": "华尔街见闻", "url": "https://wallstreetcn.com/rss", "priority": 2, "category": "invest"},
-    {"name": "格隆汇", "url": "https://www.gelonghui.com/rss", "priority": 2, "category": "invest"},
-    {"name": "金十数据", "url": "https://www.jin10.com/rss", "priority": 2, "category": "invest"},
-    # 科技 + 投资交叉
-    {"name": "极客公园", "url": "https://www.geekpark.net/rss", "priority": 2, "category": "tech"},
-    {"name": "钛媒体", "url": "https://www.tmtpost.com/rss", "priority": 2, "category": "tech"},
+    # 注: 机器之心/量子位/虎嗅/雪球/第一财经/华尔街见闻/格隆汇 RSS 已失效
 ]
 
 # AI/投资关键词
