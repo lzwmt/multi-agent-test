@@ -1,0 +1,162 @@
+{
+  "single": {
+    "id": "single",
+    "name_cn": "单牌指引",
+    "name_en": "Single Card",
+    "description": "抽取一张牌，获得当前最直接的指引与启示。",
+    "card_count": 1,
+    "positions": [
+      {
+        "index": 0,
+        "name": "当前指引",
+        "description": "当下面对的最核心的能量与信息"
+      }
+    ]
+  },
+  "three_card": {
+    "id": "three_card",
+    "name_cn": "三牌阵",
+    "name_en": "Three Card Spread",
+    "description": "经典三牌阵，揭示过去、现在与未来的能量流动。",
+    "card_count": 3,
+    "positions": [
+      {
+        "index": 0,
+        "name": "过去",
+        "description": "影响当前局面的过去因素"
+      },
+      {
+        "index": 1,
+        "name": "现在",
+        "description": "当下的能量状态与核心议题"
+      },
+      {
+        "index": 2,
+        "name": "未来",
+        "description": "可能的发展方向与未来趋势"
+      }
+    ]
+  },
+  "celtic_cross": {
+    "id": "celtic_cross",
+    "name_cn": "凯尔特十字牌阵",
+    "name_en": "Celtic Cross",
+    "description": "最经典的塔罗牌阵，全面深入地解读问题的各个层面。",
+    "card_count": 10,
+    "positions": [
+      {
+        "index": 0,
+        "name": "当前状况",
+        "description": "你目前所面对的核心问题或情境"
+      },
+      {
+        "index": 1,
+        "name": "挑战",
+        "description": "阻碍你前进的困难或冲突"
+      },
+      {
+        "index": 2,
+        "name": "过去根基",
+        "description": "导致当前局面的深层原因"
+      },
+      {
+        "index": 3,
+        "name": "近期过去",
+        "description": "刚刚发生或即将过去的事件"
+      },
+      {
+        "index": 4,
+        "name": "可能未来",
+        "description": "事情可能发展的方向"
+      },
+      {
+        "index": 5,
+        "name": "近期未来",
+        "description": "即将来临的变化与事件"
+      },
+      {
+        "index": 6,
+        "name": "自我认知",
+        "description": "你对当前问题的真实感受与态度"
+      },
+      {
+        "index": 7,
+        "name": "外部环境",
+        "description": "周围人或环境对你产生的影响"
+      },
+      {
+        "index": 8,
+        "name": "希望与恐惧",
+        "description": "你内心深处的期望与担忧"
+      },
+      {
+        "index": 9,
+        "name": "最终结果",
+        "description": "如果现状持续，最终可能的结局"
+      }
+    ]
+  },
+  "love_cross": {
+    "id": "love_cross",
+    "name_cn": "爱情十字牌阵",
+    "name_en": "Love Cross",
+    "description": "专为感情问题设计的牌阵，深入洞察双方情感状态与关系走向。",
+    "card_count": 5,
+    "positions": [
+      {
+        "index": 0,
+        "name": "你的感受",
+        "description": "你对这段关系的真实情感"
+      },
+      {
+        "index": 1,
+        "name": "对方的感受",
+        "description": "对方对这段关系的情感状态"
+      },
+      {
+        "index": 2,
+        "name": "关系现状",
+        "description": "你们之间目前的能量与状态"
+      },
+      {
+        "index": 3,
+        "name": "障碍",
+        "description": "阻碍这段关系发展的因素"
+      },
+      {
+        "index": 4,
+        "name": "建议",
+        "description": "塔罗牌给你的感情建议与指引"
+      }
+    ]
+  },
+  "career_pyramid": {
+    "id": "career_pyramid",
+    "name_cn": "事业金字塔牌阵",
+    "name_en": "Career Pyramid",
+    "description": "专为事业与职业发展问题设计，从内到外层层解析。",
+    "card_count": 4,
+    "positions": [
+      {
+        "index": 0,
+        "name": "当前状态",
+        "description": "你目前的事业发展阶段与状态"
+      },
+      {
+        "index": 1,
+        "name": "内在优势",
+        "description": "你自身拥有的有利条件与天赋"
+      },
+      {
+        "index": 2,
+        "name": "外在挑战",
+        "description": "来自外部环境的困难与阻碍"
+      },
+      {
+        "index": 3,
+        "name": "发展建议",
+        "description": "塔罗牌给出的职业发展建议"
+      }
+    ]
+  }
+}

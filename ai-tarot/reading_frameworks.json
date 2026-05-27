@@ -1,0 +1,70 @@
+{
+  "three_layer_model": {
+    "name": "三层解读模型",
+    "layers": {
+      "surface": "牌面的表面含义和关键词",
+      "symbolic": "牌面象征意义和隐喻",
+      "deep": "深层心理暗示和潜意识信息"
+    }
+  },
+  "nine_dimension_visual": {
+    "name": "九维画面分析",
+    "dimensions": {
+      "element": "元素能量（火水风土）",
+      "number": "数字振动（1-10+宫廷牌）",
+      "astrology": "星座能量",
+      "color": "色彩象征",
+      "symbol": "牌面符号",
+      "figure": "人物姿态",
+      "landscape": "场景环境",
+      "sky": "天空与光线",
+      "objects": "道具与物品"
+    }
+  },
+  "psychological_framework": {
+    "name": "心理学解读框架",
+    "approaches": {
+      "jungian": "荣格原型与集体潜意识",
+      "cognitive": "认知行为模式识别",
+      "emotional": "情感状态评估",
+      "archetypal": "原型能量分析"
+    }
+  },
+  "topic_focus": {
+    "love": {
+      "name": "感情",
+      "keywords": ["爱情", "伴侣", "关系", "桃花", "婚姻"],
+      "focus": "重点解读圣杯牌组和关系类牌",
+      "advice_style": "温柔共情，提供关系建议"
+    },
+    "career": {
+      "name": "事业",
+      "keywords": ["工作", "事业", "跳槽", "升职", "创业"],
+      "focus": "重点解读权杖牌组和星币牌组",
+      "advice_style": "理性务实，提供行动建议"
+    },
+    "wealth": {
+      "name": "财运",
+      "keywords": ["钱", "财运", "投资", "收入"],
+      "focus": "重点解读星币牌组",
+      "advice_style": "谨慎保守，提供理财建议"
+    },
+    "health": {
+      "name": "健康",
+      "keywords": ["健康", "身体", "疾病"],
+      "focus": "结合元素能量分析",
+      "advice_style": "温和提醒，建议就医"
+    }
+  },
+  "reading_structure": {
+    "name": "标准解读结构",
+    "steps": [
+      "1. 整体印象：1-2句话概括牌面核心信息",
+      "2. 逐张解读：结合位置含义解读每张牌",
+      "3. 牌面串联：把牌连成完整故事",
+      "4. 组合提示：命中组合规则时特别说明",
+      "5. 建议：给出2-3条具体建议",
+      "6. 互动：问用户一个引导性问题"
+    ]
+  }
+}
