@@ -2,6 +2,7 @@
 Tarot Engine - Core tarot reading logic.
 
 Handles card loading, drawing, spread management, and full reading assembly.
+Compatible with both INTEGRATION.md spreads format and backend/data format.
 """
 
 import json
@@ -9,9 +10,9 @@ import random
 from pathlib import Path
 from typing import Any
 
-# Resolve paths relative to this file's parent (services/)
 _SERVICES_DIR = Path(__file__).resolve().parent
 _DATA_DIR = _SERVICES_DIR.parent / "data"
+_ROOT_DIR = _SERVICES_DIR.parent.parent  # ai-tarot/
 
 
 class TarotEngine:
@@ -21,72 +22,74 @@ class TarotEngine:
         self._cards: list[dict[str, Any]] = []
         self._spreads: dict[str, dict[str, Any]] = {}
 
-    # ------------------------------------------------------------------
-    # Loading
-    # ------------------------------------------------------------------
-
     def load_cards(self, path: str | Path | None = None) -> list[dict[str, Any]]:
-        """Load card definitions from a JSON file.
-
-        Args:
-            path: Optional path to cards.json.  Defaults to ``data/cards.json``.
-
-        Returns:
-            The list of card dictionaries.
-        """
         if path is None:
             path = _DATA_DIR / "cards.json"
         path = Path(path)
-
         with path.open("r", encoding="utf-8") as fh:
             self._cards = json.load(fh)
-
         return self._cards
 
     def load_spreads(self, path: str | Path | None = None) -> dict[str, dict[str, Any]]:
-        """Load spread definitions from a JSON file.
-
-        Args:
-            path: Optional path to spreads.json.  Defaults to ``data/spreads.json``.
-
-        Returns:
-            The dictionary of spread definitions keyed by spread id.
-        """
         if path is None:
-            path = _DATA_DIR / "spreads.json"
+            # Prefer root spreads.json (richer, from INTEGRATION.md)
+            root_path = _ROOT_DIR / "spreads.json"
+            path = root_path if root_path.exists() else _DATA_DIR / "spreads.json"
         path = Path(path)
 
         with path.open("r", encoding="utf-8") as fh:
-            self._spreads = json.load(fh)
+            raw = json.load(fh)
 
+        # Normalize: support both formats
+        # Format A (backend/data): {"id", "name_cn", "name_en", "card_count", "positions": [{index, name, description}]}
+        # Format B (root/INTEGRATION): {"name", "cards", "use", "positions": {"1": "pos_name", ...}}
+        normalized = {}
+        for key, spread in raw.items():
+            if "card_count" in spread:
+                # Format A - already normalized
+                normalized[key] = spread
+            else:
+                # Format B - normalize
+                card_count = spread.get("cards", 1)
+                raw_positions = spread.get("positions", {})
+                positions = []
+                for i in range(1, card_count + 1):
+                    pos_str = raw_positions.get(str(i), f"位置{i}")
+                    positions.append({
+                        "index": i - 1,
+                        "name": pos_str,
+                        "description": spread.get("use", ""),
+                    })
+                # Build position details from knowledge base
+                pos_details = []
+                for k, v in raw_positions.items():
+                    if k not in ("center",):
+                        pos_details.append({"pos": k, "meaning": v})
+                    else:
+                        pos_details.insert(0, {"pos": k, "meaning": v})
+
+                normalized[key] = {
+                    "id": key,
+                    "name_cn": spread.get("name", key),
+                    "name_en": key.replace("_", " ").title(),
+                    "description": spread.get("use", ""),
+                    "card_count": card_count,
+                    "positions": positions,
+                    "use": spread.get("use", ""),
+                    "steps": spread.get("steps", []),
+                    "tips": spread.get("tips", []),
+                    "note": spread.get("note", ""),
+                    "answer_logic": spread.get("answer_logic", ""),
+                    "layout": spread.get("layout", ""),
+                    "position_details": pos_details,
+                }
+
+        self._spreads = normalized
         return self._spreads
 
-    # ------------------------------------------------------------------
-    # Card operations
-    # ------------------------------------------------------------------
-
-    def draw_cards(
-        self,
-        count: int,
-        allow_reversed: bool = True,
-    ) -> list[dict[str, Any]]:
-        """Draw *count* random cards from the loaded deck.
-
-        Each drawn card gets an ``orientation`` field that is either
-        ``"upright"`` or ``"reversed"`` (if *allow_reversed* is True).
-
-        Args:
-            count:            Number of cards to draw.
-            allow_reversed:   Whether reversed orientations are allowed.
-
-        Returns:
-            A list of card dictionaries enriched with ``orientation`` and
-            ``drawn_id`` (1-based draw order).
-        """
+    def draw_cards(self, count: int, allow_reversed: bool = True) -> list[dict[str, Any]]:
         if not self._cards:
-            raise RuntimeError(
-                "No cards loaded. Call load_cards() before drawing."
-            )
+            raise RuntimeError("No cards loaded. Call load_cards() before drawing.")
 
         drawn: list[dict[str, Any]] = []
         available = list(self._cards)
@@ -94,68 +97,27 @@ class TarotEngine:
         for idx in range(min(count, len(available))):
             card = random.choice(available)
             available.remove(card)
-
             card_copy = dict(card)
-
             if allow_reversed:
                 card_copy["orientation"] = random.choice(["upright", "reversed"])
             else:
                 card_copy["orientation"] = "upright"
-
             card_copy["drawn_id"] = idx + 1
             drawn.append(card_copy)
 
         return drawn
 
-    # ------------------------------------------------------------------
-    # Spread operations
-    # ------------------------------------------------------------------
-
     def get_spread(self, name: str) -> dict[str, Any]:
-        """Return the spread configuration for *name*.
-
-        Args:
-            name: The spread id (e.g. ``"three_card"``).
-
-        Returns:
-            The spread dictionary including its ``positions`` array.
-
-        Raises:
-            KeyError: If the spread name is not found.
-        """
         if not self._spreads:
-            raise RuntimeError(
-                "No spreads loaded. Call load_spreads() before looking up a spread."
-            )
+            raise RuntimeError("No spreads loaded. Call load_spreads() before looking up a spread.")
 
         if name not in self._spreads:
             available = ", ".join(sorted(self._spreads.keys()))
-            raise KeyError(
-                f"Unknown spread '{name}'. Available spreads: {available}"
-            )
+            raise KeyError(f"Unknown spread '{name}'. Available spreads: {available}")
 
         return self._spreads[name]
 
-    # ------------------------------------------------------------------
-    # Full reading
-    # ------------------------------------------------------------------
-
-    def do_reading(
-        self,
-        spread_name: str,
-        allow_reversed: bool = True,
-    ) -> dict[str, Any]:
-        """Perform a full tarot reading: combine a spread with drawn cards.
-
-        Args:
-            spread_name:     The spread id to use (e.g. ``"celtic_cross"``).
-            allow_reversed:  Whether reversed orientations are allowed.
-
-        Returns:
-            A dictionary with the spread info and a ``cards`` list where each
-            entry contains the card data, its ``position`` (from the spread),
-            and its ``orientation``.
-        """
+    def do_reading(self, spread_name: str, allow_reversed: bool = True) -> dict[str, Any]:
         spread = self.get_spread(spread_name)
         cards = self.draw_cards(
             count=spread["card_count"],

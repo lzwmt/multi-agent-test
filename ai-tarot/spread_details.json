@@ -1,0 +1,304 @@
+{
+  "source": {
+    "book": "塔罗全书",
+    "author": "迪亚夫人",
+    "file": "/tmp/tarot_all.txt",
+    "note": "以下9个牌阵信息提取自《塔罗全书》第五章'如何塔罗'中的经典牌阵及其它精典牌阵列举部分"
+  },
+  "spreads": [
+    {
+      "name": "海伦阵",
+      "purpose": "主要用于爱情方面的咨询",
+      "number_of_cards": 3,
+      "layout_shape": "竖直排列（从下到上）",
+      "mythological_background": "传说中的海伦阵有可能比古希腊的历史更古老。荷马史诗中，特洛伊王子在向海伦求爱的时候，就是在事先用这种牌阵获得了神灵的支持。中世纪时期的法国，传说蓬帕杜夫人就是巧妙地运用此阵帮助路易十五解决国家政务上的困难，因而赢得了国王的爱情与欢宠。用海伦阵询问爱情，是每一个少女必不可少的心灵教育。",
+      "positions": [
+        {
+          "position": 1,
+          "name": "主牌（塔罗精灵）",
+          "placement": "先抽出，作为基础牌",
+          "meaning": "代表求问者的整体爱情状态或塔罗精灵的指引"
+        },
+        {
+          "position": 2,
+          "name": "第二张牌",
+          "placement": "放在主牌的上方",
+          "meaning": "代表爱情中的发展或影响因素"
+        },
+        {
+          "position": 3,
+          "name": "第三张牌",
+          "placement": "放在第二张牌的上方",
+          "meaning": "代表爱情的最终结果或启示"
+        }
+      ],
+      "interpretation_method": "先翻到第六章《塔罗给你的启示》，查找第一部分《大阿卡纳二十二神给你的启示》，根据主牌查找第二张牌的解读，再查找第三张牌的解读。"
+    },
+    {
+      "name": "圣三角阵",
+      "purpose": "主要用于寻找事业的启示",
+      "number_of_cards": 3,
+      "layout_shape": "三角形（上一下二）",
+      "mythological_background": "这种牌阵是中世纪欧洲国王与大臣们的主要娱乐方式，后来流传入民间，主要用以寻找牌灵对于人们事业的启示。",
+      "positions": [
+        {
+          "position": 1,
+          "name": "主牌（塔罗精灵）",
+          "placement": "放在正上位（三角形顶端）",
+          "meaning": "代表求问者的整体事业状态"
+        },
+        {
+          "position": 2,
+          "name": "第二张牌",
+          "placement": "放在主牌的下左位",
+          "meaning": "代表事业中的内在因素或基础"
+        },
+        {
+          "position": 3,
+          "name": "第三张牌",
+          "placement": "放在主牌的下右位",
+          "meaning": "代表事业的发展方向或结果"
+        }
+      ],
+      "interpretation_method": "先翻到第六章《塔罗给你的启示》，查找第一部分《大阿卡纳二十二神给你的启示》，根据主牌查找第二张牌的解读，再查找第三张牌的解读。"
+    },
+    {
+      "name": "凯特尔十字阵",
+      "purpose": "主要用来寻找财运",
+      "number_of_cards": 5,
+      "layout_shape": "十字形（中心+上下左右）",
+      "mythological_background": "凯特尔十字阵源自凯尔特文化的十字架象征，代表着四个方向与中心的交汇，象征着财富能量的汇聚与流动。",
+      "positions": [
+        {
+          "position": 1,
+          "name": "主牌（塔罗精灵）",
+          "placement": "放在正中间",
+          "meaning": "代表求问者的整体财运状态"
+        },
+        {
+          "position": 2,
+          "name": "第二张牌",
+          "placement": "放在塔罗精灵的正上方",
+          "meaning": "代表财运的理想目标或愿景"
+        },
+        {
+          "position": 3,
+          "name": "第三张牌",
+          "placement": "放在塔罗精灵的正下方",
+          "meaning": "代表财运的基础或根源"
+        },
+        {
+          "position": 4,
+          "name": "第四张牌",
+          "placement": "放在塔罗精灵的正左方",
+          "meaning": "代表过去的财运状况或影响"
+        },
+        {
+          "position": 5,
+          "name": "第五张牌",
+          "placement": "放在塔罗精灵的正右方",
+          "meaning": "代表未来的财运趋势或结果"
+        }
+      ],
+      "interpretation_method": "先翻到第六章《塔罗给你的启示》，查找第一部分《大阿卡纳二十二神给你的启示》，根据主牌逐一查找各张牌在对应位置的解读。"
+    },
+    {
+      "name": "炼金术狮子牌阵",
+      "purpose": "可以用来寻找财富的所在",
+      "number_of_cards": 4,
+      "layout_shape": "菱形/钻石形（上下+左右各一）",
+      "mythological_background": "传说这个牌阵是欧洲中世纪的炼金术士梅涅特最经常采用的，可以用来寻找财富的所在。炼金术士相信通过神秘的转化过程，可以将普通物质转化为黄金，此牌阵象征着这种寻找隐藏财富的探索过程。",
+      "positions": [
+        {
+          "position": 1,
+          "name": "主牌（塔罗精灵）",
+          "placement": "放在正上位",
+          "meaning": "代表财富的总体指引方向"
+        },
+        {
+          "position": 2,
+          "name": "第二张牌",
+          "placement": "放在主牌下面的中左位",
+          "meaning": "代表财富的隐藏线索或左侧因素"
+        },
+        {
+          "position": 3,
+          "name": "第三张牌",
+          "placement": "放在主牌的正下位",
+          "meaning": "代表财富的基础或深层来源"
+        },
+        {
+          "position": 4,
+          "name": "第四张牌",
+          "placement": "放在主牌下面的中右位",
+          "meaning": "代表财富的行动方向或右侧因素"
+        }
+      ],
+      "interpretation_method": "使用大阿卡纳洗牌切牌后抽取，按照牌阵位置逐一解读。"
+    },
+    {
+      "name": "荷罗斯兄弟牌阵",
+      "purpose": "可以指导人们解决职业方面的困扰",
+      "number_of_cards": 3,
+      "layout_shape": "水平排列（从左到右）",
+      "mythological_background": "荷罗斯兄弟会是古埃及时代的一个地下秘密社团，只有会团成员才有资格被加冕为法老。这一协会的历史远比金字塔的经文更要古老。使用这一简洁的牌阵可以指导人们解决职业方面的困扰。",
+      "positions": [
+        {
+          "position": 1,
+          "name": "主牌（塔罗精灵）",
+          "placement": "放在正左方",
+          "meaning": "代表职业现状或起点"
+        },
+        {
+          "position": 2,
+          "name": "第二张牌",
+          "placement": "放在主牌的正右位",
+          "meaning": "代表职业发展过程或转折"
+        },
+        {
+          "position": 3,
+          "name": "第三张牌",
+          "placement": "放在第二张牌的正右位",
+          "meaning": "代表职业的最终方向或结果"
+        }
+      ],
+      "interpretation_method": "大阿卡纳洗牌切牌后抽取三张，从左至右按顺序解读。"
+    },
+    {
+      "name": "图特摩斯牌阵",
+      "purpose": "代表友情与结合力，和团体的力量，适用于友谊方面的咨询",
+      "number_of_cards": 5,
+      "layout_shape": "十字形（中心+上下+左右下方）",
+      "mythological_background": "传说这一牌阵是在埃及法老图特摩斯的陵墓中发现的，所以被称为图特摩斯牌阵。塔罗牌的这种精美组合代表着友情与结合力，和团体的力量。吉普赛人在关于友谊方面的牌阵中，使用最广泛的就是这个牌阵。",
+      "positions": [
+        {
+          "position": 1,
+          "name": "主牌（塔罗精灵）",
+          "placement": "放在正中间",
+          "meaning": "代表友谊或团队关系的核心状态"
+        },
+        {
+          "position": 2,
+          "name": "第二张牌",
+          "placement": "放在主牌的正上位",
+          "meaning": "代表友谊的理想高度或精神层面"
+        },
+        {
+          "position": 3,
+          "name": "第三张牌",
+          "placement": "放在主牌的正下位",
+          "meaning": "代表友谊的基础或根基"
+        },
+        {
+          "position": 4,
+          "name": "第四张牌",
+          "placement": "放在主牌下面的正左位",
+          "meaning": "代表友谊中的给予或过去因素"
+        },
+        {
+          "position": 5,
+          "name": "第五张牌",
+          "placement": "放在主牌下面的正右位",
+          "meaning": "代表友谊中的收获或未来趋势"
+        }
+      ],
+      "interpretation_method": "大阿卡纳洗牌切牌后抽取五张，按照牌阵位置逐一解读友谊关系的各个层面。"
+    },
+    {
+      "name": "沙卡乌牌阵",
+      "purpose": "寻找确保家族幸福及和谐的秘密",
+      "number_of_cards": 4,
+      "layout_shape": "垂直直线排列（从上到下）",
+      "mythological_background": "古埃及人经常用这一牌阵寻找确保家族幸福及和谐的秘密，据说他们从未曾失望过。沙卡乌牌阵以垂直的线性排列象征着家族血脉的传承与延续。",
+      "positions": [
+        {
+          "position": 1,
+          "name": "主牌（塔罗精灵）",
+          "placement": "放在正上位",
+          "meaning": "代表家族幸福的总体指引或最高愿望"
+        },
+        {
+          "position": 2,
+          "name": "第二张牌",
+          "placement": "放在主牌的正下位",
+          "meaning": "代表家族关系中的当前状态"
+        },
+        {
+          "position": 3,
+          "name": "第三张牌",
+          "placement": "放在第二张牌的正下位",
+          "meaning": "代表家族和谐的深层因素"
+        },
+        {
+          "position": 4,
+          "name": "第四张牌",
+          "placement": "放在第三张牌的正下位",
+          "meaning": "代表家族幸福的最终根基或结果"
+        }
+      ],
+      "interpretation_method": "大阿卡纳洗牌切牌后抽取四张，从上至下垂直排列，按顺序解读家族和谐的各层含义。"
+    },
+    {
+      "name": "基沙金字塔牌阵",
+      "purpose": "用于解释学习方面的启示",
+      "number_of_cards": 3,
+      "layout_shape": "金字塔形/三角形（下一下二，与圣三角阵相反）",
+      "mythological_background": "传说15世纪的画家吉兰达约在佛罗伦萨用这个牌阵询问友人，以获得明确提示。但不知为何被称为基沙金字塔阵。金字塔形的排列象征着知识的层层积累与升华，如同金字塔从基座到顶端的渐进过程。",
+      "positions": [
+        {
+          "position": 1,
+          "name": "主牌（塔罗精灵）",
+          "placement": "放在正下位（金字塔底座）",
+          "meaning": "代表学习的基础或当前知识水平"
+        },
+        {
+          "position": 2,
+          "name": "第二张牌",
+          "placement": "放在主牌的上方正左位",
+          "meaning": "代表学习过程中的左脑/理性因素"
+        },
+        {
+          "position": 3,
+          "name": "第三张牌",
+          "placement": "放在主牌的上方正右位",
+          "meaning": "代表学习过程中的右脑/直觉因素或最终成就"
+        }
+      ],
+      "interpretation_method": "大阿卡纳洗牌切牌后抽取三张，主牌在底部，另外两张在上方两侧，形成金字塔形状，解读学习的各个层面。"
+    },
+    {
+      "name": "维纳斯阵",
+      "purpose": "用来询问有关爱情和婚姻方面的疑惑",
+      "number_of_cards": 4,
+      "layout_shape": "L形/倒T形（上一+下一左一右）",
+      "mythological_background": "顾名思义，维纳斯牌阵常常用来询问有关爱情和婚姻方面的疑惑。这个牌阵可以说是在塔罗爱情占卜领域中有着非常古老的地位。维纳斯是罗马神话中的爱与美之女神，象征着爱情的神圣力量。",
+      "positions": [
+        {
+          "position": 1,
+          "name": "主牌（塔罗精灵）",
+          "placement": "放在正上位",
+          "meaning": "代表爱情的总体状态或爱神的指引"
+        },
+        {
+          "position": 2,
+          "name": "第二张牌",
+          "placement": "放在主牌的正下位",
+          "meaning": "代表爱情关系的深层基础或内心感受"
+        },
+        {
+          "position": 3,
+          "name": "第三张牌",
+          "placement": "放在第二张牌的正右位",
+          "meaning": "代表爱情中的行动或外部影响"
+        },
+        {
+          "position": 4,
+          "name": "第四张牌",
+          "placement": "放在第三张牌的正右位",
+          "meaning": "代表爱情的最终发展或结果"
+        }
+      ],
+      "interpretation_method": "大阿卡纳洗牌切牌后抽取四张，按L形排列，从上至下、从左至右解读爱情的各个层面。"
+    }
+  ]
+}

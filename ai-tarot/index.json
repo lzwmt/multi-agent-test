@@ -1,35 +1,51 @@
 {
   "project": "AI塔罗知识库",
   "sources": [
-    "其实你已经很塔罗了",
-    "78度的智慧",
-    "塔罗入门十九堂课",
-    "塔罗全书",
-    "塔罗图钥",
-    "塔罗白皮书",
-    "塔罗逆位精解",
-    "直觉式塔罗"
+    "《其实你已经很塔罗了》Paul Fenton-Smith",
+    "《78度的智慧》Rachel Pollack",
+    "《塔罗入门十九堂课》Joan Bunning",
+    "《塔罗全书》迪亚夫人",
+    "《塔罗图钥》Arthur Edward Waite",
+    "《塔罗白皮书》星宿",
+    "《塔罗逆位精解》丹尼尔",
+    "《直觉式塔罗》曼格拉"
   ],
-  "version": "2.0",
+  "version": "3.0",
   "files": {
-    "wands.json": "权杖14张",
-    "cups.json": "圣杯14张",
-    "swords.json": "宝剑14张",
-    "pentacles.json": "五角星14张",
-    "major_arcana.json": "大阿尔克纳22张",
-    "spreads.json": "8种基础牌阵",
-    "additional_spreads.json": "补充牌阵",
-    "combinations.json": "组合规则",
-    "reversed_methods.json": "逆位方法论",
-    "reading_frameworks.json": "解读框架",
-    "reading_guide.json": "解牌指南",
-    "INTEGRATION.md": "对接文档"
+    "core_cards": {
+      "wands.json": "权杖14张 (火)",
+      "cups.json": "圣杯14张 (水)",
+      "swords.json": "宝剑14张 (空气)",
+      "pentacles.json": "五角星14张 (土)",
+      "major_arcana.json": "大阿尔克纳22张"
+    },
+    "advanced": {
+      "cross_matrix.json": "22×22大牌交叉解读矩阵 (968条组合)",
+      "reversed_detail.json": "22张大牌四层逆位分析 (70KB)",
+      "waite_symbolism.json": "牌重复出现规则+大牌深层符号象征 (21KB)",
+      "celtic_pairs.json": "凯尔特十字位置配对解读+关键词拓展词",
+      "thoth_deck.json": "克劳力托特牌系结构+解读框架"
+    },
+    "reference": {
+      "spreads.json": "8种基础牌阵",
+      "spread_details.json": "9种特殊牌阵详细摆法+传说背景 (13KB)",
+      "additional_spreads.json": "补充牌阵索引",
+      "combinations.json": "17组牌义组合规则",
+      "reversed_methods.json": "逆位解读方法论 (6理论+7原则)",
+      "reading_frameworks.json": "解读框架 (三层模型+9维+心理学)",
+      "reading_guide.json": "基础解牌指南 (元素/星座/程序)"
+    },
+    "docs": {
+      "INTEGRATION.md": "对接文档"
+    }
   },
   "stats": {
     "total_cards": 78,
-    "spreads": 17,
-    "combination_rules": 17,
-    "reversed_methods": 6,
-    "reversed_principles": 7
+    "json_files": 18,
+    "total_size_kb": 650,
+    "cross_matrix_entries": "22x22=484 pairs (968 interpretations)",
+    "reversed_detail_entries": "22 cards x 4 layers",
+    "spreads_total": 17,
+    "combination_rules": 17
   }
 }

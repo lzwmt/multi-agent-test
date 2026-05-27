@@ -61,6 +61,13 @@ class SpreadInfo(BaseModel):
     name_en: str
     description: str
     card_count: int
+    use: str = ""
+    steps: list[str] = []
+    tips: list[str] = []
+    note: str = ""
+    answer_logic: str = ""
+    layout: str = ""
+    position_details: list[dict] = []
 
 
 class PersonaInfo(BaseModel):
@@ -85,6 +92,13 @@ async def list_spreads():
             name_en=spread["name_en"],
             description=spread.get("description", ""),
             card_count=spread["card_count"],
+            use=spread.get("use", ""),
+            steps=spread.get("steps", []),
+            tips=spread.get("tips", []),
+            note=spread.get("note", ""),
+            answer_logic=spread.get("answer_logic", ""),
+            layout=spread.get("layout", ""),
+            position_details=spread.get("position_details", []),
         ))
     return result
 

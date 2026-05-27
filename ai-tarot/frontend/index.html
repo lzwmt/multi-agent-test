@@ -46,6 +46,24 @@ body{font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei
 .spreads-title{font-size:18px;color:var(--gold);text-align:center;margin:24px 0 16px;letter-spacing:3px}
 .spread-card{background:rgba(45,27,78,.6);border:1px solid rgba(212,175,55,.3);border-radius:14px;padding:18px;margin-bottom:12px;cursor:pointer;transition:transform .2s,border-color .2s}
 .spread-card:active{transform:scale(.97)}
+.spread-top{display:flex;align-items:center;gap:12px;cursor:pointer}
+.spread-info{flex:1;min-width:0}
+.spread-name{font-size:17px;color:var(--gold);font-weight:600;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.card-count{font-size:11px;color:rgba(240,230,211,.45);font-weight:400;background:rgba(212,175,55,.1);padding:2px 8px;border-radius:10px}
+.spread-help{width:24px;height:24px;border-radius:50%;border:1px solid rgba(212,175,55,.4);color:var(--gold);font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s}
+.spread-help:active{background:rgba(212,175,55,.2)}
+.spread-detail{margin-top:12px;padding:12px;background:rgba(13,6,24,.5);border:1px solid rgba(212,175,55,.15);border-radius:8px;font-size:13px;color:rgba(240,230,211,.7);line-height:1.6}
+.spread-detail-hint{margin-top:10px;color:var(--gold);opacity:.6;font-size:12px}
+.sd-section{margin-bottom:10px}
+.sd-section:last-of-type{margin-bottom:0}
+.sd-label{font-size:13px;color:var(--gold);font-weight:600;margin-bottom:4px}
+.sd-text{font-size:13px;color:rgba(240,230,211,.7);line-height:1.6}
+.sd-pos{display:flex;gap:8px;font-size:12px;line-height:1.6;margin:3px 0}
+.sd-pos-num{color:var(--gold);opacity:.8;min-width:42px;flex-shrink:0}
+.sd-pos-meaning{color:rgba(240,230,211,.65)}
+.sd-list{padding-left:18px;margin:4px 0}
+.sd-list li{font-size:12px;color:rgba(240,230,211,.65);line-height:1.7;margin:2px 0}
+.sd-list.tips{list-style:disc}
 .spread-card.selected{border-color:var(--gold);box-shadow:0 0 15px rgba(212,175,55,.2)}
 .spread-icon{font-size:32px;margin-bottom:8px}
 .spread-name{font-size:17px;color:var(--gold);font-weight:600;margin-bottom:4px}
@@ -64,20 +82,112 @@ body{font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei
 .chip:active{transform:scale(.95)}
 .submit-wrap{margin-top:28px;text-align:center}
 
-/* Card drawing */
-.cards-area{display:flex;flex-wrap:wrap;justify-content:center;gap:16px;padding:20px 0}
-.card-container{perspective:600px;width:120px;height:180px}
-.card-inner{position:relative;width:100%;height:100%;transition:transform .8s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d}
+/* === Card drawing - VFX Edition === */
+.cards-area{display:flex;flex-wrap:wrap;justify-content:center;gap:20px;padding:24px 0;perspective:800px}
+
+/* Card entry: fly up with bounce */
+.card-wrap{text-align:center;animation:cardEnter .6s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes cardEnter{0%{opacity:0;transform:translateY(60px) scale(.7)}100%{opacity:1;transform:translateY(0) scale(1)}}
+
+.card-container{perspective:800px;width:120px;height:180px;position:relative}
+
+/* Glow aura behind card */
+.card-container::before{content:'';position:absolute;inset:-8px;border-radius:14px;opacity:0;transition:opacity .6s;pointer-events:none;z-index:0}
+.card-inner.flipped~.card-glow,.card-container:hover::before{opacity:1}
+
+/* Card inner flip */
+.card-inner{position:relative;width:100%;height:100%;transition:transform .9s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d;z-index:1}
 .card-inner.flipped{transform:rotateY(180deg)}
-.card-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px solid var(--gold)}
+
+/* Card faces */
+.card-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px solid var(--gold);overflow:hidden}
+
+/* === Card back === */
 .card-back{background:linear-gradient(135deg,var(--purple-dark),var(--purple-light));background-image:repeating-conic-gradient(rgba(212,175,55,.08) 0% 25%, transparent 0% 50%);background-size:20px 20px;box-shadow:0 4px 15px rgba(0,0,0,.4)}
-.card-back::after{content:"✦";font-size:36px;color:var(--gold);opacity:.6}
+.card-back::after{content:"✦";font-size:36px;color:var(--gold);opacity:.6;animation:backSpin 4s linear infinite}
+@keyframes backSpin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+
+/* Shimmer sweep on back */
+.card-back::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(45deg,transparent 30%,rgba(212,175,55,.12) 50%,transparent 70%);animation:shimmer 3s ease-in-out infinite}
+@keyframes shimmer{0%{transform:translateX(-100%) rotate(45deg)}100%{transform:translateX(100%) rotate(45deg)}}
+
+/* === Card front === */
 .card-front{background:linear-gradient(180deg,rgba(45,27,78,.9),rgba(13,6,24,.95));transform:rotateY(180deg);padding:10px}
 .card-front .card-name{font-size:14px;color:var(--gold);font-weight:600;text-align:center;line-height:1.3}
 .card-front .card-orientation{font-size:12px;margin-top:6px;display:flex;align-items:center;gap:4px}
 .card-front .card-orientation.up{color:var(--green)}
 .card-front .card-orientation.down{color:var(--red)}
-.card-position-label{font-size:11px;color:rgba(240,230,211,.5);text-align:center;margin-top:8px;max-width:120px}
+
+/* === Upright: golden glow === */
+.card-inner.flipped .card-front{box-shadow:0 0 20px rgba(212,175,55,.4),inset 0 0 15px rgba(212,175,55,.1);animation:uprightGlow 2s ease-in-out infinite alternate}
+@keyframes uprightGlow{0%{box-shadow:0 0 15px rgba(212,175,55,.3),inset 0 0 10px rgba(212,175,55,.08)}100%{box-shadow:0 0 25px rgba(212,175,55,.5),inset 0 0 20px rgba(212,175,55,.15)}}
+
+/* === Reversed: crimson pulse + shake === */
+.card-inner.flipped.reversed .card-front{box-shadow:0 0 20px rgba(231,76,60,.4),inset 0 0 15px rgba(231,76,60,.1);animation:reversedPulse 1.5s ease-in-out infinite alternate}
+.card-inner.flipped.reversed .card-front .card-name{animation:reversedShake .6s ease-in-out .9s 2}
+@keyframes reversedPulse{0%{box-shadow:0 0 15px rgba(231,76,60,.3),inset 0 0 10px rgba(231,76,60,.08)}100%{box-shadow:0 0 30px rgba(231,76,60,.5),inset 0 0 20px rgba(231,76,60,.15)}}
+@keyframes reversedShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+
+/* === Flip burst (light flash on flip) === */
+.card-inner.flipped .card-front::before{content:'';position:absolute;inset:0;background:radial-gradient(circle,rgba(212,175,55,.35) 0%,transparent 70%);animation:flipBurst .6s ease-out forwards;pointer-events:none;border-radius:10px}
+.card-inner.flipped.reversed .card-front::before{background:radial-gradient(circle,rgba(231,76,60,.3) 0%,transparent 70%)}
+@keyframes flipBurst{0%{opacity:1;transform:scale(.5)}100%{opacity:0;transform:scale(1.5)}}
+
+/* === Particles container === */
+.card-particles{position:absolute;inset:-20px;pointer-events:none;z-index:2;overflow:visible}
+.particle{position:absolute;width:4px;height:4px;border-radius:50%;animation:particleFly .8s ease-out forwards}
+@keyframes particleFly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0)}}
+
+/* Position label */
+.card-position-label{font-size:11px;color:rgba(240,230,211,.5);text-align:center;margin-top:8px;max-width:120px;animation:fadeInUp .5s ease-out .3s both}
+@keyframes fadeInUp{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}
+
+/* === Card Pile (Manual Draw) === */
+.draw-page{display:flex;flex-direction:column;align-items:center;padding-top:12px}
+.draw-hint{text-align:center;margin-bottom:16px}
+.draw-hint-title{font-size:16px;color:var(--gold);letter-spacing:2px;margin-bottom:6px}
+.draw-hint-sub{font-size:13px;color:rgba(240,230,211,.5)}
+.draw-counter{font-size:14px;color:var(--gold);margin-bottom:16px;background:rgba(45,27,78,.6);padding:6px 20px;border-radius:20px;border:1px solid rgba(212,175,55,.3)}
+.draw-counter b{color:#fff;font-size:18px}
+
+/* Pile grid */
+.card-pile{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;padding:0 12px;max-width:400px}
+
+/* Individual pile card */
+.pile-card{width:72px;height:108px;border-radius:8px;cursor:pointer;position:relative;transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s;animation:pileEnter .4s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes pileEnter{0%{opacity:0;transform:scale(.5) rotateY(90deg)}100%{opacity:1;transform:scale(1) rotateY(0)}}
+.pile-card:active{transform:scale(.92)}
+
+/* Card back in pile */
+.pile-card-inner{width:100%;height:100%;border-radius:8px;border:2px solid rgba(212,175,55,.3);background:linear-gradient(135deg,var(--purple-dark),var(--purple-light));background-image:repeating-conic-gradient(rgba(212,175,55,.06) 0% 25%, transparent 0% 50%);background-size:14px 14px;display:flex;align-items:center;justify-content:center;transition:border-color .3s,box-shadow .3s;overflow:hidden}
+.pile-card-inner::after{content:"✦";font-size:20px;color:var(--gold);opacity:.5;transition:opacity .3s}
+
+/* Shimmer on pile cards */
+.pile-card-inner::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(45deg,transparent 30%,rgba(212,175,55,.08) 50%,transparent 70%);animation:shimmer 4s ease-in-out infinite;animation-delay:var(--sd,0s)}
+
+/* Selected state */
+.pile-card.selected{transform:translateY(-8px) scale(1.05);pointer-events:none}
+.pile-card.selected .pile-card-inner{border-color:var(--gold);box-shadow:0 0 20px rgba(212,175,55,.5),0 8px 25px rgba(0,0,0,.4)}
+.pile-card.selected .pile-card-inner::after{opacity:1;animation:pulseStar .6s ease-in-out 2}
+@keyframes pulseStar{0%,100%{transform:scale(1)}50%{transform:scale(1.4)}}
+
+/* Flying to position */
+.pile-card.flying{animation:flyToPosition .6s cubic-bezier(.4,0,.2,1) forwards;z-index:10}
+@keyframes flyToPosition{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.3) translateY(-100px)}}
+
+/* Confirm button */
+.draw-confirm{margin-top:24px;text-align:center}
+.draw-confirm-hint{font-size:12px;color:rgba(240,230,211,.4);margin-top:8px}
+
+/* Ready cards display (after selection, before API call) */
+.ready-cards{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;padding:20px 0}
+.ready-card{width:80px;height:120px;border-radius:10px;border:2px solid var(--gold);background:linear-gradient(135deg,var(--purple-dark),var(--purple-light));display:flex;align-items:center;justify-content:center;animation:readyBounce .5s cubic-bezier(.34,1.56,.64,1) both;box-shadow:0 0 15px rgba(212,175,55,.3)}
+@keyframes readyBounce{0%{opacity:0;transform:scale(0) rotateY(180deg)}100%{opacity:1;transform:scale(1) rotateY(0)}}
+.ready-card::after{content:"✦";font-size:24px;color:var(--gold);opacity:.7}
+
+/* Loading mystic effect */
+.spinner{width:48px;height:48px;border:3px solid rgba(212,175,55,.2);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}
+.spinner::after{content:'';position:absolute;inset:6px;border:2px solid rgba(212,175,55,.1);border-bottom-color:rgba(212,175,55,.4);border-radius:50%;animation:spin .6s linear infinite reverse}
 
 /* Reading */
 .reading-wrap{padding-top:16px}
@@ -102,8 +212,7 @@ body{font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei
 
 /* Loading spinner */
 .spinner-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 0}
-.spinner{width:48px;height:48px;border:3px solid rgba(212,175,55,.2);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
+.spinner-text{margin-top:16px;font-size:14px;color:rgba(240,230,211,.5);letter-spacing:2px}
 .spinner-text{margin-top:16px;font-size:14px;color:rgba(240,230,211,.5);letter-spacing:2px}
 
 /* Disclaimer */
@@ -140,10 +249,49 @@ body{font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei
         <span class="right"></span>
       </div>
       <div class="spreads-title">— 选择你的牌阵 —</div>
-      <div v-for="s in spreads" :key="s.id" class="spread-card" :class="{selected:selectedSpread===s.id}" @click="selectSpread(s)">
-        <div class="spread-icon">{{spreadIcons[s.id]||'🃏'}}</div>
-        <div class="spread-name">{{s.name}}</div>
-        <div class="spread-desc">{{s.description}}</div>
+      <div v-for="s in spreads" :key="s.id" class="spread-card" :class="{selected:selectedSpread===s.id}">
+        <div class="spread-top" @click="selectSpread(s)">
+          <div class="spread-icon">{{spreadIcons[s.id]||'🃏'}}</div>
+          <div class="spread-info">
+            <div class="spread-name">{{s.name_cn}} <span class="card-count">{{s.card_count}}张牌</span></div>
+            <div class="spread-desc">{{s.description}}</div>
+          </div>
+          <span class="spread-help" @click.stop="toggleSpreadHelp(s.id)">{{spreadHelp===s.id?'✕':'?'}}</span>
+        </div>
+        <div v-if="spreadHelp===s.id" class="spread-detail">
+          <div class="sd-section" v-if="s.use">
+            <div class="sd-label">📌 适用场景</div>
+            <div class="sd-text">{{s.use}}</div>
+          </div>
+          <div class="sd-section" v-if="s.layout">
+            <div class="sd-label">📐 牌形布局</div>
+            <div class="sd-text">{{s.layout}}形</div>
+          </div>
+          <div class="sd-section" v-if="s.position_details&&s.position_details.length">
+            <div class="sd-label">🗺️ 位置含义</div>
+            <div class="sd-pos" v-for="p in s.position_details" :key="p.pos">
+              <span class="sd-pos-num">{{p.pos==='center'?'中心':'位置'+p.pos}}</span>
+              <span class="sd-pos-meaning">{{p.meaning}}</span>
+            </div>
+          </div>
+          <div class="sd-section" v-if="s.steps&&s.steps.length">
+            <div class="sd-label">📋 操作步骤</div>
+            <ol class="sd-list"><li v-for="(st,i) in s.steps" :key="i">{{st}}</li></ol>
+          </div>
+          <div class="sd-section" v-if="s.answer_logic">
+            <div class="sd-label">💡 解读逻辑</div>
+            <div class="sd-text">{{s.answer_logic}}</div>
+          </div>
+          <div class="sd-section" v-if="s.tips&&s.tips.length">
+            <div class="sd-label">⚠️ 注意事项</div>
+            <ul class="sd-list tips"><li v-for="(t,i) in s.tips" :key="i">{{t}}</li></ul>
+          </div>
+          <div class="sd-section" v-if="s.note">
+            <div class="sd-label">📝 备注</div>
+            <div class="sd-text">{{s.note}}</div>
+          </div>
+          <div class="spread-detail-hint">选择此牌阵后，系统将抽取 <b>{{s.card_count}}张</b> 牌为您解读</div>
+        </div>
       </div>
     </div>
   </transition>
@@ -174,11 +322,46 @@ body{font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei
     </div>
   </transition>
 
-  <!-- Card Drawing -->
+  <!-- Card Pile: Manual Draw -->
+  <transition name="fade">
+    <div v-if="page==='draw'" key="draw" class="page">
+      <div class="header">
+        <span class="back" @click="page='question'">‹</span>
+        <span class="title">选择命运之牌</span>
+        <span class="right"></span>
+      </div>
+      <div class="draw-page">
+        <div class="draw-hint">
+          <div class="draw-hint-title">— 集中意念 选择你的牌 —</div>
+          <div class="draw-hint-sub">点击牌面，凭直觉抽取 {{needCount}} 张牌</div>
+        </div>
+        <div class="draw-counter">
+          已选 <b>{{selectedPile.length}}</b> / {{needCount}} 张
+        </div>
+        <div class="card-pile">
+          <div v-for="(c,i) in pileCards" :key="i"
+            class="pile-card"
+            :class="{selected:c.selected,flying:c.flying}"
+            :style="{animationDelay:(i*0.04)+'s','--sd':(i*0.3)+'s'}"
+            @click="selectPileCard(i)">
+            <div class="pile-card-inner"></div>
+          </div>
+        </div>
+        <div class="draw-confirm" v-if="selectedPile.length===needCount">
+          <button class="btn-primary" @click="confirmDraw" style="font-size:16px;padding:12px 40px">
+            ✦ 揭示命运 ✦
+          </button>
+          <div class="draw-confirm-hint">点击重新选择可取消已选的牌</div>
+        </div>
+      </div>
+    </div>
+  </transition>
+
+  <!-- Card Drawing (result reveal) -->
   <transition name="fade">
     <div v-if="page==='drawing'" key="drawing" class="page">
       <div class="header">
-        <span class="back" @click="page='question'">‹</span>
+        <span class="back" @click="page='home'">‹</span>
         <span class="title">命运之牌</span>
         <span class="right"></span>
       </div>
@@ -187,9 +370,9 @@ body{font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei
         <div class="spinner-text">命运正在降临...</div>
       </div>
       <div v-else class="cards-area">
-        <div v-for="(card,i) in resultCards" :key="i" style="text-align:center">
+        <div v-for="(card,i) in resultCards" :key="i" class="card-wrap" :style="{animationDelay:(i*0.12)+'s'}">
           <div class="card-container">
-            <div class="card-inner" :class="{flipped:card.revealed}">
+            <div class="card-inner" :class="{flipped:card.revealed,reversed:card.orientation==='reversed'}">
               <div class="card-face card-back"></div>
               <div class="card-face card-front">
                 <div class="card-name">{{card.name_cn}}</div>
@@ -197,6 +380,18 @@ body{font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei
                   {{card.orientation==='upright'?'↑ 正位':'↓ 逆位'}}
                 </div>
               </div>
+            </div>
+            <div class="card-particles" v-if="card.revealed">
+              <div v-for="p in 8" :key="p" class="particle"
+                :style="{
+                  left:'50%',top:'50%',
+                  background:card.orientation==='upright'?'var(--gold)':'var(--red)',
+                  '--tx':(Math.cos(p*Math.PI/4)*40)+'px',
+                  '--ty':(Math.sin(p*Math.PI/4)*40)+'px',
+                  animationDelay:(p*0.05)+'s',
+                  width:(2+Math.random()*3)+'px',
+                  height:(2+Math.random()*3)+'px'
+                }"></div>
             </div>
           </div>
           <div class="card-position-label" v-if="card.position">{{card.position}}</div>
@@ -272,7 +467,13 @@ createApp({
     const historyLoading=ref(false);
     const toast=reactive({show:false,msg:''});
 
-    const spreadIcons={'single':'🃏','three_card':'🎴','celtic_cross':'✝️','love_cross':'💕','career_pyramid':'🔺'};
+    const spreadHelp=ref(null);
+    const spreadIcons={'single_card':'🃏','seven_card':'🎴','spiritual_direction':'🌌','five_card_lesson':'📖','statement':'📋','four_aspects':'🔮','four_elements':'🌿','karma':'☯️'};
+
+    // Card pile state
+    const pileCards=ref([]);
+    const selectedPile=ref([]);
+    const needCount=ref(0);
 
     // Stars
     const stars=ref(Array.from({length:50},(_,i)=>({
@@ -309,8 +510,41 @@ createApp({
       }
     }
 
-    async function startReading(){
+    function startReading(){
       if(!question.value.trim())return;
+      // Find the selected spread's card count
+      const sp=spreads.value.find(s=>s.id===selectedSpread.value);
+      needCount.value=sp?.card_count||3;
+      // Generate pile: more cards than needed for choice
+      const pileSize=Math.max(needCount.value+8,18);
+      pileCards.value=Array.from({length:pileSize},(_,i)=>({index:i,selected:false,flying:false}));
+      selectedPile.value=[];
+      page.value='draw';
+    }
+
+    function selectPileCard(i){
+      const card=pileCards.value[i];
+      if(!card)return;
+      if(card.selected){
+        // Deselect
+        card.selected=false;
+        selectedPile.value=selectedPile.value.filter(x=>x!==i);
+        return;
+      }
+      if(selectedPile.value.length>=needCount.value)return;
+      // Select with haptic-like feedback
+      card.selected=true;
+      selectedPile.value.push(i);
+      // Vibrate on mobile
+      if(navigator.vibrate)navigator.vibrate(30);
+    }
+
+    async function confirmDraw(){
+      // Fly animation
+      for(const i of selectedPile.value){
+        pileCards.value[i].flying=true;
+      }
+      await new Promise(r=>setTimeout(r,500));
       page.value='drawing';
       loading.value=true;
       resultCards.value=[];
@@ -323,12 +557,14 @@ createApp({
         loading.value=false;
         resultCards.value=(d.cards||[]).map(c=>({...c,revealed:false}));
         readingText.value=d.answer||d.reading||'';
-        // Reveal cards one by one
+        // Dramatic reveal: wait for entry animation, then flip one by one
+        await new Promise(r=>setTimeout(r,400));
         for(let i=0;i<resultCards.value.length;i++){
-          await new Promise(r=>setTimeout(r,i===0?300:500));
+          await new Promise(r=>setTimeout(r,i===0?500:700));
           resultCards.value[i].revealed=true;
         }
-        await new Promise(r=>setTimeout(r,600));
+        // Extra pause to enjoy the glow effects
+        await new Promise(r=>setTimeout(r,1200));
         page.value='reading';
       }catch(e){
         loading.value=false;
@@ -371,8 +607,11 @@ createApp({
     }
     function pullEnd(){if(pulling.value){pulling.value=false;goToHistory();}}
 
-    return{page,loading,spreads,selectedSpread,personas,selectedPersona,question,resultCards,readingText,histories,historyLoading,toast,stars,spreadIcons,
-      goToSpreads,selectSpread,startReading,goToHistory,resetAll,shareResult,pulling,pullText,pullStart,pullMove,pullEnd};
+    function toggleSpreadHelp(id){spreadHelp.value=spreadHelp.value===id?null:id;}
+
+    return{page,loading,spreads,selectedSpread,personas,selectedPersona,question,resultCards,readingText,histories,historyLoading,toast,stars,spreadIcons,spreadHelp,
+      pileCards,selectedPile,needCount,
+      toggleSpreadHelp,goToSpreads,selectSpread,startReading,confirmDraw,selectPileCard,goToHistory,resetAll,shareResult,pulling,pullText,pullStart,pullMove,pullEnd};
   }
 }).mount('#app');
 </script>

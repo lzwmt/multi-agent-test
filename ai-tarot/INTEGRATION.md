@@ -1,157 +1,212 @@
-# AI塔罗项目 — 知识库对接文档
+# AI塔罗项目 — 知识库对接文档 v3.0
 
 > 本文档供 AI Agent 直接执行，完成知识库与 LLM 的对接。
 > 知识库路径：`~/.openclaw/workspace/ai-tarot/`
+> 来源：8本塔罗书籍结构化提取 | 18个JSON文件 | 621KB
 
 ---
 
-## 1. 项目目标
+## 1. 文件清单
 
-构建一个 AI 塔罗占卜应用，用户选择牌阵 → 系统随机抽牌 → LLM 基于知识库生成解读。
+### 核心牌义（78张）
+| 文件 | 内容 | 大小 |
+|------|------|------|
+| `wands.json` | 权杖14张（火元素） | 11KB |
+| `cups.json` | 圣杯14张（水元素） | 12KB |
+| `swords.json` | 宝剑14张（空气元素） | 11KB |
+| `pentacles.json` | 五角星14张（土元素） | 11KB |
+| `major_arcana.json` | 大阿尔克纳22张 | 17KB |
 
-## 2. 知识库文件清单
+### 进阶知识（新增）
+| 文件 | 内容 | 大小 |
+|------|------|------|
+| `cross_matrix.json` | 22×22大牌交叉解读矩阵（968条组合） | 430KB |
+| `reversed_detail.json` | 22张大牌四层逆位分析（图示/负面/相反/经典） | 70KB |
+| `waite_symbolism.json` | 牌重复出现规则+大牌深层符号象征 | 21KB |
+| `celtic_pairs.json` | 凯尔特十字位置配对解读+关键词拓展词 | 5KB |
+| `thoth_deck.json` | 克劳力托特牌系结构+解读框架 | 5KB |
+| `spread_details.json` | 9种特殊牌阵详细摆法+传说背景 | 13KB |
 
-```
-~/.openclaw/workspace/ai-tarot/
-├── index.json              # 元数据索引
-├── wands.json              # 权杖牌组 14张 (火元素)
-├── cups.json               # 圣杯牌组 14张 (水元素)
-├── swords.json             # 宝剑牌组 14张 (空气元素)
-├── pentacles.json          # 五角星牌组 14张 (土元素)
-├── major_arcana.json       # 大阿尔克纳 22张
-├── spreads.json            # 8种基础牌阵
-├── additional_spreads.json # 补充牌阵
-├── combinations.json       # 牌义组合规则 (金钱/婚姻/旅行等)
-├── reversed_methods.json   # 逆位解读方法论
-├── reading_frameworks.json # 解读框架 (三层模型/9维画面/心理学)
-└── reading_guide.json      # 基础解牌指南 (元素/星座/程序)
-```
+### 参考框架
+| 文件 | 内容 | 大小 |
+|------|------|------|
+| `spreads.json` | 8种基础牌阵 | 4KB |
+| `additional_spreads.json` | 补充牌阵索引 | 2KB |
+| `combinations.json` | 17组牌义组合规则 | 3KB |
+| `reversed_methods.json` | 逆位解读方法论（6理论+7原则） | 3KB |
+| `reading_frameworks.json` | 解读框架（三层模型+9维+心理学） | 5KB |
+| `reading_guide.json` | 基础解牌指南（元素/星座/程序） | 3KB |
+| `index.json` | 元数据索引 | 1KB |
 
-总大小: 86.2KB, 78张牌, 每张含正位/逆位 x 大体/关系 = 4维解读。
+---
 
-## 3. 数据结构定义
+## 2. 数据结构
 
-### 3.1 牌的数据结构 (以 wands.json 为例)
+### 2.1 单张牌结构（wands/cups/swords/pentacles/major_arcana）
 
 ```json
 {
-  "suit": "权杖",
-  "element": "火",
-  "theme": "热情、行动、创造力、事业、挑战",
-  "keywords": ["行动", "热情", "挑战", "事业", "旅行", "精力"],
-  "astrological_signs": ["白羊座", "狮子座", "射手座"],
   "cards": {
     "ace": {
       "name": "权杖王牌",
       "number": 1,
       "upright": {
-        "general": "大体意义文本",
-        "relationship": "两性关系意义文本",
+        "general": "大体意义",
+        "relationship": "两性关系意义",
         "keywords": ["关键词1", "关键词2"]
       },
       "reversed": {
-        "general": "倒立大体意义文本",
-        "relationship": "倒立两性关系意义文本",
-        "keywords": ["关键词1", "关键词2"]
+        "general": "倒立意义",
+        "relationship": "倒立关系意义",
+        "keywords": ["关键词1"]
       }
     }
   }
 }
 ```
 
-### 3.2 大阿尔卡纳结构 (major_arcana.json)
+大阿尔卡纳 key 为字符串数字 "0"-"21"，另有 `english` 字段。
+
+### 2.2 交叉解读矩阵（cross_matrix.json）⭐ 核心差异化
+
+```json
+{
+  "matrix": {
+    "0": {
+      "1": {
+        "upright": "愚人+魔术师正位解读",
+        "reversed": "愚人+魔术师逆位解读",
+        "advice": "告诫"
+      },
+      "2": { ... }
+    }
+  }
+}
+```
+
+用法：当两张大阿尔卡纳同时出现时，查询 `matrix[cardA_id][cardB_id]` 获取组合解读。
+
+### 2.3 四层逆位分析（reversed_detail.json）
 
 ```json
 {
   "cards": {
     "0": {
       "name": "愚人",
-      "english": "The Fool",
-      "upright": { "general": "...", "relationship": "...", "keywords": [...] },
-      "reversed": { "general": "...", "relationship": "...", "keywords": [...] }
+      "upright_keywords": ["关键词"],
+      "visual": "图示联想法分析",
+      "negative": "负面意义法分析",
+      "opposite": "相反意义法分析",
+      "classical": "其他经典牌义"
     }
   }
 }
 ```
 
-key 是字符串数字 "0"-"21"。
-
-### 3.3 牌阵结构 (spreads.json)
+### 2.4 牌重复规则（waite_symbolism.json）
 
 ```json
 {
-  "seven_card": {
-    "name": "七张牌牌形",
-    "cards": 7,
-    "use": "大体上的分析，或回答特定问题",
-    "positions": {
-      "1": "过去 (可追溯18个月前)",
-      "2": "目前状况 (前后4星期)",
-      "3": "最近结果 (约3个月)",
-      "4": "当事人/问题的答案",
-      "5": "环绕的能量/围绕问题的能量",
-      "6": "希望及恐惧",
-      "7": "结果 (24个月内)"
+  "card_recurrence_rules": {
+    "kings": {
+      "4_kings": "四张国王牌含义",
+      "3_kings": "三张国王牌含义",
+      "2_kings": "两张国王牌含义"
     }
-  }
-}
-```
-
-### 3.4 组合规则结构 (combinations.json)
-
-```json
-{
-  "marriage": {
-    "name": "结婚",
-    "cards": ["圣杯二", "圣杯十", "圣杯三", "正义", "权杖六"]
   },
-  "money_earned": {
-    "name": "赚来的钱",
-    "cards": ["五角星六", "五角星八", "五角星九"]
+  "major_arcana_symbolism": {
+    "0": {
+      "name": "愚人",
+      "symbols": ["白玫瑰", "悬崖", "小狗", "行囊"],
+      "deep_meaning": "深层象征解读"
+    }
   }
 }
 ```
+
+### 2.5 凯尔特十字配对（celtic_pairs.json）
+
+```json
+{
+  "position_pairings": {
+    "1_2": { "positions": [1, 2], "meaning": "核心组含义" },
+    "3_5": { "positions": [3, 5], "meaning": "意识组含义" }
+  },
+  "keywords_expansion_examples": {
+    "圣杯七": { "keywords": ["充满期待"], "expansion": ["自我蒙蔽"] }
+  }
+}
+```
+
+### 2.6 牌阵详情（spread_details.json）
+
+```json
+{
+  "spreads": {
+    "海伦阵": {
+      "cards": 3,
+      "purpose": "爱情咨询",
+      "layout": "纵向排列",
+      "positions": { "1": "位置含义", "2": "...", "3": "..." },
+      "background": "传说背景"
+    }
+  }
+}
+```
+
+### 2.7 托特牌系（thoth_deck.json）
+
+```json
+{
+  "deck_structure": {
+    "suits": { "wands": "...", "swords": "...", "cups": "...", "disks": "..." },
+    "court": { "knight": "...", "queen": "...", "prince": "...", "princess": "..." }
+  }
+}
+```
+
+注意：托特牌义因源PDF文本不完整，仅含牌系结构和解读框架，不含78张完整牌义。
 
 ---
 
-## 4. 需要实现的模块
+## 3. 实现模块
 
-### 模块 A: 抽牌引擎
-
-功能: 从78张牌中随机抽取 N 张不重复的牌, 随机决定正位/逆位。
+### 模块 A：加载全部牌
 
 ```python
 import json
-import random
 from pathlib import Path
 
 KB_DIR = Path("~/.openclaw/workspace/ai-tarot").expanduser()
 
+def load_json(name):
+    with open(KB_DIR / name) as f:
+        return json.load(f)
+
 def load_all_cards():
-    """Load all 78 cards into a flat dict {card_name: card_data}"""
+    """Load all 78 cards as flat dict {name: card_data}"""
     all_cards = {}
-
-    # Minor Arcana
     for suit_file in ["wands", "cups", "swords", "pentacles"]:
-        with open(KB_DIR / f"{suit_file}.json") as f:
-            data = json.load(f)
-            for key, card in data["cards"].items():
-                card["suit"] = data["suit"]
-                card["element"] = data["element"]
-                all_cards[card["name"]] = card
-
-    # Major Arcana
-    with open(KB_DIR / "major_arcana.json") as f:
-        data = json.load(f)
+        data = load_json(f"{suit_file}.json")
         for key, card in data["cards"].items():
-            card["suit"] = "大阿尔克纳"
-            card["element"] = None
+            card["suit"] = data["suit"]
+            card["element"] = data["element"]
             all_cards[card["name"]] = card
-
+    data = load_json("major_arcana.json")
+    for key, card in data["cards"].items():
+        card["suit"] = "大阿尔克纳"
+        card["element"] = None
+        all_cards[card["name"]] = card
     return all_cards
+```
+
+### 模块 B：抽牌引擎
+
+```python
+import random
 
 def draw_cards(n, all_cards):
-    """Draw n unique cards, each randomly upright or reversed."""
+    """Draw n unique cards with random orientation."""
     names = random.sample(list(all_cards.keys()), n)
     result = []
     for name in names:
@@ -161,437 +216,272 @@ def draw_cards(n, all_cards):
     return result
 ```
 
-### 模块 B: 知识检索
-
-功能: 根据抽到的牌, 从知识库中检索相关知识片段, 组装成 LLM 的 context。
+### 模块 C：知识检索（增强版）
 
 ```python
-def load_combinations():
-    with open(KB_DIR / "combinations.json") as f:
-        return json.load(f)
-
-def load_spread(spread_name):
-    """Load a specific spread by name."""
-    with open(KB_DIR / "spreads.json") as f:
-        spreads = json.load(f)
-    if spread_name in spreads:
-        return spreads[spread_name]
-    with open(KB_DIR / "additional_spreads.json") as f:
-        extra = json.load(f)
-    return extra.get("spreads", {}).get(spread_name, {})
-
-def load_reversed_methods():
-    with open(KB_DIR / "reversed_methods.json") as f:
-        return json.load(f)
-
-def load_reading_guide():
-    with open(KB_DIR / "reading_guide.json") as f:
-        return json.load(f)
-
-def check_combinations(drawn_card_names, combinations):
-    """Check if drawn cards match any combination rules."""
-    matched = []
-    for key, combo in combinations.items():
-        combo_cards = set(combo.get("cards", []))
-        drawn_set = set(drawn_card_names)
-        if combo_cards & drawn_set:
-            matched.append({
-                "rule": combo["name"],
-                "matched_cards": list(combo_cards & drawn_set)
-            })
-    return matched
-
 def build_context(drawn_cards, spread, question=""):
-    """Assemble knowledge context for the LLM."""
-    combinations = load_combinations()
-    reversed_methods = load_reversed_methods()
-    guide = load_reading_guide()
-
+    """Build enhanced knowledge context for LLM."""
     parts = []
 
     # 1. Card meanings
     parts.append("## 牌义参考")
     for i, card in enumerate(drawn_cards):
-        pos_name = spread.get("positions", {}).get(str(i + 1), f"位置{i+1}")
-        orientation = card["orientation"]
-        meaning = card[orientation]
-        orient_label = "正位" if orientation == "upright" else "逆位"
-        parts.append(f"""
-### {pos_name}: {card['name']} ({orient_label})
-- 元素: {card.get('element', '无')}
-- 大体意义: {meaning['general']}
-- 关系意义: {meaning['relationship']}
-- 关键词: {', '.join(meaning['keywords'])}
-""")
+        pos = spread.get("positions", {}).get(str(i+1), f"位置{i+1}")
+        orient = card["orientation"]
+        meaning = card[orient]
+        orient_label = "正位" if orient == "upright" else "逆位"
+        parts.append(f"### {pos}: {card['name']} ({orient_label})")
+        parts.append(f"- 大体: {meaning['general']}")
+        parts.append(f"- 关系: {meaning['relationship']}")
+        parts.append(f"- 关键词: {', '.join(meaning['keywords'])}")
 
-    # 2. Combination rules
+    # 2. Cross matrix (if 2+ Major Arcana)
+    major_drawn = [c for c in drawn_cards if c.get("suit") == "大阿尔克纳"]
+    if len(major_drawn) >= 2:
+        matrix = load_json("cross_matrix.json")["matrix"]
+        parts.append("## 大牌交叉解读")
+        for i in range(len(major_drawn)):
+            for j in range(i+1, len(major_drawn)):
+                id_a = str(major_drawn[i].get("number", ""))
+                id_b = str(major_drawn[j].get("number", ""))
+                entry = matrix.get(id_a, {}).get(id_b, {})
+                if entry:
+                    parts.append(f"- {major_drawn[i]['name']}+{major_drawn[j]['name']}: {entry.get('upright', '')}")
+
+    # 3. Reversed detail (for Major Arcana reversed)
+    reversed_major = [c for c in major_drawn if c["orientation"] == "reversed"]
+    if reversed_major:
+        detail = load_json("reversed_detail.json")
+        parts.append("## 逆位深度分析")
+        for c in reversed_major:
+            card_detail = detail.get("cards", {}).get(str(c["number"]), {})
+            if card_detail:
+                parts.append(f"### {c['name']}逆位")
+                parts.append(f"- 图示联想: {card_detail.get('visual', '')}")
+                parts.append(f"- 负面意义: {card_detail.get('negative', '')}")
+
+    # 4. Combination rules
+    combos = load_json("combinations.json")
     card_names = [c["name"] for c in drawn_cards]
-    matched_combos = check_combinations(card_names, combinations)
-    if matched_combos:
-        parts.append("## 命中的组合规则")
-        for combo in matched_combos:
-            parts.append(f"- {combo['rule']}: 命中牌 [{', '.join(combo['matched_cards'])}]")
+    matched = []
+    for key, combo in combos.items():
+        if isinstance(combo, dict) and "cards" in combo:
+            if set(combo["cards"]) & set(card_names):
+                matched.append(combo["name"])
+    if matched:
+        parts.append("## 命中组合规则")
+        for m in matched:
+            parts.append(f"- {m}")
 
-    # 3. Reversed rules (if any reversed cards)
+    # 5. Reversed principles
     reversed_cards = [c for c in drawn_cards if c["orientation"] == "reversed"]
     if reversed_cards:
+        methods = load_json("reversed_methods.json")
         parts.append("## 逆位解读原则")
-        principles = reversed_methods.get("seven_derivation_principles", {})
-        for key, desc in principles.items():
-            if key != "title":
-                parts.append(f"- {desc}")
-        specials = reversed_methods.get("special_findings", {})
-        if specials:
-            parts.append("### 特殊规则")
-            for k, v in specials.items():
-                parts.append(f"- {v}")
+        for k, v in methods.get("seven_derivation_principles", {}).items():
+            parts.append(f"- {v}")
 
     return "\n".join(parts)
 ```
 
-### 模块 C: Prompt 组装
-
-功能: 将上下文、牌阵、用户问题组装成最终发给 LLM 的 prompt。
+### 模块 D：Prompt 组装
 
 ```python
 SYSTEM_PROMPT = """你是一位温暖、有洞察力的塔罗分析师。
 
 ## 解读风格
-- 用温暖自然的语言, 不要机械地复述牌义
+- 用温暖自然的语言，不要机械地复述牌义
 - 结合牌面故事和位置含义做综合解读
-- 先解读每张牌, 再做整体串联
+- 先解读每张牌，再做整体串联
 - 最后给出具体、可操作的建议
-- 如果有逆位牌, 不要简单说"不好", 用"需要注意"或"需要调整"的语气
+- 如果有逆位牌，不要简单说"不好"，用"需要注意"或"需要调整"的语气
 
 ## 解读结构
 1. 【整体印象】用1-2句话概括牌面传递的核心信息
 2. 【逐张解读】结合位置含义解读每张牌
 3. 【牌面串联】把牌连成一个完整的故事
-4. 【组合提示】如果命中组合规则, 特别说明
+4. 【组合提示】如果命中组合规则或大牌交叉矩阵，特别说明
 5. 【建议】给出2-3条具体建议
-6. 【互动】问用户一个引导性问题, 促进对话
+6. 【互动】问用户一个引导性问题
 
 ## 重要提醒
-- 不要做出绝对化的预测 ("一定会"、"肯定不会")
-- 强调塔罗是自我探索的工具, 不是命运判决
+- 不要做出绝对化的预测
+- 强调塔罗是自我探索的工具，不是命运判决
 - 用"目前的能量显示"、"牌面暗示"等柔性表达
 """
 
 def build_prompt(drawn_cards, spread, question="", topic="general"):
-    """Build the final message list for the LLM."""
-
-    # Card display
     card_lines = []
     for i, card in enumerate(drawn_cards):
-        pos = spread.get("positions", {}).get(str(i + 1), f"位置{i+1}")
+        pos = spread.get("positions", {}).get(str(i+1), f"位置{i+1}")
         orient = "正位" if card["orientation"] == "upright" else "逆位"
         card_lines.append(f"位置{i+1} ({pos}): {card['name']} [{orient}]")
 
-    card_display = "\n".join(card_lines)
+    topic_hint = {"love": "感情问题", "career": "事业问题", "health": "健康问题"}.get(topic, "")
+    if topic_hint:
+        topic_hint = f"\n用户关注的是{topic_hint}，请重点解读相关方面的意义。"
 
-    # Topic hint
-    topic_hint = ""
-    if topic == "love":
-        topic_hint = "\n用户关注的是感情问题, 请重点解读两性关系方面的意义。"
-    elif topic == "career":
-        topic_hint = "\n用户关注的是事业问题, 请重点解读事业和金钱方面的意义。"
-    elif topic == "health":
-        topic_hint = "\n用户关注的是健康问题, 请结合牌义给出健康方面的建议。"
-
-    # Knowledge context
     context = build_context(drawn_cards, spread, question)
 
-    user_message = f"""牌阵: {spread['name']} ({spread.get('use', '')})
-
-用户问题: {question if question else '请做一次整体分析'}
+    user_msg = f"""牌阵: {spread['name']}
+用户问题: {question or '请做一次整体分析'}
 {topic_hint}
 
 抽到的牌:
-{card_display}
+{chr(10).join(card_lines)}
 
 ---
-以下是知识库中的参考资料, 请在解读时参考但不要直接复制:
-
+知识库参考资料:
 {context}"""
 
     return [
         {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": user_message}
+        {"role": "user", "content": user_msg}
     ]
 ```
 
-### 模块 D: 主流程串联
+### 模块 E：主流程
 
 ```python
 async def do_reading(spread_name="seven_card", question="", topic="general"):
-    """Complete reading flow."""
-
-    # 1. Load cards
     all_cards = load_all_cards()
-
-    # 2. Load spread
-    spread = load_spread(spread_name)
+    spread = load_json("spreads.json").get(spread_name)
     if not spread:
-        return f"未找到牌阵: {spread_name}"
+        extra = load_json("additional_spreads.json")
+        spread = extra.get("spreads", {}).get(spread_name)
+    if not spread:
+        return {"error": f"未找到牌阵: {spread_name}"}
 
-    # 3. Draw cards
-    n = spread["cards"]
-    drawn = draw_cards(n, all_cards)
-
-    # 4. Build prompt
+    drawn = draw_cards(spread["cards"], all_cards)
     messages = build_prompt(drawn, spread, question, topic)
 
-    # 5. Call LLM (choose one method below)
+    # Call your LLM here
+    interpretation = await call_llm(messages)
 
-    # Method A: OpenAI-compatible API
-    import httpx
-    async with httpx.AsyncClient() as client:
-        resp = await client.post(
-            "https://your-api-endpoint/v1/chat/completions",
-            headers={"Authorization": "Bearer YOUR_KEY"},
-            json={
-                "model": "gpt-4o",
-                "messages": messages,
-                "temperature": 0.8,
-                "max_tokens": 2000
-            },
-            timeout=60
-        )
-        result = resp.json()
-        return result["choices"][0]["message"]["content"]
-
-    # Method B: openai library
-    # from openai import AsyncOpenAI
-    # client = AsyncOpenAI(api_key="...", base_url="...")
-    # resp = await client.chat.completions.create(
-    #     model="gpt-4o", messages=messages, temperature=0.8
-    # )
-    # return resp.choices[0].message.content
+    return {
+        "cards": [{"name": c["name"], "orientation": c["orientation"],
+                   "position": spread.get("positions", {}).get(str(i+1), "")}
+                  for i, c in enumerate(drawn)],
+        "interpretation": interpretation,
+        "spread": spread["name"]
+    }
 ```
 
 ---
 
-## 5. API 接口设计 (FastAPI)
+## 4. API 接口（FastAPI）
 
 ```python
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-app = FastAPI(title="AI Tarot API")
+app = FastAPI(title="AI Tarot API v3")
 
 class ReadingRequest(BaseModel):
-    spread: str = "seven_card"       # Spread name
-    question: str = ""                # User question
-    topic: str = "general"            # love/career/health/general
-
-class ReadingResponse(BaseModel):
-    cards: list[dict]                 # Drawn cards with orientation
-    interpretation: str               # LLM generated reading
-    spread_name: str                  # Spread used
+    spread: str = "seven_card"
+    question: str = ""
+    topic: str = "general"  # love/career/health/general
 
 @app.get("/api/spreads")
 async def list_spreads():
-    """Get all available spreads."""
-    with open(KB_DIR / "spreads.json") as f:
-        basic = json.load(f)
-    with open(KB_DIR / "additional_spreads.json") as f:
-        extra = json.load(f)
+    basic = load_json("spreads.json")
+    extra = load_json("additional_spreads.json")
+    detail = load_json("spread_details.json")
     result = {}
     for k, v in basic.items():
         result[k] = {"name": v["name"], "cards": v["cards"], "use": v.get("use", "")}
     for k, v in extra.get("spreads", {}).items():
         result[k] = {"name": v.get("name", k), "cards": v.get("cards", 0)}
+    for k, v in detail.get("spreads", {}).items():
+        result[k] = {"name": k, "cards": v.get("cards", 0), "purpose": v.get("purpose", "")}
     return result
-
-@app.post("/api/reading", response_model=ReadingResponse)
-async def create_reading(req: ReadingRequest):
-    """Execute a reading."""
-    all_cards = load_all_cards()
-    spread = load_spread(req.spread)
-    if not spread:
-        return {"error": f"未找到牌阵: {req.spread}"}
-
-    drawn = draw_cards(spread["cards"], all_cards)
-    messages = build_prompt(drawn, spread, req.question, req.topic)
-
-    interpretation = await call_llm(messages)
-
-    return {
-        "cards": [
-            {"name": c["name"], "orientation": c["orientation"],
-             "position": spread.get("positions", {}).get(str(i+1), "")}
-            for i, c in enumerate(drawn)
-        ],
-        "interpretation": interpretation,
-        "spread_name": spread["name"]
-    }
 
 @app.get("/api/cards")
 async def list_cards():
-    """Get all 78 cards."""
-    all_cards = load_all_cards()
-    return [
-        {"name": name, "suit": card.get("suit", ""), "element": card.get("element", "")}
-        for name, card in all_cards.items()
-    ]
+    return [{"name": n, "suit": c.get("suit",""), "element": c.get("element","")}
+            for n, c in load_all_cards().items()]
+
+@app.get("/api/cross/{card_a}/{card_b}")
+async def get_cross_reading(card_a: str, card_b: str):
+    """查询两张大牌的交叉解读"""
+    matrix = load_json("cross_matrix.json")["matrix"]
+    entry = matrix.get(card_a, {}).get(card_b, {})
+    if not entry:
+        entry = matrix.get(card_b, {}).get(card_a, {})
+    return entry or {"error": "未找到交叉解读"}
+
+@app.get("/api/reversed-detail/{card_id}")
+async def get_reversed_detail(card_id: str):
+    """查询大牌的四层逆位分析"""
+    detail = load_json("reversed_detail.json")
+    return detail.get("cards", {}).get(card_id, {"error": "未找到"})
+
+@app.get("/api/symbolism/{card_id}")
+async def get_symbolism(card_id: str):
+    """查询大牌的深层符号象征"""
+    sym = load_json("waite_symbolism.json")
+    return sym.get("major_arcana_symbolism", {}).get(card_id, {"error": "未找到"})
+
+@app.post("/api/reading")
+async def create_reading(req: ReadingRequest):
+    result = await do_reading(req.spread, req.question, req.topic)
+    return result
 ```
 
 ---
 
-## 6. RAG 向量检索方案 (进阶, 可选)
+## 5. 可用牌阵
 
-如果想让解读更精准, 可以用向量检索替代全量注入。
-
-```python
-# pip install chromadb openai
-
-import chromadb
-from openai import OpenAI
-
-client = chromadb.PersistentClient(path="./tarot_vectordb")
-openai_client = OpenAI()
-
-def embed(text):
-    resp = openai_client.embeddings.create(
-        model="text-embedding-3-small", input=text
-    )
-    return resp.data[0].embedding
-
-def build_vectordb():
-    """One-time vector DB construction."""
-    collection = client.get_or_create_collection("tarot")
-
-    all_cards = load_all_cards()
-    for name, card in all_cards.items():
-        for orient in ["upright", "reversed"]:
-            meaning = card[orient]
-            orient_label = "正位" if orient == "upright" else "逆位"
-            text = f"{name} ({orient_label})\n"
-            text += f"大体: {meaning['general']}\n"
-            text += f"关系: {meaning['relationship']}\n"
-            text += f"关键词: {', '.join(meaning['keywords'])}"
-
-            doc_id = f"{name}_{orient}"
-            collection.add(
-                ids=[doc_id],
-                documents=[text],
-                metadatas=[{
-                    "card_name": name,
-                    "orientation": orient,
-                    "suit": card.get("suit", ""),
-                    "type": "card_meaning"
-                }],
-                embeddings=[embed(text)]
-            )
-
-    # Combination rules
-    combos = load_combinations()
-    for key, combo in combos.items():
-        text = f"组合规则: {combo['name']}\n涉及牌: {', '.join(combo['cards'])}"
-        collection.add(
-            ids=[f"combo_{key}"],
-            documents=[text],
-            metadatas=[{"type": "combination", "rule_name": combo["name"]}],
-            embeddings=[embed(text)]
-        )
-
-def search_relevant(query, n_results=5):
-    """Search for relevant knowledge snippets."""
-    collection = client.get_collection("tarot")
-    results = collection.query(
-        query_embeddings=[embed(query)],
-        n_results=n_results
-    )
-    return results["documents"][0]
-```
-
----
-
-## 7. 可用牌阵清单
-
-以下 key 可直接传给 `spread` 参数:
-
+### 基础牌阵（spreads.json）
 | key | 名称 | 牌数 | 用途 |
 |-----|------|------|------|
-| `single_card` | 单张牌 | 1 | 是/否问题, 快速洞察 |
-| `seven_card` | 七张牌牌形 | 7 | 整体分析 (推荐默认) |
+| `single_card` | 单张牌 | 1 | 是/否问题 |
+| `seven_card` | 七张牌 | 7 | 整体分析（推荐默认） |
 | `spiritual_direction` | 精神方向 | 5 | 理解精神方向 |
-| `five_card_lesson` | 课题牌形 | 5 | 了解为何陷于窘境 |
-| `statement` | 陈述性牌形 | 5 | 看控制了什么 |
+| `five_card_lesson` | 课题牌形 | 5 | 了解困境原因 |
+| `statement` | 陈述性 | 5 | 看控制了什么 |
 | `four_aspects` | 四个面向 | 4 | 身体/感情/心智/精神 |
-| `four_elements` | 四元素 | 4 | 能量受阻/流动分析 |
-| `karma` | 因果循环 | 8 | 优缺点和精神平衡 |
+| `four_elements` | 四元素 | 4 | 能量分析 |
+| `karma` | 因果循环 | 8 | 优缺点分析 |
+
+### 特殊牌阵（spread_details.json）
+| 名称 | 牌数 | 用途 |
+|------|------|------|
+| 海伦阵 | 3 | 爱情咨询 |
+| 圣三角阵 | 3 | 事业启示 |
+| 凯特尔十字阵 | 5 | 财运 |
+| 炼金术狮子牌阵 | 4 | 寻找财富 |
+| 荷罗斯兄弟牌阵 | 3 | 职业困扰 |
+| 图特摩斯牌阵 | 5 | 友谊与团队 |
+| 沙卡乌牌阵 | 4 | 家族幸福 |
+| 基沙金字塔牌阵 | 3 | 学习启示 |
+| 维纳斯阵 | 4 | 爱情婚姻 |
+| 凯尔特十字（韦特原版）| 10 | 全面深度分析 |
 
 ---
 
-## 8. 话题分类
+## 6. 快速启动清单
 
-`topic` 参数影响解读侧重点:
-
-| topic | 含义 | 推荐牌阵 |
-|-------|------|----------|
-| `general` | 整体分析 | seven_card |
-| `love` | 感情问题 | seven_card, four_aspects |
-| `career` | 事业/金钱 | four_elements, five_card_lesson |
-| `health` | 健康 | spiritual_direction |
-| `spiritual` | 灵性成长 | karma, spiritual_direction |
-
----
-
-## 9. 前端展示建议
-
-抽牌结果可这样展示:
-
-```
-+-------------------------------------+
-|         * 七张牌牌形 *              |
-|                                     |
-|  +------+  +------+  +------+      |
-|  | 过去  |  | 现在  |  | 近期  |      |
-|  | 权杖三 |  | 圣杯五 |  | 太阳  |      |
-|  | [正位] |  | [逆位] |  | [正位] |      |
-|  +------+  +------+  +------+      |
-|                                     |
-|         +------+                    |
-|         | 答案  |                    |
-|         | 命运之轮|                    |
-|         | [正位] |                    |
-|         +------+                    |
-|                                     |
-|  +------+  +------+  +------+      |
-|  | 能量  |  | 希望恐惧| | 结果  |      |
-|  | 宝剑八 |  | 女皇  |  | 星星  |      |
-|  | [逆位] |  | [正位] |  | [正位] |      |
-|  +------+  +------+  +------+      |
-|                                     |
-|  [解读内容...]                       |
-+-------------------------------------+
-```
+- [ ] `load_all_cards()` 验证返回78张牌
+- [ ] `draw_cards()` 抽牌逻辑
+- [ ] `build_context()` 知识检索（含交叉矩阵+逆位深度）
+- [ ] `build_prompt()` Prompt组装
+- [ ] 对接 LLM API
+- [ ] 实现 API 接口
+- [ ] 前端页面
+- [ ] 牌面图片资源
 
 ---
 
-## 10. 快速启动清单
+## 7. 关键提示
 
-- [ ] 读取全部 JSON 文件, 验证 `load_all_cards()` 返回 78 张牌
-- [ ] 实现 `draw_cards()` 抽牌逻辑
-- [ ] 实现 `build_context()` 知识检索
-- [ ] 实现 `build_prompt()` Prompt 组装
-- [ ] 对接 LLM API (OpenAI/国产/本地)
-- [ ] 实现 API 接口 (可选 FastAPI)
-- [ ] 前端页面 (可选)
-- [ ] 牌面图片资源 (可选)
+1. **交叉矩阵是最强差异化** — 两张大牌同时出现时一定要查 cross_matrix.json
+2. **逆位不要说"不好"** — 用 reversed_detail.json 的四层分析，给出建设性解读
+3. **牌重复规则** — 同数字/同花色出现2/3/4张时查 waite_symbolism.json
+4. **凯尔特十字配对** — 使用最广泛的牌阵，查 celtic_pairs.json 的位置配对
+5. **温度0.7-0.9** — 太低死板太高胡说
+6. **免责声明** — 前端加上"塔罗是自我探索工具"
 
 ---
 
-## 11. 关键注意事项
-
-1. **温度参数**: 建议 0.7-0.9, 太低会死板, 太高会胡说
-2. **max_tokens**: 建议 1500-2500, 解读太短没深度, 太长用户不看
-3. **逆位处理**: 不要简单说"不好", 知识库里有7种逆位推衍原则
-4. **组合规则**: 命中时要特别强调, 这是差异化竞争力
-5. **随机性**: 同一问题多次抽牌结果不同, 要在UI上说明这是正常的
-6. **免责声明**: 前端加上"塔罗是自我探索工具, 不是命运判决"
-
----
-
-*文档版本: 2.0 | 基于 8 本塔罗书籍提取 | 78张牌 x 4维解读*
+*文档版本: 3.0 | 8本书 | 18个JSON | 621KB | 78牌 × 4维 + 968条交叉解读*

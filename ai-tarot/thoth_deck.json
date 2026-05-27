@@ -1,0 +1,116 @@
+{
+  "source": {
+    "book": "直觉式塔罗",
+    "author": "曼格拉 (Mangala)",
+    "translator": "谦达那",
+    "deck": "克劳力托特塔罗牌 (Aleister Crowley Thoth Tarot)",
+    "file": "/tmp/tarot_int.txt",
+    "note": "源文件仅包含本书的前三个部分（背景、直觉式学习的关键、牌阵），第四部分'这些牌的意义'（包含78张牌的详细牌义）在文本提取中被省略。原文第225行明确标注'克劳力*托特塔罗牌（简称托特牌）（略）'，第543行开始的第四部分仅包含牌义章节的引言说明，未包含实际牌义内容。"
+  },
+  "deck_structure": {
+    "total_cards": 78,
+    "major_arcana": {
+      "count": 22,
+      "description": "主牌是人类心灵旅程的二十二个阶段或成长过程",
+      "thoth_naming_notes": "克劳力托特牌的大阿卡纳命名与韦特牌有所不同，例如：'The Hierophant'在托特牌中称为'The Priest'（祭司），'The High Priestess'称为'The Priestess'（女祭司）"
+    },
+    "minor_arcana": {
+      "count": 56,
+      "description": "副牌是人的不同的状态",
+      "suits": [
+        {
+          "name_chinese": "权杖",
+          "element": "火",
+          "english": "Wands"
+        },
+        {
+          "name_chinese": "宝剑",
+          "element": "风",
+          "english": "Swords"
+        },
+        {
+          "name_chinese": "圣杯",
+          "element": "水",
+          "english": "Cups"
+        },
+        {
+          "name_chinese": "金币",
+          "element": "土",
+          "english": "Disks/Coins"
+        }
+      ],
+      "court_cards": {
+        "description": "每一组牌都有四张宫廷牌，代表不同的连结方式，或不同的使用方式——使用组成一个人的某一个元素",
+        "cards": [
+          {
+            "name_chinese": "骑士",
+            "english": "Knight",
+            "note": "托特牌使用骑士(Knight)而非韦特牌的国王(King)"
+          },
+          {
+            "name_chinese": "皇后",
+            "english": "Queen"
+          },
+          {
+            "name_chinese": "王子",
+            "english": "Prince",
+            "note": "托特牌使用王子(Prince)而非韦特牌的骑士(Knight)"
+          },
+          {
+            "name_chinese": "公主",
+            "english": "Princess",
+            "note": "托特牌使用公主(Princess)而非韦特牌的侍从(Page)"
+          }
+        ]
+      }
+    }
+  },
+  "card_interpretation_structure": {
+    "description": "每一张牌的解释包含以下几个部分（根据原书第四部分引言）",
+    "sections": [
+      {
+        "name": "本质",
+        "description": "它纯粹的意义。一般而言是你必须学习和记住的。如果你能够将这个本质的情感吸收到你的存在里，你已经具备了直觉读牌所需要的一切讯息。"
+      },
+      {
+        "name": "内涵",
+        "description": "进入到每一张牌的更深处，详细描述那张牌所代表的状态或人的情况，让你能够更深入、更清晰地了解它的本质。"
+      },
+      {
+        "name": "象征图象",
+        "description": "解释每一张牌的象征图象，并说明它所代表的占星学符号。在七十八张牌里面有超过一千两百种象征图象。"
+      },
+      {
+        "name": "目前生活解读的变化",
+        "description": "解释牌阵里面13个位置的牌的意义，帮助将本质的意义扩大解释，使细节和相关意义变得更清楚。"
+      }
+    ]
+  },
+  "cards_mentioned_in_text": [
+    {
+      "name": "主权",
+      "context": "在忠告位置的例子中提到，意味着新的方向"
+    },
+    {
+      "name": "力量",
+      "context": "在忠告位置的例子中提到，代表独立或完整"
+    },
+    {
+      "name": "女皇",
+      "context": "在忠告位置的例子中提到，代表慈悲和滋养"
+    },
+    {
+      "name": "国王",
+      "context": "在关系解读的例子中提到，代表责任的品质"
+    },
+    {
+      "name": "圣杯一",
+      "context": "在加牌解读的例子中提到"
+    }
+  ],
+  "missing_card_meanings": {
+    "status": "unavailable",
+    "reason": "源文件 /tmp/tarot_int.txt 仅572行，包含本书第一至三部分的完整内容，但第四部分'这些牌的意义'（包含大阿卡纳22张和小阿卡纳56张的详细牌义）在文本提取时未被包含。原书第四部分应包含所有78张牌的正位/逆位含义、本质、内涵、象征图象解读。",
+    "suggestion": "如需完整的托特塔罗牌牌义，需要获取原书第四部分的完整文本。"
+  }
+}
