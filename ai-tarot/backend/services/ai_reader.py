@@ -60,6 +60,7 @@ class AIReader:
         self._kb_symbolism: dict[str, Any] = {}
         self._kb_celtic_pairs: dict[str, Any] = {}
         self._kb_reversed_minor: dict[str, Any] = {}  # v3.2: 56小牌逆位
+        self._kb_enhanced: dict[str, Any] = {}  # v3.2: 78张牌扩展牌义
         self._load_knowledge_base()
 
     # ------------------------------------------------------------------
@@ -152,6 +153,12 @@ class AIReader:
                     kb_name = kb_name.replace(old, new)
                 if kb_name:
                     self._kb_reversed_minor[kb_name] = data
+
+        # v3.2: Enhanced meanings (78 cards detailed interpretations)
+        path = _KB_DIR / "enhanced_meanings.json"
+        if path.exists():
+            raw_enhanced = self._load_json(path).get("cards", {})
+            self._kb_enhanced = raw_enhanced
 
         # v3.0: Waite symbolism (recurrence rules + deep symbols) - index by name
         path = _KB_DIR / "waite_symbolism.json"
@@ -247,6 +254,16 @@ class AIReader:
         element = card.get("element") or (kb_card.get("element") if kb_card else "")
         if element:
             parts.append(f"- 元素: {element}")
+
+        # v3.2: Enhanced meanings from 《塔罗全书》
+        enhanced = self._kb_enhanced.get(card_name, {})
+        if enhanced:
+            if orientation == "upright":
+                if enhanced.get("general"):
+                    parts.append(f"- 详细解读: {enhanced['general'][:200]}")
+            else:
+                if enhanced.get("reversed"):
+                    parts.append(f"- 逆位详解: {enhanced['reversed'][:200]}")
 
         return "\n".join(parts)
 
