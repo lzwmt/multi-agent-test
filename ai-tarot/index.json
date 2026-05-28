@@ -32,7 +32,7 @@
       "spreads.json": "8种基础牌阵",
       "spread_details.json": "9种特殊牌阵详细摆法+传说背景 (13KB)",
       "additional_spreads.json": "补充牌阵索引",
-      "combinations.json": "17组牌义组合规则",
+      "combinations.json": "35组牌义组合规则（含占星12星座+18种生活场景+5种心理模式）",
       "reversed_methods.json": "逆位解读方法论 (6理论+7原则)",
       "reading_frameworks.json": "解读框架 (三层模型+9维+心理学)",
       "reading_guide.json": "基础解牌指南 (元素/星座/程序)"
@@ -48,7 +48,7 @@
     "cross_matrix_entries": "22x22=484 pairs (968 interpretations)",
     "reversed_detail_entries": "22 cards x 4 layers",
     "spreads_total": 17,
-    "combination_rules": 17,
+    "combination_rules": 35,
     "topic_scenarios": "78 cards × 4 topics = 312 entries"
   }
 }
