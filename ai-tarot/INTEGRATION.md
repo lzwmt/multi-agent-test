@@ -2,7 +2,7 @@
 
 > 本文档供 AI Agent 直接执行，完成知识库与 LLM 的对接。
 > 知识库路径：`~/.openclaw/workspace/ai-tarot/`
-> 来源：8本塔罗书籍结构化提取 | 18个JSON文件 | 621KB
+> 来源：8本塔罗书籍结构化提取 | 19个JSON文件 | 750KB
 
 ---
 
@@ -25,6 +25,7 @@
 | `waite_symbolism.json` | 牌重复出现规则+大牌深层符号象征 | 21KB |
 | `celtic_pairs.json` | 凯尔特十字位置配对解读+关键词拓展词 | 5KB |
 | `thoth_deck.json` | 克劳力托特牌系结构+解读框架 | 5KB |
+| `topic_scenarios.json` | 78张牌×4话题场景解读（感情/事业/财运/健康）312条 | 102KB |
 | `spread_details.json` | 9种特殊牌阵详细摆法+传说背景 | 13KB |
 
 ### 参考框架
@@ -167,6 +168,29 @@
 
 注意：托特牌义因源PDF文本不完整，仅含牌系结构和解读框架，不含78张完整牌义。
 
+### 2.8 话题场景解读（topic_scenarios.json）⭐ 用户问什么答什么
+
+```json
+{
+  "scenarios": {
+    "love": {
+      "major_0": {
+        "name": "愚人",
+        "upright": "正位感情解读",
+        "reversed": "逆位感情解读"
+      }
+    },
+    "career": { ... },
+    "wealth": { ... },
+    "health": { ... }
+  }
+}
+```
+
+用法：当用户提问涉及特定话题时，查询 `scenarios[topic][card_key]` 获取场景化解读。
+- topic: `love`/`career`/`wealth`/`health`
+- card_key: 大牌 `major_0`-`major_21`，小牌 `{suit}_{rank}`（如 `wands_ace`、`cups_two`）
+
 ---
 
 ## 3. 实现模块
@@ -280,6 +304,20 @@ def build_context(drawn_cards, spread, question=""):
         parts.append("## 逆位解读原则")
         for k, v in methods.get("seven_derivation_principles", {}).items():
             parts.append(f"- {v}")
+
+    # 6. Topic scenarios (if user specified a topic)
+    if topic and topic in ["love", "career", "wealth", "health"]:
+        topic_data = load_json("topic_scenarios.json")["scenarios"].get(topic, {})
+        if topic_data:
+            topic_labels = {"love": "感情", "career": "事业", "wealth": "财运", "health": "健康"}
+            parts.append(f"## {topic_labels[topic]}话题场景解读")
+            for i, card in enumerate(drawn_cards):
+                card_key = card.get("_key", "")  # e.g. "major_0" or "wands_ace"
+                entry = topic_data.get(card_key, {})
+                if entry:
+                    orient = card["orientation"]
+                    label = "正位" if orient == "upright" else "逆位"
+                    parts.append(f"- {card['name']}({label}): {entry.get(orient, '')}")
 
     return "\n".join(parts)
 ```
@@ -484,4 +522,4 @@ async def create_reading(req: ReadingRequest):
 
 ---
 
-*文档版本: 3.0 | 8本书 | 18个JSON | 621KB | 78牌 × 4维 + 968条交叉解读*
+*文档版本: 3.1 | 8本书 | 19个JSON | 750KB | 78牌 × 4维 + 968条交叉解读 + 312条场景解读*

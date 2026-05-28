@@ -24,7 +24,8 @@
       "reversed_detail.json": "22张大牌四层逆位分析 (70KB)",
       "waite_symbolism.json": "牌重复出现规则+大牌深层符号象征 (21KB)",
       "celtic_pairs.json": "凯尔特十字位置配对解读+关键词拓展词",
-      "thoth_deck.json": "克劳力托特牌系结构+解读框架"
+      "thoth_deck.json": "克劳力托特牌系结构+解读框架",
+      "topic_scenarios.json": "78张牌×4话题场景解读(感情/事业/财运/健康) 312条 102KB"
     },
     "reference": {
       "spreads.json": "8种基础牌阵",
@@ -41,11 +42,12 @@
   },
   "stats": {
     "total_cards": 78,
-    "json_files": 18,
-    "total_size_kb": 650,
+    "json_files": 19,
+    "total_size_kb": 750,
     "cross_matrix_entries": "22x22=484 pairs (968 interpretations)",
     "reversed_detail_entries": "22 cards x 4 layers",
     "spreads_total": 17,
-    "combination_rules": 17
+    "combination_rules": 17,
+    "topic_scenarios": "78 cards × 4 topics = 312 entries"
   }
 }
