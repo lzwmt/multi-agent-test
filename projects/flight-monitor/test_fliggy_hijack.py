@@ -1,7 +1,7 @@
 """劫持飞猪API请求"""
 import json
 import time
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 
 def hijack_fliggy(dep_code, arr_code, date_str):

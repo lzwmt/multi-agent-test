@@ -1,7 +1,7 @@
 """携程数据排查"""
 import re
 import time
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 
 def debug_ctrip(dep_code, arr_code, date_str):

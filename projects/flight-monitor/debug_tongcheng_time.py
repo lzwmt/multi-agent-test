@@ -1,5 +1,5 @@
 """调试同程的时间信息"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import re
 
 url = "https://www.ly.com/Flight/QueryFlight.aspx?from=CAN&to=TAO&date=2026-03-14"

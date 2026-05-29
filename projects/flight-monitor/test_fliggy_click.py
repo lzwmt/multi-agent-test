@@ -1,6 +1,6 @@
 """飞猪模拟点击搜索"""
 from datetime import datetime
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import re
 import time
 

@@ -1,7 +1,7 @@
 """获取携程新鲜Cookie"""
 import json
 import time
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 
 def get_fresh_cookies():

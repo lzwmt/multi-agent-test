@@ -1,7 +1,7 @@
 """劫持同程航班列表API"""
 import json
 import time
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 
 def hijack_tongcheng_flight_list(dep_code, arr_code, date_str):

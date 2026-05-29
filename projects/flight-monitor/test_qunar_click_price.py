@@ -1,6 +1,6 @@
 """去哪儿 - 点击"查价"触发价格请求"""
 from datetime import datetime
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import json
 import re
 import time

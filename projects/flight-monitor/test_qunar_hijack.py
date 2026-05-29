@@ -1,5 +1,5 @@
 """劫持去哪儿航班列表响应数据"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import json
 import time
 

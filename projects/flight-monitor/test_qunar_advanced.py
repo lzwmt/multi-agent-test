@@ -1,6 +1,6 @@
 """去哪儿高级拦截 - JSONP/WebSocket/影子请求"""
 from datetime import datetime
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import json
 import re
 import time

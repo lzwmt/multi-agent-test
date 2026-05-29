@@ -1,5 +1,5 @@
 """劫持带 Bella 签名的 touchInnerList 请求"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import json
 import time
 

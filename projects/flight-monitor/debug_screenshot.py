@@ -1,5 +1,5 @@
 """截图查看页面实际内容"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 url = "https://flights.ctrip.com/online/list/oneway-CAN-TAO?depdate=2026-03-14"
 

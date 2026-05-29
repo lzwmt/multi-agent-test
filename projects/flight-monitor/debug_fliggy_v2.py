@@ -1,5 +1,5 @@
 """调试飞猪 - 直接访问搜索页"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import re
 
 # 飞猪机票搜索URL（从浏览器复制的）

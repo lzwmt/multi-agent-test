@@ -1,5 +1,5 @@
 """抓取去哪儿结果页 HTML 内容"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import json
 import re
 import time

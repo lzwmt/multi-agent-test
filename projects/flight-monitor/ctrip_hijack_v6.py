@@ -2,7 +2,7 @@
 import json
 import time
 import requests
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 
 def test_ctrip_api():

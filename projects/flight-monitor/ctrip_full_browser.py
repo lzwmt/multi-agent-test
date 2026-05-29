@@ -1,7 +1,7 @@
 """携程完整浏览器模拟 - 自动处理验证"""
 import json
 import time
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 
 class CtripFullBrowser:

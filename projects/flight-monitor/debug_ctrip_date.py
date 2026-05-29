@@ -1,5 +1,5 @@
 """调试携程不同日期"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import re
 from datetime import datetime, timedelta
 

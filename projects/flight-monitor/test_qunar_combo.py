@@ -1,6 +1,6 @@
 """去哪儿 Cookie + 模拟点击 + 清除存储"""
 from datetime import datetime
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import re
 import time
 import random

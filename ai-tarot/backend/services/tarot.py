@@ -84,6 +84,46 @@ class TarotEngine:
                     "position_details": pos_details,
                 }
 
+        # Load special spreads from spread_details.json
+        detail_path = _ROOT_DIR / "spread_details.json"
+        if detail_path.exists():
+            with detail_path.open("r", encoding="utf-8") as fh:
+                detail_data = json.load(fh)
+            for sp in detail_data.get("spreads", []):
+                name = sp.get("name", "")
+                if not name:
+                    continue
+                key = "special_" + name.replace("（", "").replace("）", "").replace("(", "").replace(")", "")
+                card_count = sp.get("number_of_cards", sp.get("cards", 3))
+                raw_positions = sp.get("positions", [])
+                positions = []
+                pos_details = []
+                for pos in raw_positions:
+                    idx = pos.get("position", 0) - 1
+                    pos_name = pos.get("name", f"位置{pos.get('position', '?')}")
+                    pos_meaning = pos.get("meaning", "")
+                    positions.append({
+                        "index": idx,
+                        "name": pos_name,
+                        "description": pos_meaning,
+                    })
+                    pos_details.append({"pos": str(pos.get("position", "?")), "meaning": pos_meaning})
+                normalized[key] = {
+                    "id": key,
+                    "name_cn": name,
+                    "name_en": key.replace("_", " ").title(),
+                    "description": sp.get("purpose", ""),
+                    "card_count": card_count,
+                    "positions": positions,
+                    "use": sp.get("purpose", ""),
+                    "steps": [],
+                    "tips": [],
+                    "note": sp.get("mythological_background", ""),
+                    "answer_logic": sp.get("interpretation_method", ""),
+                    "layout": sp.get("layout_shape", ""),
+                    "position_details": pos_details,
+                }
+
         self._spreads = normalized
         return self._spreads
 

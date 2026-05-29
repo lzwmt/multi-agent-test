@@ -1,6 +1,6 @@
 """去哪儿 H5 移动端强攻"""
 from datetime import datetime
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import json
 import re
 import time

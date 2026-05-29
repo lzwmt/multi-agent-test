@@ -1,5 +1,5 @@
 """调试航班时间信息"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import re
 
 # 测试携程

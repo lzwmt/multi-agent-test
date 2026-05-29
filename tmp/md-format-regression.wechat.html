@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <body>
+    <div style="max-width: 860px; margin: 0 auto; padding: 32px 14px; background-color: #f7f7f5;">
+      <article style="background: #ffffff; border: 1px solid #e8e8e8; border-radius: 16px; padding: 28px 22px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;">
+        <h1 style="font-size: 30px; line-height: 1.35; color: #111827; margin: 8px 0 20px;">Markdown 格式回归测试</h1>
+        <div style="font-size: 13px; color: #6b7280; line-height: 1.7; margin: 0 0 18px;"><span style="margin-right: 12px;">作者：lzwmt</span><span>摘要：检查列表、引用、代码、表格、任务列表、分隔线、图片等渲染。</span></div>
+        <p style="color: #2f2f2f; font-size: 16px; line-height: 1.8; margin: 16px 0;">普通段落里有 <strong>粗体</strong>、<em>斜体</em>、<del>删除线</del>、<code style="background: #f1f5f9; color: #0f172a; padding: 2px 6px; border-radius: 6px; font-size: 0.92em;">inline code</code> 和 <a href="https://example.com">链接</a>。</p>
+<h2 style="font-size: 24px; line-height: 1.45; color: #1f2937; margin: 28px 0 14px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">无序列表</h2>
+<ul style="color: #2f2f2f; font-size: 16px; line-height: 1.8; padding-left: 1.4em; margin: 14px 0;">
+<li style="margin: 6px 0;">第一项</li>
+<li style="margin: 6px 0;">第二项<ul style="color: #2f2f2f; font-size: 16px; line-height: 1.8; padding-left: 1.4em; margin: 14px 0;">
+<li style="margin: 6px 0;">二级项 A</li>
+<li style="margin: 6px 0;">二级项 B</li>
+</ul>
+</li>
+<li style="margin: 6px 0;">第三项</li>
+</ul>
+<h2 style="font-size: 24px; line-height: 1.45; color: #1f2937; margin: 28px 0 14px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">有序列表</h2>
+<ol style="color: #2f2f2f; font-size: 16px; line-height: 1.8; padding-left: 1.4em; margin: 14px 0;">
+<li style="margin: 6px 0;">第一步</li>
+<li style="margin: 6px 0;">第二步<ol style="color: #2f2f2f; font-size: 16px; line-height: 1.8; padding-left: 1.4em; margin: 14px 0;">
+<li style="margin: 6px 0;">子步骤 2.1</li>
+<li style="margin: 6px 0;">子步骤 2.2</li>
+</ol>
+</li>
+<li style="margin: 6px 0;">第三步</li>
+</ol>
+<h2 style="font-size: 24px; line-height: 1.45; color: #1f2937; margin: 28px 0 14px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">混合列表</h2>
+<ol style="color: #2f2f2f; font-size: 16px; line-height: 1.8; padding-left: 1.4em; margin: 14px 0;">
+<li style="margin: 6px 0;">有序父项<ul style="color: #2f2f2f; font-size: 16px; line-height: 1.8; padding-left: 1.4em; margin: 14px 0;">
+<li style="margin: 6px 0;">无序子项 A</li>
+<li style="margin: 6px 0;">无序子项 B</li>
+</ul>
+</li>
+<li style="margin: 6px 0;">第二个父项</li>
+</ol>
+<h2 style="font-size: 24px; line-height: 1.45; color: #1f2937; margin: 28px 0 14px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">引用</h2>
+<blockquote style="margin: 18px 0; padding: 12px 16px; background: #f8fafc; border-left: 4px solid #3b82f6; color: #334155;">
+<p style="color: #2f2f2f; font-size: 16px; line-height: 1.8; margin: 16px 0;">第一层引用</p>
+<ul style="color: #2f2f2f; font-size: 16px; line-height: 1.8; padding-left: 1.4em; margin: 14px 0;">
+<li style="margin: 6px 0;">引用里的列表项</li>
+<li style="margin: 6px 0;">另一个列表项</li>
+</ul>
+<p style="color: #2f2f2f; font-size: 16px; line-height: 1.8; margin: 16px 0;"><code style="background: #f1f5f9; color: #0f172a; padding: 2px 6px; border-radius: 6px; font-size: 0.92em;">引用里的代码</code></p>
+</blockquote>
+<h2 style="font-size: 24px; line-height: 1.45; color: #1f2937; margin: 28px 0 14px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">代码块</h2>
+<pre style="background: #0f172a; color: #e2e8f0; padding: 14px 16px; border-radius: 10px; overflow-x: auto; font-size: 14px; line-height: 1.6; margin: 18px 0;"><code class="language-python">for i in range(3):
+    print(i)
+</code></pre>
+<h2 style="font-size: 24px; line-height: 1.45; color: #1f2937; margin: 28px 0 14px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">表格</h2>
+<table style="width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 15px; line-height: 1.7;">
+<thead>
+<tr>
+<th style="border: 1px solid #e5e7eb; background: #f8fafc; padding: 10px 12px; text-align: left;">列1</th>
+<th style="border: 1px solid #e5e7eb; background: #f8fafc; padding: 10px 12px; text-align: left;">列2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border: 1px solid #e5e7eb; padding: 10px 12px; text-align: left; color: #374151;">A</td>
+<td style="border: 1px solid #e5e7eb; padding: 10px 12px; text-align: left; color: #374151;">B</td>
+</tr>
+<tr>
+<td style="border: 1px solid #e5e7eb; padding: 10px 12px; text-align: left; color: #374151;">C</td>
+<td style="border: 1px solid #e5e7eb; padding: 10px 12px; text-align: left; color: #374151;">D</td>
+</tr>
+</tbody>
+</table>
+<h2 style="font-size: 24px; line-height: 1.45; color: #1f2937; margin: 28px 0 14px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">任务列表</h2>
+<ul style="color: #2f2f2f; font-size: 16px; line-height: 1.8; padding-left: 1.4em; margin: 14px 0;">
+<li style="margin: 6px 0;"><input type="checkbox" disabled="disabled" checked="checked" style="margin-right: 8px; transform: translateY(1px);" /> <span>已完成</span></li>
+<li style="margin: 6px 0;"><input type="checkbox" disabled="disabled" style="margin-right: 8px; transform: translateY(1px);" /> <span>未完成</span></li>
+</ul>
+<h2 style="font-size: 24px; line-height: 1.45; color: #1f2937; margin: 28px 0 14px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">分隔线</h2>
+<hr style="border: none; border-top: 1px solid #e5e7eb; margin: 28px 0;">
+<h2 style="font-size: 24px; line-height: 1.45; color: #1f2937; margin: 28px 0 14px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">图片</h2>
+<p style="color: #2f2f2f; font-size: 16px; line-height: 1.8; margin: 16px 0;"><img alt="示例图" src="https://example.com/demo.png" style="max-width: 100%; height: auto; border-radius: 10px; display: block; margin: 20px auto;"></p>
+<h2 style="font-size: 24px; line-height: 1.45; color: #1f2937; margin: 28px 0 14px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">脚注</h2>
+<p style="color: #2f2f2f; font-size: 16px; line-height: 1.8; margin: 16px 0;">这里有一个脚注引用<sup id="fnref:note"><a class="footnote-ref" href="#fn:note">1</a></sup>。</p>
+<h2 style="font-size: 24px; line-height: 1.45; color: #1f2937; margin: 28px 0 14px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">定义列表</h2>
+<dl>
+<dt>术语一</dt>
+<dd>定义一</dd>
+<dt>术语二</dt>
+<dd>定义二</dd>
+</dl>
+<h2 style="font-size: 24px; line-height: 1.45; color: #1f2937; margin: 28px 0 14px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">高亮</h2>
+<p style="color: #2f2f2f; font-size: 16px; line-height: 1.8; margin: 16px 0;">这是一段 ==高亮文本==。</p>
+<h2 style="font-size: 24px; line-height: 1.45; color: #1f2937; margin: 28px 0 14px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">上标下标</h2>
+<p style="color: #2f2f2f; font-size: 16px; line-height: 1.8; margin: 16px 0;">H~2~O 和 2^10^。</p>
+<h2 style="font-size: 24px; line-height: 1.45; color: #1f2937; margin: 28px 0 14px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">内联 HTML</h2>
+<div class="callout">这是内联 HTML 块。</div>
+
+<div class="footnote">
+<hr style="border: none; border-top: 1px solid #e5e7eb; margin: 28px 0;">
+<ol style="color: #2f2f2f; font-size: 16px; line-height: 1.8; padding-left: 1.4em; margin: 14px 0;">
+<li id="fn:note" style="margin: 6px 0;">
+<p style="color: #2f2f2f; font-size: 16px; line-height: 1.8; margin: 16px 0;">这是脚注内容。&#160;<a class="footnote-backref" href="#fnref:note" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+      </article>
+    </div>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 """用Playwright抓取飞猪和同程H5页面"""
 import json
 import time
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 
 def scrape_fliggy(dep_code, arr_code, date_str):

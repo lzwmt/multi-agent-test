@@ -1,5 +1,5 @@
 """调试航班时间 - 等待AJAX加载"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import re
 
 url = "https://flights.ctrip.com/online/list/oneway-CAN-TAO?depdate=2026-03-14"

@@ -1,7 +1,7 @@
 """携程数据劫持器 V3 - 点击搜索触发API"""
 import json
 import time
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 
 class CtripHijackFetcherV3:

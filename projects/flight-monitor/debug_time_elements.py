@@ -1,5 +1,5 @@
 """调试航班时间 - 从页面元素提取"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import re
 
 url = "https://flights.ctrip.com/online/list/oneway-CAN-TAO?depdate=2026-03-14"

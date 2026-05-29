@@ -1,5 +1,5 @@
 """使用 https://m.flight.qunar.com/h5/flight/ 获取航班详情"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import json
 import time
 import re

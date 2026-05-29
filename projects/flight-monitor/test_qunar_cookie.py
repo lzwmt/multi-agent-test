@@ -1,6 +1,6 @@
 """测试去哪儿 Cookie"""
 from datetime import datetime
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import re
 
 # 去哪儿 Cookie

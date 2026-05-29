@@ -1,6 +1,6 @@
 """使用 Cookie 测试携程"""
 from datetime import datetime
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import json
 import re
 

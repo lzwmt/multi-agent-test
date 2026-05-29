@@ -1,5 +1,5 @@
 """访问 jumpUrl 获取航班详情"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import json
 import time
 import urllib.parse

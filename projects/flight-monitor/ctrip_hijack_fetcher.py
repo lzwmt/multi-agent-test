@@ -1,7 +1,7 @@
 """携程数据劫持器 - 使用Playwright拦截API响应"""
 import json
 import time
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 from datetime import datetime, timedelta
 
 

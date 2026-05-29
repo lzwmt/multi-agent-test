@@ -272,6 +272,31 @@ def score_item(item: dict) -> float:
     invest_hits = sum(1 for kw in INVEST_KEYWORDS if kw.lower() in text.lower())
     score += invest_hits * 5  # 投资关键词权重提高到 5
 
+    # AI/投资交叉最优；纯大会通稿和泛科技新闻降权。
+    if ai_hits and invest_hits:
+        score += 35
+    elif invest_hits:
+        score += 18
+    elif ai_hits:
+        score += 8
+
+    business_terms = ["营收", "利润", "亏损", "赚钱", "财报", "估值", "商业模式", "成本", "毛利", "订单", "客户", "订阅", "融资"]
+    business_hits = sum(1 for kw in business_terms if kw.lower() in text.lower())
+    score += business_hits * 6
+
+    press_release_terms = ["大会", "演讲", "论坛", "分享题目", "嘉宾", "整理编辑"]
+    press_hits = sum(1 for kw in press_release_terms if kw.lower() in text.lower())
+    score -= press_hits * 8
+
+    promo_terms = ["提交报道", "寻求报道", "报名活动", "媒体合作", "投稿入口"]
+    promo_hits = sum(1 for kw in promo_terms if kw.lower() in text.lower())
+    score -= promo_hits * 18
+    if promo_hits >= 2 or "让好项目" in item["title"]:
+        score -= 40
+
+    if item["category"] == "ai" and not ai_hits and not invest_hits:
+        score -= 25
+
     # AI 原生源加分
     if item["category"] == "ai":
         score += 10

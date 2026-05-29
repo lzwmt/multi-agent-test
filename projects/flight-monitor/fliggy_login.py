@@ -1,5 +1,5 @@
 """飞猪登录 - 保存登录状态"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import os
 import time
 

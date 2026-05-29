@@ -1,7 +1,7 @@
 """携程数据劫持器 V2 - 触发API加载"""
 import json
 import time
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 
 class CtripHijackFetcherV2:

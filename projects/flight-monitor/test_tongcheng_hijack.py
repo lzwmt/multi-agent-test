@@ -2,7 +2,7 @@
 import json
 import time
 from datetime import datetime, timedelta
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 
 def hijack_tongcheng(dep_code, arr_code, date_str):

@@ -1,0 +1,325 @@
+{
+  "style_prefix": "A highly detailed tarot card illustration in Art Nouveau style with contemporary digital art elements. Dark mystical atmosphere with deep purple, midnight blue, and rich gold accents. Ornate decorative border with celestial symbols, crescent moons, and stars. Ethereal glowing effects. Vertical composition 2:3 aspect ratio. --ar 2:3 --s 750 --q 2",
+  "major_arcana": {
+    "0": {
+      "name": "The Fool / 愚人",
+      "prompt": "A young carefree figure standing at the edge of a cliff, wearing flowing colorful robes, looking up at the sky with a white rose in hand. A small white dog dances at their feet. Mountains in the distant background. Golden sunlight breaking through clouds. Carrying a bindle over the shoulder. Expression of innocent joy and adventure. Style prefix + mystical golden aura, floating feathers, cosmic stardust particles."
+    },
+    "1": {
+      "name": "The Magician / 魔术师",
+      "prompt": "A powerful figure standing before an altar with a wand raised to the sky, one hand pointing to the earth. Above their head floats the lemniscate (infinity symbol) glowing in gold. On the altar: a cup, sword, pentacle, and wand. Red and white robes with golden trim. Roses and lilies surrounding the scene. Dramatic lighting from above. Expression of confidence and mastery."
+    },
+    "2": {
+      "name": "The High Priestess / 女教皇",
+      "prompt": "A serene feminine figure seated between two pillars (one black B, one white J), wearing blue robes and a crescent moon crown. A scroll labeled TORAH in her lap. A veil of pomegranates behind her. Water flowing at her feet. Mysterious half-shadow across her face. Deep wisdom in her eyes. Moonlit atmosphere with silver and blue tones."
+    },
+    "3": {
+      "name": "The Empress / 女皇",
+      "prompt": "A beautiful woman seated on a luxurious throne in a lush garden, wearing a crown of twelve stars. Flowing green robes with pomegranate pattern. A golden shield with Venus symbol. Wheat field at her feet, waterfall nearby. Abundant nature: fruits, flowers, trees. Warm golden sunlight. Expression of nurturing love and fertility."
+    },
+    "4": {
+      "name": "The Emperor / 皇帝",
+      "prompt": "A stern powerful figure seated on a stone throne carved with ram heads, wearing red robes and armor. Holding an ankh scepter and golden orb. Barren mountains in background. Long white beard. Crown of gold. Four rams decorating the throne. Expression of authority, structure, and unwavering will. Desert landscape with fortress."
+    },
+    "5": {
+      "name": "The Hierophant / 教皇",
+      "prompt": "A religious figure seated between two grey pillars, wearing elaborate papal triple crown and red vestments. Holding a triple cross staff. Two monks kneeling before him receiving teachings. Keys crossed at his feet. Gothic cathedral interior with stained glass. Sacred geometry patterns. Expression of spiritual wisdom and tradition."
+    },
+    "6": {
+      "name": "The Lovers / 恋人",
+      "prompt": "A man and woman standing beneath a great angel Raphael with purple wings spreading above them in a garden. The angel wears purple robes and blesses them. Tree of knowledge with a serpent behind the woman, tree of flames behind the man. Naked vulnerability. Golden light surrounding them. Expression of divine love and choice."
+    },
+    "7": {
+      "name": "The Chariot / 战车",
+      "prompt": "A crowned warrior standing in a stone chariot pulled by one black and one white sphinx. Holding a wand, wearing armor decorated with crescent moons and alchemical symbols. Starry canopy above. City walls behind. Wings on the charioteer's helmet. Expression of triumph, willpower, and determination. Starry night sky background."
+    },
+    "8": {
+      "name": "Strength / 力量",
+      "prompt": "A serene woman gently closing the jaws of a lion, wearing white robes with a garland of flowers. Lemniscate (infinity symbol) floating above her head. Rolling green hills. Chain of roses and laurel. The lion's tail curled peacefully. Expression of gentle courage and inner strength. Golden afternoon light."
+    },
+    "9": {
+      "name": "The Hermit / 隐士",
+      "prompt": "An old wise figure standing on a mountain peak, holding a glowing lantern containing a six-pointed star. Grey hooded robes. Snow-capped mountains. Staff in other hand. Solitary figure against vast landscape. Expression of introspection and inner guidance. Cold blue moonlight with warm lantern glow."
+    },
+    "10": {
+      "name": "Wheel of Fortune / 命运之轮",
+      "prompt": "A great golden wheel floating in the sky with mystical symbols (TARO/ROTA), surrounded by clouds. Four winged creatures in corners: angel (Aquarius), eagle (Scorpio), lion (Leo), bull (Taurus). Sphinx atop the wheel with sword. Serpent descending on one side, Anubis ascending on the other. Cosmic backdrop with zodiac symbols."
+    },
+    "11": {
+      "name": "Justice / 正义",
+      "prompt": "A seated figure between two pillars, wearing red robes and gold crown. Holding a raised sword in right hand and balanced scales in left. Square pattern on green veil behind. Purple curtain. Expression of impartial judgment and truth. Symmetrical composition. Cool measured lighting with warm golden accents."
+    },
+    "12": {
+      "name": "The Hanged Man / 悬吊者",
+      "prompt": "A serene figure suspended upside down from a living T-shaped tree, one leg crossed behind the other forming a figure four. Golden halo around the head. Blue and red clothing. Green leaves growing from the wooden beam. Calm peaceful expression despite the uncomfortable position. Blue sky background. Symbol of sacrifice and new perspective."
+    },
+    "13": {
+      "name": "Death / 死神",
+      "prompt": "A skeleton knight in black armor riding a white horse, carrying a black flag with white mystic rose. A king fallen before the horse, a child offering flowers, a bishop praying, a maiden bowing. Two towers with setting sun between them. Transformation scene. Not scary but inevitable and powerful. Dark dramatic sky."
+    },
+    "14": {
+      "name": "Temperance / 节制",
+      "prompt": "A great winged angel in white robes standing with one foot on land and one in a pool of water, pouring liquid between two golden cups in an endless flow. A golden triangle inside a square on the chest. Path leading to mountains with a glowing crown. Irises growing nearby. Expression of balance, patience, and moderation."
+    },
+    "15": {
+      "name": "The Devil / 魔鬼",
+      "prompt": "A winged goat-headed figure with inverted pentagram on forehead, perched on a dark pedestal. A nude man and woman chained to the pedestal with loose chains (they could remove them). Bat wings. Raised right hand, lowered left hand holding torch. Dark fiery background. Expression of bondage, temptation, and shadow self."
+    },
+    "16": {
+      "name": "The Tower / 高塔",
+      "prompt": "A tall stone tower struck by lightning, its crown being blown off. Two figures falling from the tower into darkness. 22 drops of flame/golden light raining down. Crown atop the tower being dislodged. Rocky cliff. Stormy dark sky. Dramatic destructive energy. Symbol of sudden upheaval and revelation. Fiery orange and dark palette."
+    },
+    "17": {
+      "name": "The Star / 星星",
+      "prompt": "A nude woman kneeling by a pool of water, pouring water from two pitchers (one into pool, one onto land). One great eight-pointed star above with seven smaller stars. An ibis bird in a tree. Night sky. Lush green landscape. Expression of hope, healing, and serenity. Cool blue and silver tones with warm golden starlight."
+    },
+    "18": {
+      "name": "The Moon / 月亮",
+      "prompt": "A large full moon with a face in profile between two towers. A crayfish emerging from a pool of water. A dog and a wolf howling at the moon. A winding path leading from the pool to distant mountains. Droplets falling from the moon. Expression of illusion, intuition, and the subconscious. Misty blue-grey atmosphere."
+    },
+    "19": {
+      "name": "The Sun / 太阳",
+      "prompt": "A joyful nude child riding a white horse beneath a great radiant sun with a face. Four tall sunflowers growing behind a low stone wall. The child holds a red banner triumphantly. Bright golden rays. Expression of pure joy, success, and vitality. Warm vibrant yellow and orange palette. Clear blue sky."
+    },
+    "20": {
+      "name": "Judgment / 审判",
+      "prompt": "A great angel (Gabriel) blowing a trumpet in cloudy skies, figures of men, women, and children rising from coffins with arms outstretched. Mountain range in background. Banner with cross on the trumpet. Expression of awakening, absolution, and rebirth. Dramatic heavenly lighting. Purple and gold atmosphere."
+    },
+    "21": {
+      "name": "The World / 世界",
+      "prompt": "A nude dancing figure wrapped in a flowing purple scarf inside a great green laurel wreath. Four creatures in the corners (angel, eagle, lion, bull). The figure holds two wands. Expression of completion, accomplishment, and cosmic consciousness. Stars and cosmic background. Golden and purple tones. Egg-shaped wreath."
+    }
+  },
+  "wands": {
+    "ace": {
+      "name": "Ace of Wands / 权杖王牌",
+      "prompt": "A single great flowering wand emerging from a cloud, reaching toward a golden crown floating above. A landscape of mountains, river, and castle below. Green leaves sprouting from the wand. Rays of golden light emanating from the crown. Symbol of new beginnings, creative spark, and inspiration."
+    },
+    "two": {
+      "name": "Two of Wands / 权杖二",
+      "prompt": "A figure standing on castle battlements holding a small globe, another wand mounted on the wall. Ships sailing on vast ocean below. Red cloak. Looking out at the horizon with one wand in hand. Mountainous coastline. Symbol of planning, future vision, and bold decisions."
+    },
+    "three": {
+      "name": "Three of Wands / 权杖三",
+      "prompt": "A merchant standing on cliff edge watching three ships sailing away, three wands planted in the ground beside them. Red robes flowing in the wind. Vast ocean vista. Symbol of foresight, expansion, and opportunities unfolding."
+    },
+    "four": {
+      "name": "Four of Wands / 权杖四",
+      "prompt": "Four wands forming a canopy draped with flowers and garlands, two figures celebrating beneath with bouquets. A castle in the background. Festival atmosphere. Wreaths of flowers. Symbol of celebration, harmony, and homecoming."
+    },
+    "five": {
+      "name": "Five of Wands / 权杖五",
+      "prompt": "Five young men each holding a wand, engaged in a chaotic but playful struggle. Different colored clothing. Open field. Competitive energy but no real malice. Symbol of conflict, competition, and diversity of opinion."
+    },
+    "six": {
+      "name": "Six of Wands / 权杖六",
+      "prompt": "A victorious figure on horseback riding through a crowd, holding a wand crowned with laurel. Five other wands held by supporters. Triumphant procession. Laurel wreath on the wand. Symbol of victory, recognition, and public success."
+    },
+    "seven": {
+      "name": "Seven of Wands / 权杖七",
+      "prompt": "A figure standing on high ground defending against six wands attacking from below, holding one wand firmly. Defensive stance on a hill. Mountainous terrain. Symbol of perseverance, defense, and standing your ground."
+    },
+    "eight": {
+      "name": "Eight of Wands / 权杖八",
+      "prompt": "Eight wands flying swiftly through a clear sky above a green landscape with a river and castle. Speed lines showing rapid movement. No figures. Symbol of swift action, movement, and rapid progress."
+    },
+    "nine": {
+      "name": "Nine of Wands / 权杖九",
+      "prompt": "A weary but determined figure with a bandaged head, leaning on a wand, with eight other wands standing behind them like a fence. Defensive posture. Guarded stance. Symbol of resilience, persistence, and last stand."
+    },
+    "ten": {
+      "name": "Ten of Wands / 权杖十",
+      "prompt": "A figure struggling to carry ten heavy wands, bent over under the weight, walking toward a distant town. Burdened posture. Heavy load. Symbol of burden, responsibility, and hard work."
+    },
+    "page": {
+      "name": "Page of Wands / 权杖侍卫",
+      "prompt": "A young figure standing in a barren field, holding a large wand upright, looking at it with curiosity and wonder. Desert landscape. Salamander on the clothing. Symbol of enthusiasm, exploration, and new ideas."
+    },
+    "knight": {
+      "name": "Knight of Wands / 权杖骑士",
+      "prompt": "A knight in armor charging forward on a rearing horse, holding a wand aloft. Flame and salamander decorations on clothing. Desert landscape. Dynamic movement. Symbol of adventure, energy, and impulsiveness."
+    },
+    "queen": {
+      "name": "Queen of Wands / 权杖皇后",
+      "prompt": "A confident woman seated on a throne decorated with lions and sunflowers, holding a wand upright. A black cat at her feet. Sunflower in hand. Warm and commanding presence. Symbol of courage, confidence, and determination."
+    },
+    "king": {
+      "name": "King of Wands / 权杖国王",
+      "prompt": "A powerful figure seated on a throne decorated with lions and salamanders, holding a wand and wearing a crown. Red and green robes. Salamander at feet. Commanding presence. Symbol of leadership, vision, and entrepreneurship."
+    }
+  },
+  "cups": {
+    "ace": {
+      "name": "Ace of Cups / 圣杯王牌",
+      "prompt": "A single great golden cup offered by a hand emerging from a cloud, with five streams of water flowing down. A dove carrying a communion wafer descending. White lotus floating on the water. Symbol of new love, emotional fulfillment, and spiritual awakening."
+    },
+    "two": {
+      "name": "Two of Cups / 圣杯二",
+      "prompt": "A man and woman exchanging cups in a ceremony of mutual respect, a winged lion's head (caduceus) above them. House in background. Red and blue clothing. Symbol of partnership, mutual attraction, and connection."
+    },
+    "three": {
+      "name": "Three of Cups / 圣杯三",
+      "prompt": "Three women dancing in a circle, each raising a cup in celebration. Abundant fruits and flowers at their feet. Vineyard background. Festive and joyful atmosphere. Symbol of celebration, friendship, and community."
+    },
+    "four": {
+      "name": "Four of Cups / 圣杯四",
+      "prompt": "A figure sitting under a tree in contemplation, arms crossed, with three cups before them. A hand emerging from a cloud offering a fourth cup. Expression of apathy or meditation. Symbol of contemplation, dissatisfaction, and reevaluation."
+    },
+    "five": {
+      "name": "Five of Cups / 圣杯五",
+      "prompt": "A cloaked figure in black mourning over three spilled cups, ignoring two upright cups behind them. Bridge leading to a castle across a river. Expression of grief and loss. Symbol of regret, disappointment, but hope remains."
+    },
+    "six": {
+      "name": "Six of Cups / 圣杯六",
+      "prompt": "A child offering a cup with a white flower to another child in a garden. Four more cups with flowers arranged around them. Castle in background. Nostalgic and innocent atmosphere. Symbol of innocence, nostalgia, and childhood memories."
+    },
+    "seven": {
+      "name": "Seven of Cups / 圣杯七",
+      "prompt": "A silhouetted figure standing before seven cups floating in clouds, each containing a different vision: a castle, jewels, wreath, dragon, head, snake, and shrouded figure. Dreamlike and illusory. Symbol of fantasy, choices, and illusion."
+    },
+    "eight": {
+      "name": "Eight of Cups / 圣杯八",
+      "prompt": "A cloaked figure walking away from eight cups arranged in the foreground, heading toward mountains under a crescent moon. Turning their back on what was built. Night scene. Symbol of abandonment, seeking deeper meaning, and moving on."
+    },
+    "nine": {
+      "name": "Nine of Cups / 圣杯九",
+      "prompt": "A contented figure sitting on a wooden bench with arms crossed, nine cups arranged in an arc behind them. Smug satisfied expression. Comfortable setting. Symbol of wish fulfillment, satisfaction, and emotional contentment."
+    },
+    "ten": {
+      "name": "Ten of Cups / 圣杯十",
+      "prompt": "A couple standing beneath a rainbow of ten cups, arms raised in gratitude. Two children playing nearby. River, trees, and a cozy home in the background. Expression of perfect happiness. Symbol of harmony, family, and lasting happiness."
+    },
+    "page": {
+      "name": "Page of Cups / 圣杯侍卫",
+      "prompt": "A young dreamy figure holding a cup with a fish popping out, standing by the sea. Blue and green clothing with floral patterns. Shoreside setting. Contemplative expression. Symbol of creative messages, intuition, and emotional openness."
+    },
+    "knight": {
+      "name": "Knight of Cups / 圣杯骑士",
+      "prompt": "A knight in armor riding gracefully on a white horse, holding a cup as if offering it. Wings on helmet and feet. River flowing beside. Romantic and chivalrous demeanor. Symbol of romance, charm, and following the heart."
+    },
+    "queen": {
+      "name": "Queen of Cups / 圣杯皇后",
+      "prompt": "A serene beautiful woman seated on a throne at the water's edge, holding an ornate closed cup. Water at her feet. Compassionate and intuitive expression. Watery throne with shell and sea creature decorations. Symbol of emotional depth, intuition, and compassion."
+    },
+    "king": {
+      "name": "King of Cups / 圣杯国王",
+      "prompt": "A wise figure seated on a throne amidst turbulent waters, calm and composed, holding a cup and scepter. A fish jumping beside the throne. Ship in background. Balanced emotional control. Symbol of emotional maturity, wisdom, and diplomacy."
+    }
+  },
+  "swords": {
+    "ace": {
+      "name": "Ace of Swords / 宝剑王牌",
+      "prompt": "A great sword emerging from a cloud, pointing upward, crowned with a wreath of olive and palm. A golden crown at the tip. Mountains and clouds below. Rays of light. Symbol of clarity, breakthrough, and new ideas."
+    },
+    "two": {
+      "name": "Two of Swords / 宝剑二",
+      "prompt": "A blindfolded woman sitting by the sea at night, holding two swords crossed over her chest. Crescent moon above. Water and rocky shore. Peaceful but tense. Symbol of difficult decisions, stalemate, and blocked emotions."
+    },
+    "three": {
+      "name": "Three of Swords / 宝剑三",
+      "prompt": "A bright red heart floating in storm clouds, pierced by three swords. Rain falling heavily. Dark grey clouds. Dramatic emotional pain. Symbol of heartbreak, grief, and painful truth."
+    },
+    "four": {
+      "name": "Four of Swords / 宝剑四",
+      "prompt": "A knight lying in repose on a tomb, hands in prayer position, three swords on the wall above and one carved on the side. Stained glass window. Church interior. Symbol of rest, recovery, and contemplation."
+    },
+    "five": {
+      "name": "Five of Swords / 宝剑五",
+      "prompt": "A figure smugly holding three swords while two dejected figures walk away, two swords on the ground. Stormy sky. Windswept beach. Conflict aftermath. Symbol of defeat, conflict, and hollow victory."
+    },
+    "six": {
+      "name": "Six of Swords / 宝剑六",
+      "prompt": "A hooded figure ferrying a woman and child across choppy waters to a distant calm shore, six swords standing upright in the boat. Transition from rough to calm waters. Symbol of transition, moving on, and healing journey."
+    },
+    "seven": {
+      "name": "Seven of Swords / 宝剑七",
+      "prompt": "A figure sneaking away from a military camp carrying five swords, looking back at two remaining swords. Tent and flags in background. Devious expression. Symbol of deception, strategy, and cunning."
+    },
+    "eight": {
+      "name": "Eight of Swords / 宝剑八",
+      "prompt": "A blindfolded and bound woman standing in shallow water surrounded by eight swords planted in the ground. Castle on a distant hill. Restrictive situation but bindings are loose. Symbol of restriction, imprisonment, and self-limitation."
+    },
+    "nine": {
+      "name": "Nine of Swords / 宝剑九",
+      "prompt": "A figure sitting up in bed, head in hands, nine swords mounted on the wall above. Dark bedroom. Quilt with astrological symbols. Expression of anguish and nightmares. Symbol of anxiety, worry, and mental anguish."
+    },
+    "ten": {
+      "name": "Ten of Swords / 宝剑十",
+      "prompt": "A figure lying face down on the ground with ten swords in their back, dawn breaking on the horizon. Dark sky transitioning to light. Water in background. Rock bottom. Symbol of endings, betrayal, but inevitable renewal."
+    },
+    "page": {
+      "name": "Page of Swords / 宝剑侍卫",
+      "prompt": "A young figure standing alert with sword raised, looking around watchfully. Windy day with clouds and birds. Standing on green hill. Energetic and curious stance. Symbol of curiosity, vigilance, and new communication."
+    },
+    "knight": {
+      "name": "Knight of Swords / 宝剑骑士",
+      "prompt": "A knight charging at full gallop on a white horse through a storm, sword raised high. Trees bending in the wind. Fast-moving clouds. Dynamic aggressive energy. Symbol of ambition, action, and determination."
+    },
+    "queen": {
+      "name": "Queen of Swords / 宝剑皇后",
+      "prompt": "A stern woman seated on a throne decorated with butterflies and clouds, holding a sword upright pointing to the sky. Free hand extended. Clear sky. Stern but fair expression. Symbol of independence, clear perception, and directness."
+    },
+    "king": {
+      "name": "King of Swords / 宝剑国王",
+      "prompt": "A stern authoritative figure seated on a throne decorated with butterflies and moons, holding a sword upright. Blue and purple robes. Clouds behind. Stern judicial expression. Symbol of intellectual authority, truth, and fairness."
+    }
+  },
+  "pentacles": {
+    "ace": {
+      "name": "Ace of Pentacles / 五角星王牌",
+      "prompt": "A great golden pentacle/coin offered by a hand emerging from a cloud above a lush garden with an archway leading to a path. White lilies. Abundant greenery. Symbol of new opportunity, prosperity, and material abundance."
+    },
+    "two": {
+      "name": "Two of Pentacles / 五角星二",
+      "prompt": "A dancing figure juggling two large pentacles connected by an infinity loop, with ships on rough seas behind. Carefree expression despite the waves. Symbol of balance, adaptability, and managing priorities."
+    },
+    "three": {
+      "name": "Three of Pentacles / 五角星三",
+      "prompt": "A master craftsman working on a cathedral, with a monk and architect consulting plans below. Three pentacles carved in the arch. Collaborative work environment. Symbol of teamwork, skill, and craftsmanship."
+    },
+    "four": {
+      "name": "Four of Pentacles / 五角星四",
+      "prompt": "A figure sitting tightly clutching a pentacle on their head, one under each foot, and one in their arms. City behind. Tight grip. Possessive posture. Symbol of security, control, and material attachment."
+    },
+    "five": {
+      "name": "Five of Pentacles / 五角星五",
+      "prompt": "Two impoverished figures walking through snow past a church's stained glass window with five pentacles. Barefoot, ragged clothing. Cold and hungry. Church offers refuge but they pass by. Symbol of hardship, poverty, and isolation."
+    },
+    "six": {
+      "name": "Six of Pentacles / 五角星六",
+      "prompt": "A wealthy merchant holding balanced scales, giving coins to two kneeling beggars. Fine robes. Generous but controlled giving. Symbol of generosity, charity, and sharing wealth."
+    },
+    "seven": {
+      "name": "Seven of Pentacles / 五角星七",
+      "prompt": "A farmer leaning on a hoe, contemplating seven pentacles growing on a lush plant. Patient waiting for harvest. Garden setting. Symbol of patience, investment, and waiting for results."
+    },
+    "eight": {
+      "name": "Eight of Pentacles / 五角星八",
+      "prompt": "A diligent craftsman carefully carving pentacles at a workbench, seven completed pentacles hanging above, one being worked on. Focused concentration. Workshop setting. Symbol of dedication, skill development, and craftsmanship."
+    },
+    "nine": {
+      "name": "Nine of Pentacles / 五角星九",
+      "prompt": "An elegant woman in a luxurious garden, a falcon on her hand, nine pentacles on a vine archway behind her. Fine robes. Abundant garden. Self-sufficient and content. Symbol of luxury, self-sufficiency, and refinement."
+    },
+    "ten": {
+      "name": "Ten of Pentacles / 五角星十",
+      "prompt": "An old patriarch sitting with two dogs, a young couple with a child nearby, ten pentacles arranged in a tree-of-life pattern above. Castle archway. Family legacy. Symbol of wealth, family, and legacy."
+    },
+    "page": {
+      "name": "Page of Pentacles / 五角星侍卫",
+      "prompt": "A young student standing in a field, carefully studying a single pentacle held up. Mountains and trees in background. Attentive studious expression. Symbol of ambition, desire to learn, and new financial opportunity."
+    },
+    "knight": {
+      "name": "Knight of Pentacles / 五角星骑士",
+      "prompt": "A patient knight sitting on a heavy workhorse, holding a pentacle, surveying a plowed field. Slow but steady approach. Reliable and methodical. Symbol of hard work, reliability, and steady progress."
+    },
+    "queen": {
+      "name": "Queen of Pentacles / 五角星皇后",
+      "prompt": "A nurturing woman seated on a throne decorated with flowers and fruits, holding a golden pentacle in her lap. Lush garden, rabbit nearby. Earthy and warm. Symbol of abundance, nurturing, and practical wisdom."
+    },
+    "king": {
+      "name": "King of Pentacles / 五角星国王",
+      "prompt": "A prosperous figure seated on a throne decorated with bulls and grapes, holding a pentacle and scepter. Abundant vineyard. Rich robes. Successful and secure. Symbol of wealth, business success, and material mastery."
+    }
+  }
+}

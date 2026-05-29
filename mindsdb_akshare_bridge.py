@@ -234,6 +234,8 @@ def update_all_daily():
             total += count
         except Exception as e:
             print(f"更新 {symbol} 失败: {e}")
+            continue
+    print(f"\n增量更新完成，总计新增 {total} 条日线数据")
     return total
 
 def get_realtime_spot():

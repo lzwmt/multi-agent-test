@@ -1,5 +1,5 @@
 """提取去哪儿页面可见文本"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import json
 import time
 

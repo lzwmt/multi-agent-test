@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>诺曼底登陆为什么选在6月6日？</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f4ef;
+      --panel: #fffdf7;
+      --ink: #1f1f1f;
+      --muted: #5f5a52;
+      --border: #ddd6c7;
+      --warn: #8c5c00;
+      --error: #9b1c1c;
+      --info: #1f5d8a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Georgia, "Noto Serif SC", serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, #efede5 0%, #f9f7f1 100%);
+    }
+    .shell {
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px;
+      min-height: 100vh;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 12px 32px rgba(59, 43, 17, 0.08);
+    }
+    h1, h2, h3 { margin: 0 0 12px; }
+    h1 { font-size: 24px; }
+    h2 { font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-top: 24px; }
+    .meta-row { margin-bottom: 14px; }
+    .meta-label { font-size: 12px; text-transform: uppercase; color: var(--muted); letter-spacing: 0.08em; }
+    .meta-value { font-size: 16px; margin-top: 4px; word-break: break-word; }
+    .meta-source { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .pill {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      border: 1px solid var(--border);
+      background: #fbf8f0;
+    }
+    .check {
+      border-left: 4px solid var(--border);
+      padding: 10px 12px;
+      background: #fcfaf4;
+      margin-bottom: 10px;
+      border-radius: 8px;
+    }
+    .check.warn { border-color: var(--warn); }
+    .check.error { border-color: var(--error); }
+    .check.info { border-color: var(--info); }
+    .check-code { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .article-shell {
+      max-width: 760px;
+      margin: 0 auto;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 16px 40px rgba(40, 33, 18, 0.10);
+    }
+    .banner {
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 18px;
+      background: #faf6ec;
+      color: var(--muted);
+    }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #f6f3eb;
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      overflow: auto;
+    }
+    @media (max-width: 960px) {
+      .shell { grid-template-columns: 1fr; }
+      .article-shell { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="panel">
+      <h1>Publish Preview</h1>
+      <div class="meta-source">output/articles/2026-05-11_诺曼底登陆为什么选在D日.md</div>
+
+      <h2>Resolved Metadata</h2>
+      <div class="meta-row">
+        <div class="meta-label">Title</div>
+        <div class="meta-value">诺曼底登陆为什么选在6月6日？</div>
+        <div class="meta-source">cli.title · 15 / 32</div>
+      </div>
+      <div class="meta-row">
+        <div class="meta-label">Author</div>
+        <div class="meta-value">历史冷知识</div>
+        <div class="meta-source">cli.author · 5 / 16</div>
+      </div>
+      <div class="meta-row">
+        <div class="meta-label">Digest</div>
+        <div class="meta-value">300万盟军、12小时窗口、一个气象学家的一句话——D日背后的惊险真相</div>
+        <div class="meta-source">cli.digest · 35 / 128</div>
+      </div>
+
+      <h2>Context</h2>
+      <span class="pill">mode: api</span>
+      <span class="pill">theme: default</span>
+      <span class="pill">font: medium</span>
+      <span class="pill">background: none</span>
+      <span class="pill">preview: degraded</span>
+
+      <h2>Structure</h2>
+      <div class="meta-row">
+        <div class="meta-label">Body H1</div>
+        <div class="meta-value">诺曼底登陆为什么选在6月6日？答案比你想的更惊险</div>
+      </div>
+      <div class="meta-row">
+        <div class="meta-label">Images</div>
+        <div class="meta-value">0 total · 0 local · 0 remote · 0 ai</div>
+      </div>
+
+      <h2>Checks</h2>
+      
+        
+          <div class="check info">
+            <div class="check-code">info · TITLE_BODY_MISMATCH</div>
+            <div>Final article title differs from the body H1</div>
+            <div class="meta-source">confirm whether draft metadata title and body H1 are intended to differ</div>
+          </div>
+        
+          <div class="check info">
+            <div class="check-code">info · DIGEST_METADATA_ONLY</div>
+            <div>Digest affects draft metadata, not body HTML rendering</div>
+            <div class="meta-source">use body content or theme behavior to control visible article summary inside the HTML</div>
+          </div>
+        
+      
+    </aside>
+
+    <main class="panel">
+      <div class="article-shell">
+        
+          <div class="banner">Preview degraded: exact HTML could not be rendered in the current environment.</div>
+        
+        
+          <div class="banner">Render error: API call failed: API_ERROR: API returned error code 401: Invalid API Key format. Supported prefixes: wme_, wme2_, wmt_.</div>
+        
+        
+          <h1 style="margin-bottom:12px;">诺曼底登陆为什么选在6月6日？</h1>
+          <p style="color:#666; margin-top:0;">历史冷知识</p>
+          <p style="color:#666;">300万盟军、12小时窗口、一个气象学家的一句话——D日背后的惊险真相</p>
+          <h2 style="margin-top:24px;">Markdown Body</h2>
+          <pre># 诺曼底登陆为什么选在6月6日？答案比你想的更惊险
+
+&gt; &#34;战争中最危险的敌人，不是对面的枪炮，而是老天爷的脸色。&#34;
+
+1944年6月6日凌晨，300万盟军士兵正准备渡过英吉利海峡，执行人类历史上最大规模的两栖登陆作战。
+
+但在出发前，所有人都在焦虑同一个问题：**天气到底行不行？**
+
+· · ·
+
+## 一个气象预报，改变了二战走向
+
+诺曼底登陆的D日，原本定在6月5日。
+
+然而就在6月4日晚上，盟军气象主任斯塔格带来了一个坏消息：英吉利海峡即将迎来暴风雨，风力达到6级，浪高超过2米。
+
+这种天气下登陆？等于让士兵去送死。
+
+艾森豪威尔面临一个两难抉择：**推迟还是继续？**
+
+如果推迟到6月19日（下一个合适的潮汐窗口），不仅士气会崩溃，更致命的是——德军可能会发现登陆计划。整个&#34;霸王行动&#34;的突然性将荡然无存。
+
+就在这时，斯塔格说了一句改变历史的话：
+
+**&#34;6月6日凌晨，会出现一个短暂的天气窗口，大约12小时。&#34;**
+
+艾森豪威尔沉默了整整两分钟，然后说出了那句著名的命令：**&#34;OK，我们干。&#34;**
+
+· · ·
+
+## D日的秘密：不是随便选的日子
+
+很多人以为D日就是&#34;登陆日&#34;（Day）的缩写。没错，但选6月6日可不是随便挑的。
+
+两栖登陆对自然条件有三个硬性要求：
+
+🌊 **潮汐**：必须在退潮时登陆，这样士兵才能看到德军布设在海滩上的水雷和障碍物，工兵才能排除它们。
+
+🌙 **月光**：空降部队需要在凌晨跳伞，必须有月光，否则飞行员找不到目标。
+
+☀️ **日出时间**：第一波登陆部队需要在日出后30分钟上岸，既能看清目标，又能在天亮前完成滩头突破。
+
+满足这三个条件的日子，一个月里只有几天。6月6日，恰好是6月上旬唯一的一个&#34;完美日&#34;。
+
+· · ·
+
+## 希特勒的致命失误：他也在看天气
+
+最讽刺的是，德国人也有气象部门。
+
+德军气象专家的判断是：**这种天气，盟军不可能登陆。**
+
+隆美尔（&#34;大西洋壁垒&#34;指挥官）因此放心地回德国给老婆过生日去了。6月6日当天，诺曼底海滩的德军指挥官有一半不在岗。
+
+德军的逻辑很简单：没人会在暴风雨前夕发动两栖登陆。
+
+但盟军偏偏就干了。
+
+因为他们赌的是：**德军想不到我们会在这种天气登陆。**
+
+这是一场心理战，而盟军赢了。
+
+· · ·
+
+## 12小时窗口：差点就翻车
+
+6月6日凌晨，登陆舰队出发了。
+
+实际情况比预报的还糟：海浪颠簸，大量士兵严重晕船，有些人在登陆艇上就已经吐得不省人事。
+
+空降部队更惨——由于云层遮挡，很多飞行员偏离航线，13000多名伞兵被投到了距离目标几公里外的地方，有的甚至掉进了沼泽里。
+
+但正是这场&#34;糟糕的天气&#34;，成了盟军最好的掩护。
+
+德军雷达在暴风雨中性能大打折扣，直到登陆舰队距离海滩不到20公里时才被发现。而此时，一切都太晚了。
+
+· · ·
+
+## 一个数字告诉你D日有多惊险
+
+整个诺曼底登陆中：
+
+- 盟军伤亡约12万人
+- 德军伤亡约4-9万人
+- 参战兵力超过300万人
+- 动用飞机超过14000架
+- 各类舰艇超过5000艘
+
+这是人类历史上最大规模的两栖登陆作战，没有之一。
+
+而这一切，取决于一个气象学家在6月4日晚上说的那句话：**&#34;明天不行，后天可以。&#34;**
+
+---
+
+🧊 **冷知识彩蛋**：D日的&#34;D&#34;其实不代表&#34;Day&#34;。在军事术语中，D日（D-Day）和H时（H-Hour）只是用来表示&#34;行动日&#34;和&#34;行动时刻&#34;的代号，D和H本身没有任何含义，就是为了保密。类似地，&#34;H小时&#34;指的是行动开始的具体时刻。
+
+---
+
+📌 关注我，每天带你读一段你不知道的历史</pre>
+        
+      </div>
+    </main>
+  </div>
+</body>
+</html>

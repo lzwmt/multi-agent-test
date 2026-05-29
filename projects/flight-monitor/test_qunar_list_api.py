@@ -1,5 +1,5 @@
 """拦截去哪儿航班列表 API"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import json
 import time
 

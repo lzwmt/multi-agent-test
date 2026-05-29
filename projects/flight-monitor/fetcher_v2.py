@@ -6,7 +6,8 @@ import re
 import time
 import random
 
-from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeout
+from cloak_compat import sync_playwright
+from playwright.sync_api import TimeoutError as PlaywrightTimeout
 
 # 尝试导入 Scrapling
 try:
@@ -204,7 +205,7 @@ class FlightFetcher:
 
     def _fetch_qunar_with_click(self, origin_code: str, dest_code: str, date: datetime) -> Optional[str]:
         """使用 Playwright 模拟点击搜索"""
-        from playwright.sync_api import sync_playwright
+        from cloak_compat import sync_playwright
         
         # 城市代码转名称映射（简化版）
         city_names = {

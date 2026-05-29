@@ -1,7 +1,7 @@
 """劫持携程API响应获取航班数据"""
 import json
 import time
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 
 def hijack_ctrip_api(dep_code, arr_code, date_str):

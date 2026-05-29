@@ -1,7 +1,7 @@
 """使用OCR识别同程页面上的航班号"""
 import ddddocr
 import time
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 
 def ocr_tongcheng(dep_code, arr_code, date_str):

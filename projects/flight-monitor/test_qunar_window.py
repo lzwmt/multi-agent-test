@@ -1,6 +1,6 @@
 """去哪儿 - 检查 Window 全局变量和 Script 数据"""
 from datetime import datetime
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import json
 import re
 import time

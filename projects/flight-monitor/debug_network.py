@@ -1,5 +1,5 @@
 """调试网络请求 - 查找API"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import json
 
 url = "https://www.ly.com/flights/home?from=CAN&to=TAO&date=2026-03-14"

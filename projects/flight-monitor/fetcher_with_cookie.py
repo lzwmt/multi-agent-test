@@ -6,7 +6,7 @@ import re
 import time
 import random
 
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 
 class CookieFlightFetcher:

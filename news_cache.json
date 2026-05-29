@@ -1,12 +1,32 @@
 [
-  {"title": "11位联合创始人全部离职，马斯克的xAI还能走多远", "summary": "马斯克的xAI迎来人事震荡，最后一位联合创始人罗也离职，引发对其未来发展前景的担忧。这家人工智能公司能否继续前行，仍待观察。", "url": "https://www.huxiu.com/article/4846546.html?f=rss"},
-  {"title": "OpenAI关停Sora，AI视频赛道要凉？", "summary": "OpenAI 关停备受瞩目的 AI 视频生成工具 Sora，引发行业震动。 此举引发对其在 AI 视频赛道前景的担忧。", "url": "https://www.huxiu.com/article/4845590.html?f=rss"},
-  {"title": "99%做硬件的老方法注定是死局", "summary": "虎嗅科技组文章指出，99% 硬件领域的传统做法注定失败。 这篇文章是“AI原生100”栏目的第48篇，探讨AI原生创新。", "url": "https://www.huxiu.com/article/4846490.html?f=rss"},
-  {"title": "拜登舅舅被食人族吃了？一场跨越千年的“吃人罗生门”", "summary": "一篇微信文章声称，拜登的舅舅可能被食人族吃掉，引发了关于吃人历史的讨论。这篇“吃人罗生门”式的文章探讨了跨越千年的食人现象与相关传说。", "url": "https://www.huxiu.com/article/4846522.html?f=rss"},
-  {"title": "美团财报：内卷究竟有多可怕？", "summary": "美团财报显示，核心本地商业收入增长但利润亏损，一年蒸发近600亿。同时，阿里电商利润也大幅下滑，行业内卷严重，一年烧掉上千亿。", "url": "https://www.huxiu.com/article/4846252.html?f=rss"},
-  {"title": "DeepSeek修复故障，此前“已读不回”上热搜", "summary": "DeepSeek因服务故障登上热搜，此前被调侃“已读不回”。此次故障并非新模型发布，引发用户关注和讨论。", "url": "https://www.huxiu.com/article/4846512.html?f=rss"},
-  {"title": "对大多数人来说，别想着搞“股权投资”", "summary": "这篇文章警示普通人不要轻易参与股权投资，强调其风险和专业性壁垒。 作者建议将关注点放在更适合大众的投资方式上。", "url": "https://www.huxiu.com/article/4846502.html?f=rss"},
-  {"title": "马斯克的SpaceX，凭什么能撑起，12500亿美元市值？", "summary": "SpaceX估值飙升至1.25万亿美元，计划进行史上最大IPO，挑战苹果。马斯克的太空探索公司势头强劲，目标远大。", "url": "https://www.huxiu.com/article/4845909.html?f=rss"},
-  {"title": "AI 时代的反常识：赚钱很快，但用户留存很差", "summary": "AI应用赚钱速度快，但用户留存率却令人担忧。这揭示了AI时代商业模式的反常识：快速盈利与用户粘性低并存。", "url": "https://www.huxiu.com/article/4846506.html?f=rss"},
-  {"title": "这个“反人类”AI插件，专门让你体验DeepSeek宕机的感觉", "summary": "一个“反人类”的浏览器插件，让你模拟体验DeepSeek AI宕机的感受。该插件由APPSO公众号作者制作。", "url": "https://www.huxiu.com/article/4846494.html?f=rss"}
+  {
+    "title": "We're launching two specialized TPUs for the agentic era.",
+    "summary": "The eighth generation of Google’s TPU includes two specialized chips that will power the future of AI.",
+    "url": "https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/tpus-8t-8i-cloud-next/",
+    "source": "Google AI"
+  },
+  {
+    "title": "OpenAI Open-Sources Euphony: A Browser-Based Visualization Tool for Harmony Chat Data and Codex Session Logs",
+    "summary": "Debugging an AI agent that runs for dozens of steps: reading files, calling APIs, writing code, and revising its own output, is not like debugging a regular function. There is no single stack trace to read. Instead, deve",
+    "url": "https://www.marktechpost.com/2026/04/21/openai-open-sources-euphony-a-browser-based-visualization-tool-for-harmony-chat-data-and-codex-session-logs/",
+    "source": "MarkTechPost"
+  },
+  {
+    "title": "Hugging Face Releases ml-intern: An Open-Source AI Agent that Automates the LLM Post-Training Workflow",
+    "summary": "Hugging Face has released ml-intern, an open-source AI agent designed to automate end-to-end post-training workflows for large language models (LLMs). Built on the company’s smolagents framework, the tool can autonomousl",
+    "url": "https://www.marktechpost.com/2026/04/21/hugging-face-releases-ml-intern-an-open-source-ai-agent-that-automates-the-llm-post-training-workflow/",
+    "source": "MarkTechPost"
+  },
+  {
+    "title": "Introducing OpenAI Privacy Filter",
+    "summary": "OpenAI Privacy Filter is an open-weight model for detecting and redacting personally identifiable information (PII) in text with state-of-the-art accuracy",
+    "url": "https://openai.com/index/introducing-openai-privacy-filter",
+    "source": "OpenAI"
+  },
+  {
+    "title": "Photon Releases Spectrum: An Open-Source TypeScript Framework that Deploys AI Agents Directly to iMessage, WhatsApp, and Telegram",
+    "summary": "For all the progress made in AI agent development over the past few years, one fundamental problem has remained largely unsolved: most people never actually interact with agents. They live behind developer dashboards, in",
+    "url": "https://www.marktechpost.com/2026/04/22/photon-releases-spectrum-an-open-source-typescript-framework-that-deploys-ai-agents-directly-to-imessage-whatsapp-and-telegram/",
+    "source": "MarkTechPost"
+  }
 ]

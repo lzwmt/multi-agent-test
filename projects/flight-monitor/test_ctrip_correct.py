@@ -1,7 +1,7 @@
 """正确提取携程价格"""
 import re
 import time
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 
 def get_ctrip_correct(dep_code, arr_code, date_str):

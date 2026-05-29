@@ -1,6 +1,6 @@
 """使用 Cookie 测试多个日期"""
 from datetime import datetime, timedelta
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import re
 
 # Cookie 数据

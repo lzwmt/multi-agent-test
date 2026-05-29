@@ -2,7 +2,7 @@
 import re
 import requests
 import time
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 
 def extract_tongcheng_font(dep_code, arr_code, date_str):

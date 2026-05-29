@@ -1,6 +1,6 @@
 """拦截去哪儿 POST 请求数据"""
 from datetime import datetime
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import json
 import time
 

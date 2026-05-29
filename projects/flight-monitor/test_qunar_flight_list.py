@@ -1,5 +1,5 @@
 """获取去哪儿航班列表（含时间）"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import json
 import re
 import time

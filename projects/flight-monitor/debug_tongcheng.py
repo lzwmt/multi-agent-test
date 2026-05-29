@@ -1,5 +1,5 @@
 """调试同程旅行"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import re
 
 # 同程机票搜索URL

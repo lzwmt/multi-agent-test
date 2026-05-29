@@ -1,5 +1,5 @@
 """劫持去哪儿 getAirLine 请求参数"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import json
 import time
 

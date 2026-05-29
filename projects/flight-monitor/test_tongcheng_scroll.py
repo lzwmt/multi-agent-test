@@ -1,7 +1,7 @@
 """滚动页面触发同程航班数据加载"""
 import json
 import time
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 
 def scrape_tongcheng_with_scroll(dep_code, arr_code, date_str):

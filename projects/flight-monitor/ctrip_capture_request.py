@@ -1,7 +1,7 @@
 """捕获携程完整请求信息"""
 import json
 import time
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 
 def capture_ctrip_request():

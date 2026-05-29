@@ -1,7 +1,7 @@
 """查找同程页面中的JavaScript数据"""
 import re
 import json
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 
 def find_js_data(dep_code, arr_code, date_str):

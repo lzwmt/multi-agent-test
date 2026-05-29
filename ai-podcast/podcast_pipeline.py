@@ -15,13 +15,20 @@ AI 播客音频管线 — 窄 MVP
   5. 音量标准化 (-16 LUFS)
 """
 
+import argparse
+import hashlib
 import json
 import os
 import subprocess
 import sys
 import tempfile
+import time
 import shutil
+import uuid
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+import yaml
 from mutagen.mp3 import MP3
 from mutagen.id3 import ID3, TIT2, TPE1, TALB, APIC, TDRC, TRCK, COMM
 from datetime import datetime, timezone, timedelta
@@ -33,11 +40,43 @@ SAMPLE_RATE = 24000
 LUFS_TARGET = -16
 DEFAULT_BGM_DIR = os.path.expanduser("~/.openclaw/workspace/ai-podcast/bgm")
 DEFAULT_COVER = os.path.expanduser("~/.openclaw/workspace/ai-podcast/rss/cover.png")
-PODCAST_TITLE = "程序员赚钱指南"
+DEFAULT_TTS_CACHE_DIR = os.path.expanduser("~/.openclaw/workspace/ai-podcast/output/tts_cache")
+DEFAULT_TTS_WORKERS = int(os.environ.get("PODCAST_TTS_WORKERS", "2"))
+DEFAULT_TTS_TIMEOUT = int(os.environ.get("PODCAST_TTS_TIMEOUT", "120"))
+PODCAST_TITLE = "代码与财富"
 PODCAST_AUTHOR = "lzwmt"
-PODCAST_ALBUM = "程序员赚钱指南"
+PODCAST_ALBUM = "代码与财富"
 RSS_FEED_PATH = os.path.expanduser("~/.openclaw/workspace/ai-podcast/rss/feed.xml")
 RSS_BASE_URL = "https://lzwmt.github.io/ai-podcast-rss"
+
+
+def load_runtime_env() -> dict:
+    """Load TTS credentials from Hermes env/config for direct pipeline runs."""
+    env = os.environ.copy()
+    env_path = Path("/root/.hermes/.env")
+    if env_path.exists():
+        for line in env_path.read_text(encoding="utf-8", errors="ignore").splitlines():
+            if not line or line.lstrip().startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+            if key in {"XIAOMI_API_KEY", "XIAOMI_BASE_URL", "AINAIBA_API_KEY", "AINAIBA_API_URL"}:
+                env.setdefault(key, value)
+
+    config_path = Path("/root/.hermes/config.yaml")
+    if (not env.get("AINAIBA_API_KEY") or not env.get("AINAIBA_API_URL")) and config_path.exists():
+        cfg = yaml.safe_load(config_path.read_text(encoding="utf-8", errors="ignore")) or {}
+        for provider in cfg.get("custom_providers", []):
+            base_url = provider.get("base_url", "")
+            name = provider.get("name", "")
+            if "ainaiba" in base_url.lower() or "api-xai" in base_url.lower() or "ainaiba" in name.lower():
+                if provider.get("api_key"):
+                    env.setdefault("AINAIBA_API_KEY", provider["api_key"])
+                if base_url:
+                    env.setdefault("AINAIBA_API_URL", base_url)
+                break
+    return env
 
 
 def generate_placeholder_bgm(output_path: str, duration: float, freq: float = 440):
@@ -92,36 +131,85 @@ def split_text(text: str, max_chars: int = 120) -> list:
     return final if final else [text]
 
 
-def tts_segment(text: str, output_path: str):
-    """调用 MiMo TTS 合成单段音频，自动拆分长文本"""
+def tts_cache_path(text: str, cache_dir: str) -> str:
+    digest = hashlib.sha256(text.encode("utf-8")).hexdigest()[:24]
+    return os.path.join(cache_dir, f"mimo_{digest}.wav")
+
+
+def tts_chunk_cached(text: str, cache_dir: str, no_cache: bool = False,
+                     timeout: int = DEFAULT_TTS_TIMEOUT) -> str | None:
+    """Return a WAV path for one text chunk, using content-addressed cache."""
+    os.makedirs(cache_dir, exist_ok=True)
+    cached = tts_cache_path(text, cache_dir)
+    if not no_cache and os.path.exists(cached) and os.path.getsize(cached) > 0:
+        return cached
+    tmp_out = cached + f".{os.getpid()}.{uuid.uuid4().hex}.tmp.wav"
+    if _tts_single(text, tmp_out, timeout=timeout):
+        if not no_cache and os.path.exists(cached) and os.path.getsize(cached) > 0:
+            os.unlink(tmp_out)
+            return cached
+        os.replace(tmp_out, cached)
+        return cached
+    if os.path.exists(tmp_out):
+        os.unlink(tmp_out)
+    return None
+
+
+def tts_segment(text: str, output_path: str, cache_dir: str = DEFAULT_TTS_CACHE_DIR,
+                workers: int = DEFAULT_TTS_WORKERS, no_cache: bool = False,
+                timeout: int = DEFAULT_TTS_TIMEOUT):
+    """调用 MiMo TTS 合成单段音频，自动拆分长文本，失败后降级串行。"""
     chunks = split_text(text, max_chars=80)
+    first_workers = max(1, min(workers, len(chunks)))
+    tmpdir = tempfile.mkdtemp(prefix="tts_chunk_")
 
-    if len(chunks) == 1:
-        # 单块，直接合成
-        return _tts_single(chunks[0], output_path)
+    def synthesize(active_workers: int) -> dict:
+        results = {}
+        if active_workers == 1:
+            for i, chunk in enumerate(chunks):
+                results[i] = tts_chunk_cached(chunk, cache_dir, no_cache=no_cache, timeout=timeout)
+        else:
+            with ThreadPoolExecutor(max_workers=active_workers) as pool:
+                futures = {
+                    pool.submit(tts_chunk_cached, chunk, cache_dir, no_cache, timeout): i
+                    for i, chunk in enumerate(chunks)
+                }
+                for future in as_completed(futures):
+                    idx = futures[future]
+                    results[idx] = future.result()
+                    if not results[idx]:
+                        print(f"  ⚠️ chunk {idx} 失败", file=sys.stderr)
+        return results
 
-    # 多块，逐个合成后拼接
-    import tempfile as _tmp
-    tmpdir = _tmp.mkdtemp(prefix="tts_chunk_")
-    chunk_files = []
     try:
-        for i, chunk in enumerate(chunks):
-            chunk_path = os.path.join(tmpdir, f"chunk_{i:03d}.wav")
-            if not _tts_single(chunk, chunk_path):
-                return False
-            chunk_files.append(chunk_path)
-            # 块间小停顿
+        results = synthesize(first_workers)
+        failed = [i for i in range(len(chunks)) if not results.get(i)]
+        if failed and first_workers > 1:
+            print(f"  ⚠️ 并发 TTS 失败 chunks={failed}，降级串行重试", file=sys.stderr)
+            retry_results = synthesize(1)
+            for idx in failed:
+                results[idx] = retry_results.get(idx)
+            failed = [i for i in range(len(chunks)) if not results.get(i)]
+        if failed:
+            print(f"  ❌ TTS 段落失败 chunks={failed}，停止生成，避免静音冒充成品", file=sys.stderr)
+            return False
+
+        ordered_files = []
+        for i in range(len(chunks)):
+            ordered_files.append(results[i])
             if i < len(chunks) - 1:
                 pause_path = os.path.join(tmpdir, f"cpause_{i:03d}.wav")
                 generate_silence(pause_path, 300)
-                chunk_files.append(pause_path)
-        concatenate_audio(chunk_files, output_path)
+                ordered_files.append(pause_path)
+
+        concatenate_audio(ordered_files, output_path)
         return True
     finally:
         shutil.rmtree(tmpdir, ignore_errors=True)
 
 
-def _tts_single(text: str, output_path: str, retries: int = 2) -> bool:
+def _tts_single(text: str, output_path: str, retries: int = 1,
+                timeout: int = DEFAULT_TTS_TIMEOUT) -> bool:
     """调用 MiMo TTS 合成单段音频（不含拆分逻辑），带重试"""
     import time
     for attempt in range(retries + 1):
@@ -136,7 +224,7 @@ def _tts_single(text: str, output_path: str, retries: int = 2) -> bool:
         try:
             result = subprocess.run(
                 ["bash", TTS_SCRIPT, input_path, output_path],
-                capture_output=True, text=True, timeout=180
+                capture_output=True, text=True, timeout=timeout, env=load_runtime_env()
             )
             if result.returncode == 0:
                 # P0-1: 验证输出文件存在且大小 > 0
@@ -145,12 +233,9 @@ def _tts_single(text: str, output_path: str, retries: int = 2) -> bool:
                 print(f"TTS 返回成功但文件为空: {output_path}", file=sys.stderr)
             print(f"TTS 失败: {result.stderr}", file=sys.stderr)
         except subprocess.TimeoutExpired:
-            print("TTS 超时 (180s)", file=sys.stderr)
+            print(f"TTS 超时 ({timeout}s)", file=sys.stderr)
         finally:
             os.unlink(input_path)
-
-            # 块间间隔，避免 API 限流
-            time.sleep(3)
 
     return False
 
@@ -348,23 +433,30 @@ def update_rss_feed(episode_num: int, title: str, description: str,
 
 
 def main():
-    if len(sys.argv) < 3:
-        print("用法: python3 podcast_pipeline.py <script.json> <output.mp3> [--bgm-dir <dir>]")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description="AI 播客音频管线")
+    parser.add_argument("script_path", help="分段 JSON 脚本")
+    parser.add_argument("output_path", help="输出 MP3")
+    parser.add_argument("--bgm-dir", default=DEFAULT_BGM_DIR)
+    parser.add_argument("--episode-num", type=int, default=1)
+    parser.add_argument("--episode-title", default="")
+    parser.add_argument("--description", default="")
+    parser.add_argument("--no-rss", action="store_true", help="只生成音频，不更新 RSS")
+    parser.add_argument("--tts-workers", type=int, default=DEFAULT_TTS_WORKERS, help="TTS chunk 并发数，默认读取 PODCAST_TTS_WORKERS 或 2")
+    parser.add_argument("--tts-timeout", type=int, default=DEFAULT_TTS_TIMEOUT, help="单个 TTS chunk 超时时间，默认读取 PODCAST_TTS_TIMEOUT 或 120 秒")
+    parser.add_argument("--tts-cache-dir", default=DEFAULT_TTS_CACHE_DIR, help="TTS WAV 缓存目录")
+    parser.add_argument("--no-tts-cache", action="store_true", help="禁用 TTS 文本缓存")
+    args = parser.parse_args()
 
-    script_path = sys.argv[1]
-    output_path = sys.argv[2]
-    bgm_dir = DEFAULT_BGM_DIR
-
-    if "--bgm-dir" in sys.argv:
-        idx = sys.argv.index("--bgm-dir")
-        bgm_dir = sys.argv[idx + 1]
+    script_path = args.script_path
+    output_path = args.output_path
+    bgm_dir = args.bgm_dir
 
     # 读取脚本
     with open(script_path) as f:
         segments = json.load(f)
 
     print(f"📖 脚本加载: {len(segments)} 个段落")
+    print(f"⚙️  TTS workers={args.tts_workers}, timeout={args.tts_timeout}s, cache={'off' if args.no_tts_cache else args.tts_cache_dir}")
 
     # 创建临时目录
     tmpdir = tempfile.mkdtemp(prefix="podcast_")
@@ -390,33 +482,47 @@ def main():
             parts.append(placeholder)
 
         # === 逐段 TTS ===
-        for i, seg in enumerate(segments):
+        segment_audio = [None] * len(segments)
+        print(f"🎙️  并行 TTS: {len(segments)} 段")
+
+        def render_segment(index: int, seg: dict):
             seg_type = seg.get("type", "topic")
             text = seg["text"]
+            tts_out = os.path.join(tmpdir, f"seg_{index:03d}.wav")
+            started = time.time()
+            print(f"🎙️  [{index+1}/{len(segments)}] TTS: {seg_type} ({len(text)}字)")
+            ok = tts_segment(
+                text,
+                tts_out,
+                cache_dir=args.tts_cache_dir,
+                workers=args.tts_workers,
+                no_cache=args.no_tts_cache,
+                timeout=args.tts_timeout,
+            )
+            if not ok:
+                raise RuntimeError(f"段落 {index+1} TTS 失败")
+            return index, tts_out, time.time() - started
+
+        with ThreadPoolExecutor(max_workers=max(1, min(args.tts_workers, len(segments)))) as pool:
+            futures = {pool.submit(render_segment, i, seg): i for i, seg in enumerate(segments)}
+            for future in as_completed(futures):
+                index = futures[future]
+                try:
+                    index, tts_out, elapsed = future.result()
+                except Exception as exc:
+                    for pending in futures:
+                        pending.cancel()
+                    raise RuntimeError(f"段落 {index+1} TTS 失败: {exc}") from exc
+                segment_audio[index] = tts_out
+                print(f"  ✅ 段落 {index+1} 完成: {elapsed:.1f}s")
+
+        for i, seg in enumerate(segments):
+            parts.append(segment_audio[i])
             pause_ms = seg.get("pause_after_ms", 0)
-
-            print(f"🎙️  [{i+1}/{len(segments)}] TTS: {seg_type} ({len(text)}字)")
-            tts_out = os.path.join(tmpdir, f"seg_{i:03d}.wav")
-
-            if not tts_segment(text, tts_out):
-                # P0-2: TTS 失败时用静音替代，不跳过整段
-                print(f"⚠️ 段落 {i+1} TTS 失败，使用静音替代", file=sys.stderr)
-                # 估算文本时长：中文约 4 字/秒
-                estimated_duration_ms = max(3000, len(text) * 250)
-                generate_silence(tts_out, estimated_duration_ms)
-
-            parts.append(tts_out)
-
-            # 段间停顿
             if pause_ms > 0 and i < len(segments) - 1:
                 silence = os.path.join(tmpdir, f"pause_{i:03d}.wav")
                 generate_silence(silence, pause_ms)
                 parts.append(silence)
-
-            # 段间冷却，避免 API 限流
-            if i < len(segments) - 1:
-                import time
-                time.sleep(2)
 
         # === 片尾 BGM ===
         outro_bgm = os.path.join(bgm_dir, "outro.mp3")
@@ -446,8 +552,13 @@ def main():
         normalize_audio(raw_concat, output_path)
 
         # === P1-8/P1-9: 写入 ID3 tags + 封面图 ===
-        episode_num = len([s for s in segments if s.get("type") == "topic"])  # 估算集数
-        episode_title = f"EP{episode_num:02d}: {segments[0]['text'][:30]}..." if segments else "EP01"
+        episode_num = args.episode_num
+        if args.episode_title:
+            episode_title = args.episode_title
+        elif segments:
+            episode_title = f"EP{episode_num:02d}: {segments[0]['text'][:30]}..."
+        else:
+            episode_title = f"EP{episode_num:02d}"
         cover_path = os.path.join(os.path.dirname(output_path), "cover.png")
         if not os.path.exists(cover_path):
             cover_path = DEFAULT_COVER
@@ -463,15 +574,16 @@ def main():
         )
 
         # === P1-10: 自动更新 RSS feed ===
-        print("📡 更新 RSS feed...")
-        update_rss_feed(
-            episode_num=episode_num,
-            title=episode_title,
-            description=segments[0]['text'][:200] if segments else "",
-            audio_filename=os.path.basename(output_path),
-            audio_size=os.path.getsize(output_path),
-            duration_seconds=get_duration(output_path)
-        )
+        if not args.no_rss:
+            print("📡 更新 RSS feed...")
+            update_rss_feed(
+                episode_num=episode_num,
+                title=episode_title,
+                description=args.description or (segments[0]['text'][:200] if segments else ""),
+                audio_filename=os.path.basename(output_path),
+                audio_size=os.path.getsize(output_path),
+                duration_seconds=get_duration(output_path)
+            )
 
         # === 完成 ===
         duration = get_duration(output_path)

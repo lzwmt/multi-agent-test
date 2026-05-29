@@ -1,7 +1,7 @@
 """深度劫持同程所有API请求"""
 import json
 import time
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 
 def deep_hijack_tongcheng(dep_code, arr_code, date_str):

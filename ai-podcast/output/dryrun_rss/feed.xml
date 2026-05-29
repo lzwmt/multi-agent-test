@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='utf-8'?>
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
+  <channel>
+    <title>代码与财富</title>
+    <link>https://lzwmt.github.io/ai-podcast-rss/</link>
+    <description>一个程序员用AI工具研究投资的实操记录。用代码理解世界，用AI管好钱包。覆盖AI投资工具箱、AI投资实验、程序员投资思维，每期15-20分钟。</description>
+    <language>zh-cn</language>
+    <copyright>© 2026 lzwmt</copyright>
+    <lastBuildDate>Fri, 22 May 2026 22:46:45 +0800</lastBuildDate>
+    <pubDate>Fri, 22 May 2026 01:28:47 +0800</pubDate>
+    <docs>https://help.apple.com/itc/podcasts_connect/#/itcb54353390</docs>
+    <itunes:author>lzwmt</itunes:author>
+    <itunes:summary>一个程序员用AI工具研究投资的实操记录。用代码理解世界，用AI管好钱包。覆盖AI投资工具箱、AI投资实验、程序员投资思维，每期15-20分钟。</itunes:summary>
+    <itunes:owner>
+      <itunes:name>lzwmt</itunes:name>
+      <itunes:email>podcast@lzwmt.com</itunes:email>
+    </itunes:owner>
+    <itunes:image href="https://lzwmt.github.io/ai-podcast-rss/cover.png" />
+    <itunes:category text="Technology" />
+    <itunes:explicit>false</itunes:explicit>
+    <itunes:type>episodic</itunes:type>
+
+    <item><title>EP99: Dry Run Sandbox Test</title><itunes:title>Dry Run Sandbox Test</itunes:title><itunes:episode>99</itunes:episode><itunes:season>1</itunes:season><itunes:episodeType>full</itunes:episodeType><itunes:duration>541</itunes:duration><itunes:summary>dry run sandbox test</itunes:summary><description>&lt;p&gt;dry run sandbox test&lt;/p&gt;</description><pubDate>Fri, 22 May 2026 22:46:45 +0800</pubDate><enclosure url="https://lzwmt.github.io/ai-podcast-rss/episodes/ep99.mp3" length="3370260" type="audio/mpeg" /><link>https://lzwmt.github.io/ai-podcast-rss/</link><guid isPermaLink="false">ep99-20260522</guid></item><item><title>EP03: 让智能体看见世界：CV × AI Agent 的行业场景新实践| 2026AI Partner·北京亦庄</title><itunes:title>让智能体看见世界：CV × AI Agent 的行业场景新实践| 2026AI Partner·北京亦庄</itunes:title><itunes:episode>3</itunes:episode><itunes:season>1</itunes:season><itunes:episodeType>full</itunes:episodeType><itunes:duration>541</itunes:duration><itunes:summary>让智能体“看见”世界，不是给它装上摄像头那么简单。当CV遇上AI Agent，乘数效应正在发生。AI Agent不等于Chatbot，真正的价值在于静默看护与自主决策。 AI进入产业腹地仍面临两大鸿沟：视觉认知与行业的理解。为此，大华股份构建了星汉大模型系列——V系列视觉大模型让系统“看得懂”物理世界，L系列行业模型打通业务逻辑。未来“基模+行业Know-how”将成为新范式，而AI的终局不是刷榜，是让每个行业、每个个体都不掉队。 以下为大华股份研发中心副总裁 周文凯 演讲内容，经36氪整理编辑： 周文凯丨大华股份</itunes:summary><description>&lt;p&gt;让智能体“看见”世界，不是给它装上摄像头那么简单。当CV遇上AI Agent，乘数效应正在发生。AI Agent不等于Chatbot，真正的价值在于静默看护与自主决策。 AI进入产业腹地仍面临两大鸿沟：视觉认知与行业的理解。为此，大华股份构建了星汉大模型系列——V系列视觉大模型让系统“看得懂”物理世界，L系列行业模型打通业务逻辑。未来“基模+行业Know-how”将成为新范式，而AI的终局不是刷榜，是让每个行业、每个个体都不掉队。 以下为大华股份研发中心副总裁 周文凯 演讲内容，经36氪整理编辑： 周文凯丨大华股份&lt;/p&gt;</description><pubDate>Fri, 22 May 2026 21:30:27 +0800</pubDate><enclosure url="https://lzwmt.github.io/ai-podcast-rss/episodes/ep03.mp3" length="3370260" type="audio/mpeg" /><link>https://lzwmt.github.io/ai-podcast-rss/</link><guid isPermaLink="false">ep03-20260522</guid></item><item>
+      <title>EP02: 高盛点评英伟达、芯片股获利了结、理财费率归零 — 普通人怎么管钱</title>
+      <itunes:title>高盛点评英伟达、芯片股获利了结、理财费率归零 — 普通人怎么管钱</itunes:title>
+      <itunes:episode>2</itunes:episode>
+      <itunes:season>1</itunes:season>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:duration>588</itunes:duration>
+      <itunes:summary>高盛点评英伟达财报：AI算力资本支出浪潮未到顶；对冲基金对芯片股获利了结，半导体成净卖出最多方向；理财产品费率卷到0%。三件事回答同一个问题：市场既为AI兴奋又担心回调时，普通人该怎么管钱。</itunes:summary>
+      <description>
+        &lt;p&gt;高盛点评英伟达财报：AI算力资本支出浪潮未到顶；对冲基金对芯片股获利了结，半导体成净卖出最多方向；理财产品费率卷到0%。&lt;/p&gt;
+        &lt;p&gt;三件事回答同一个问题：市场既为AI兴奋又担心回调时，普通人该怎么管钱。&lt;/p&gt;
+        &lt;p&gt;&lt;strong&gt;本期要点：&lt;/strong&gt;&lt;/p&gt;
+        &lt;ul&gt;
+          &lt;li&gt;高盛英伟达财报点评：AI算力资本支出还在上升期&lt;/li&gt;
+          &lt;li&gt;对冲基金获利了结芯片股：拥挤交易的风险信号&lt;/li&gt;
+          &lt;li&gt;理财费率降到底：选产品看费率结构&lt;/li&gt;
+          &lt;li&gt;程序员视角：用AI工具拆解财报和市场信号&lt;/li&gt;
+        &lt;/ul&gt;
+      </description>
+      <pubDate>Fri, 22 May 2026 01:28:47 +0800</pubDate>
+      <enclosure url="https://lzwmt.github.io/ai-podcast-rss/episodes/ep02.mp3" length="3558137" type="audio/mpeg" />
+      <link>https://lzwmt.github.io/ai-podcast-rss/</link>
+      <guid isPermaLink="false">ep02-20260522</guid>
+    </item>
+
+    <item>
+      <title>EP01: 大模型时代的生存法则 — 从模型进化到基础设施</title>
+      <itunes:title>大模型时代的生存法则 — 从模型进化到基础设施</itunes:title>
+      <itunes:episode>1</itunes:episode>
+      <itunes:season>1</itunes:season>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:duration>420</itunes:duration>
+      <itunes:summary>OpenAI 连放大招：GPT-5.2 定位专业日常、AWS/Cloudflare 全面接入、内部数据 Agent 实战、Atlas 防御提示注入。作为一线程序员，拆解这些消息对职业发展和赚钱机会的真实影响。末尾推荐 Cursor 编辑器。</itunes:summary>
+      <description>
+        &lt;p&gt;OpenAI 连放大招：GPT-5.2 定位专业日常、AWS/Cloudflare 全面接入、内部数据 Agent 实战、Atlas 防御提示注入。&lt;/p&gt;
+        &lt;p&gt;作为一线程序员，拆解这些消息对职业发展和赚钱机会的真实影响。&lt;/p&gt;
+        &lt;p&gt;&lt;strong&gt;本期要点：&lt;/strong&gt;&lt;/p&gt;
+        &lt;ul&gt;
+          &lt;li&gt;GPT-5.2：从助手进化为合伙人，调教 AI 比用 AI 更重要&lt;/li&gt;
+          &lt;li&gt;云平台标准化集成：垂直领域创业的基础设施已就绪&lt;/li&gt;
+          &lt;li&gt;数据 Agent 趋势：程序员要从写代码转向设计 AI 工作流&lt;/li&gt;
+          &lt;li&gt;AI 安全：核心业务接入 AI 时的必选项&lt;/li&gt;
+        &lt;/ul&gt;
+        &lt;p&gt;&lt;strong&gt;工具推荐：&lt;/strong&gt; Cursor — AI 驱动的代码编辑器&lt;/p&gt;
+      </description>
+      <pubDate>Tue, 20 May 2026 07:00:00 +0800</pubDate>
+      <enclosure url="https://lzwmt.github.io/ai-podcast-rss/episodes/ep01.mp3" length="534285" type="audio/mpeg" />
+      <link>https://lzwmt.github.io/ai-podcast-rss/</link>
+      <guid isPermaLink="false">ep01-20260520</guid>
+    </item>
+
+  </channel>
+</rss>

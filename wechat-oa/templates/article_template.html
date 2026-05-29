@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.8;
+  color: #333;
+  max-width: 677px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 22px;
+  color: #1a1a1a;
+  line-height: 1.4;
+  margin-bottom: 16px;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: 18px;
+  color: #2c2c2c;
+  margin-top: 28px;
+  margin-bottom: 12px;
+  padding-left: 12px;
+  border-left: 4px solid #c0392b;
+}
+
+p {
+  font-size: 16px;
+  margin-bottom: 16px;
+  text-align: justify;
+}
+
+.highlight-box {
+  background: #fef9e7;
+  border-left: 4px solid #f39c12;
+  padding: 12px 16px;
+  margin: 20px 0;
+  border-radius: 0 4px 4px 0;
+}
+
+.highlight-box p {
+  margin: 0;
+  font-size: 15px;
+}
+
+.ending {
+  text-align: center;
+  color: #888;
+  font-size: 14px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.quote {
+  font-style: italic;
+  color: #666;
+  text-align: center;
+  margin: 24px 0;
+  font-size: 15px;
+}
+
+.section-divider {
+  text-align: center;
+  color: #ccc;
+  margin: 24px 0;
+  font-size: 20px;
+  letter-spacing: 8px;
+}
+</style>
+</head>
+<body>
+
+<h1>{{ title }}</h1>
+
+<div class="quote">{{ opening_quote }}</div>
+
+{{ content }}
+
+<div class="ending">
+<p>— END —</p>
+<p>📌 关注我，每天带你读一段你不知道的历史</p>
+</div>
+
+</body>
+</html>

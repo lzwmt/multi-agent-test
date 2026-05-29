@@ -1,6 +1,6 @@
 """检查同程页面中的Unicode编码"""
 import re
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 
 def check_unicode_in_page(dep_code, arr_code, date_str):

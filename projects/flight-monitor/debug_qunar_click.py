@@ -1,5 +1,5 @@
 """调试去哪儿 - 模拟点击搜索"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import re
 
 url = "https://flight.qunar.com/"

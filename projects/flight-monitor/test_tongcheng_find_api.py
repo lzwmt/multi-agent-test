@@ -1,7 +1,7 @@
 """寻找同程真实航班数据API"""
 import json
 import time
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 
 def find_tongcheng_real_api(dep_code, arr_code, date_str):

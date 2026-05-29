@@ -1,7 +1,7 @@
 """刷新携程Cookie"""
 import json
 import time
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 
 
 def refresh_ctrip_cookie():

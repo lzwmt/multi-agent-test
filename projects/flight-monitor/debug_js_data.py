@@ -1,5 +1,5 @@
 """调试页面中的JavaScript数据"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import re
 import json
 

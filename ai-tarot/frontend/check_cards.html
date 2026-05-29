@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>78张牌检查</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #1a1a2e; color: #eee; font-family: monospace; padding: 10px; }
+h1 { text-align: center; margin: 10px 0; font-size: 18px; color: #d4af37; }
+.row-label { color: #d4af37; font-size: 14px; margin: 8px 0 4px; padding: 4px 8px; background: #16213e; border-left: 3px solid #d4af37; }
+.grid { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+.card { width: 100px; text-align: center; background: #16213e; border: 1px solid #333; border-radius: 4px; padding: 4px; }
+.card img { width: 90px; height: 149px; object-fit: cover; border-radius: 3px; border: 1px solid #d4af37; display: block; margin: 0 auto 3px; }
+.card .name { font-size: 10px; color: #aaa; line-height: 1.2; word-break: break-all; }
+.card .idx { font-size: 9px; color: #666; }
+</style>
+</head>
+<body>
+<h1>78张牌全览 — 检查切割是否正确</h1>
+<div id="app"></div>
+<script>
+const ROWS = [
+  { label: "Row 0 (大阿卡那 0-9)", cards: [
+    "00-TheFool","01-TheMagician","02-TheHighPriestess","03-TheEmpress",
+    "04-TheEmperor","05-TheHierophant","06-TheLovers","07-TheChariot",
+    "08-Strength","09-TheHermit"
+  ]},
+  { label: "Row 1 (大阿卡那 10-19)", cards: [
+    "10-WheelOfFortune","11-Justice","12-TheHangedMan","13-Death",
+    "14-Temperance","15-TheDevil","16-TheTower","17-TheStar",
+    "18-TheMoon","19-TheSun"
+  ]},
+  { label: "Row 2 (20-21 + 权杖A-8)", cards: [
+    "20-Judgement","21-TheWorld",
+    "Wands-Ace","Wands-2","Wands-3","Wands-4",
+    "Wands-5","Wands-6","Wands-7","Wands-8"
+  ]},
+  { label: "Row 3 (权杖9-K + 圣杯A-4)", cards: [
+    "Wands-9","Wands-10","Wands-Page","Wands-Knight",
+    "Wands-Queen","Wands-King","Cups-Ace","Cups-2",
+    "Cups-3","Cups-4"
+  ]},
+  { label: "Row 4 (圣杯5-K)", cards: [
+    "Cups-5","Cups-6","Cups-7","Cups-8",
+    "Cups-9","Cups-10","Cups-Page","Cups-Knight",
+    "Cups-Queen","Cups-King"
+  ]},
+  { label: "Row 5 (宝剑A-10)", cards: [
+    "Swords-Ace","Swords-2","Swords-3","Swords-4",
+    "Swords-5","Swords-6","Swords-7","Swords-8",
+    "Swords-9","Swords-10"
+  ]},
+  { label: "Row 6 (宝剑J-K + 星币A-6)", cards: [
+    "Swords-Page","Swords-Knight","Swords-Queen","Swords-King",
+    "Pentacles-Ace","Pentacles-2","Pentacles-3","Pentacles-4",
+    "Pentacles-5","Pentacles-6"
+  ]},
+  { label: "Row 7 (星币7-K)", cards: [
+    "Pentacles-7","Pentacles-8","Pentacles-9","Pentacles-10",
+    "Pentacles-Page","Pentacles-Knight","Pentacles-Queen","Pentacles-King"
+  ]}
+];
+
+const app = document.getElementById('app');
+ROWS.forEach(row => {
+  const lbl = document.createElement('div');
+  lbl.className = 'row-label';
+  lbl.textContent = row.label;
+  app.appendChild(lbl);
+  const grid = document.createElement('div');
+  grid.className = 'grid';
+  row.cards.forEach((name, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `<div class="idx">${i+1}</div><img src="/public/cards/${name}.webp?${Date.now()}" alt="${name}" onerror="this.style.border='2px solid red';this.alt='MISSING'"><div class="name">${name}</div>`;
+    grid.appendChild(card);
+  });
+  app.appendChild(grid);
+});
+</script>
+</body>
+</html>

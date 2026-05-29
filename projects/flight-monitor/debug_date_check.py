@@ -1,5 +1,5 @@
 """检查日期参数是否生效"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 from datetime import datetime
 
 # 测试携程不同日期

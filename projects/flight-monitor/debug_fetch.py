@@ -1,6 +1,6 @@
 """调试抓取 - 保存HTML分析"""
 from datetime import datetime
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import re
 
 url = "https://flights.ctrip.com/online/list/oneway-CAN-TAO?depdate=2026-03-14"

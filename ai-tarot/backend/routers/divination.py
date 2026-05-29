@@ -43,6 +43,8 @@ class CardInfo(BaseModel):
     upright_keywords: list[str]
     reversed_keywords: list[str]
     drawn_id: int
+    suit: str | None = None
+    number: int | None = None
 
 
 class DivinationResponse(BaseModel):
@@ -200,6 +202,8 @@ async def create_divination(
             upright_keywords=c.get("upright_keywords", []),
             reversed_keywords=c.get("reversed_keywords", []),
             drawn_id=c["drawn_id"],
+            suit=c.get("suit"),
+            number=c.get("number"),
         ))
 
     return DivinationResponse(
@@ -211,6 +215,30 @@ async def create_divination(
         answer=answer,
         persona=req.persona,
     )
+
+
+@router.get("/cross/{card_a}/{card_b}")
+async def get_cross_reading(card_a: str, card_b: str):
+    """Query cross interpretation for two Major Arcana cards (by number 0-21)."""
+    matrix = _reader._kb_cross_matrix
+    entry = matrix.get(card_a, {}).get(card_b, {})
+    if not entry:
+        entry = matrix.get(card_b, {}).get(card_a, {})
+    return entry or {"error": "未找到交叉解读"}
+
+
+@router.get("/reversed-detail/{card_id}")
+async def get_reversed_detail(card_id: str):
+    """Get 4-layer reverse analysis for a Major Arcana card (by number or name)."""
+    detail = _reader._kb_reversed_detail.get(card_id, {})
+    return detail or {"error": "未找到逆位详情"}
+
+
+@router.get("/symbolism/{card_id}")
+async def get_symbolism(card_id: str):
+    """Get deep symbol meanings for a Major Arcana card (by number or name)."""
+    sym_by_name = _reader._kb_symbolism.get("_by_name", {})
+    return sym_by_name.get(card_id, {"error": "未找到符号象征"})
 
 
 @router.get("/history")

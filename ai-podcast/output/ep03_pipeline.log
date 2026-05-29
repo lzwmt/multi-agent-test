@@ -1,0 +1,29 @@
+📖 脚本加载: 7 个段落
+⚙️  TTS workers=4, cache=/root/.openclaw/workspace/ai-podcast/output/tts_cache
+🎵 使用已有片头 BGM
+🎙️  并行 TTS: 7 段
+🎙️  [1/7] TTS: intro (327字)
+🎙️  [2/7] TTS: topic (388字)
+🎙️  [3/7] TTS: topic (475字)
+🎙️  [4/7] TTS: topic (457字)
+🎙️  [5/7] TTS: topic (473字)
+  ✅ 段落 1 完成: 1.2s
+🎙️  [6/7] TTS: tool_rec (523字)
+  ✅ 段落 2 完成: 1.7s
+🎙️  [7/7] TTS: outro (123字)
+  ✅ 段落 4 完成: 1.8s
+  ✅ 段落 3 完成: 2.1s
+  ✅ 段落 7 完成: 0.4s
+  ✅ 段落 5 完成: 1.5s
+  ✅ 段落 6 完成: 1.1s
+🎵 使用已有片尾 BGM
+🔗 拼接音频...
+📊 音量标准化...
+🏷️ 写入 ID3 tags + 封面图...
+  ✅ ID3 tags 已写入: EP03: 让智能体看见世界：CV × AI Agent 的行业场景新实践| 2026AI Partner·北京亦庄
+
+✅ 完成: /root/.openclaw/workspace/ai-podcast/output/ep03.mp3
+   时长: 541.6s (9.0min)
+   大小: 3.2MB
+
+--- STDERR ---

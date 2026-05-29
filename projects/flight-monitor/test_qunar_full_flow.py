@@ -1,5 +1,5 @@
 """完整流程：首页 -> 搜索 -> 劫持航班数据"""
-from playwright.sync_api import sync_playwright
+from cloak_compat import sync_playwright
 import json
 import time
 
