@@ -1,15 +1,15 @@
 {
-  "date": "2026-05-29T10:00:35.310625",
+  "date": "2026-06-25T10:00:37.738739",
   "repos": [
-    "perplexityai/bumblebee",
-    "FoundZiGu/GuJumpgate",
-    "thananon/9arm-skills",
-    "datawhalechina/Agent-Learning-Hub",
-    "Tong89/smartNode",
-    "open-gsd/get-shit-done-redux",
-    "OpenBMB/PilotDeck",
-    "Doorman11991/smallcode",
-    "WUBING2023/PaperSpine",
-    "MoonshotAI/kimi-code"
+    "DietrichGebert/ponytail",
+    "baidu/Unlimited-OCR",
+    "zhongerxin/Cowart",
+    "vercel/eve",
+    "tamnd/kage",
+    "Waishnav/devspace",
+    "lenucksi/aur-malware-check",
+    "Forward-Future/loop-library",
+    "bozhouDev/codex-orange-book",
+    "EEliberto/IPA-Download"
   ]
 }
